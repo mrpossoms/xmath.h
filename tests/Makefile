@@ -3,7 +3,7 @@ INC+=-I../inc
 LIBS+=-L../lib/$(TARGET) -L/usr/lib
 LINK+=-lm
 
-CFLAGS+=-std=c99 -g
+CFLAGS+=-std=c++11 -g
 
 TESTS=$(patsubst %.c,bin/%,$(wildcard *.c))
 
@@ -11,7 +11,7 @@ bin:
 	mkdir bin
 
 bin/%: %.c bin
-	$(CC) $(CFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
+	$(CXX) $(CFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
 
 .PHONY: test clean
 test: $(TESTS)

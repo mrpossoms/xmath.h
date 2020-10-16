@@ -6,7 +6,8 @@
 
 TEST
 {
-    float a[5], b[5], expected = 0;
+    xmath::vec<5> a, b;
+    float expected = 0;
 
     for (int i = 5; i--;)
     {
@@ -15,7 +16,7 @@ TEST
         expected += a[i] * b[i];
     }
 
-    float actual = vec_dot(5, a, b);
+    float actual = a.dot(b);
 
     assert(fabs(expected - actual) < 1e-8);
 }

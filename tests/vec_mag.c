@@ -6,7 +6,8 @@
 
 TEST
 {
-    float a[5], expected = 0;
+    xmath::vec<5> a;
+    float expected = 0;
 
     for (int i = 5; i--;)
     {
@@ -15,7 +16,7 @@ TEST
     }
 
     expected = sqrt(expected);
-    float actual = vec_mag(5, a);
+    float actual = a.magnitude();
 
     assert(fabs(expected - actual) < 1e-8);
 }

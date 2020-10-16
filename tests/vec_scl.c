@@ -6,7 +6,7 @@
 
 TEST
 {
-    float a[5], r[5], expected[5];
+    xmath::vec<5> a, r, expected;
     float s = RAND_F;
 
     for (int i = 5; i--;)
@@ -16,7 +16,7 @@ TEST
         expected[i] = a[i] * s;
     }
 
-    vec_scl(5, r, a, s);
+    r = a * s;
 
     for (int i = 5; i--;)
     {

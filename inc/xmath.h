@@ -166,6 +166,9 @@ static inline TYPE vec_mag(size_t n, TYPE left[n])
 { VEC_MAG(TYPE, n, left) }
 
 #ifdef __cplusplus
+#include <initializer_list>
+#include <string>
+
 namespace xmath
 {
 
@@ -254,7 +257,7 @@ struct vec
 	inline vec<D,S>  operator/(const vec<D,S>& v) const
 	{
 		vec<D,S> out;
-		VEC_DIV(D, out.v, this->v, s)
+		VEC_DIV(D, out.v, this->v, v.v)
 		return out;
 	}
 

@@ -6,7 +6,7 @@
 
 TEST
 {
-    float a[5], b[5], r[5], expected[5];
+    xmath::vec<5> a, b, r, expected;
 
     for (int i = 5; i--;)
     {
@@ -15,7 +15,8 @@ TEST
         expected[i] = a[i] + b[i];
     }
 
-    vec_add(5, r, a, b);
+    //vec_add(5, r, a, b);
+    r = a + b;
 
     for (int i = 5; i--;)
     {
