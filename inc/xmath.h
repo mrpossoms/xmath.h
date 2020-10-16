@@ -18,10 +18,19 @@
 #define _XMATH_H_
 #include <math.h>
 
-#ifndef REAL
-#define REAL float
+#ifndef TYPE
+#define TYPE float
 #endif
 
+/**
+ * @brief      Compute vector addition between two vectors
+ *
+ * @param      n          Dimensionality of the vectors
+ * @param      dst_arr    The destination array to contain the result of size n
+ * @param      left_arr   The left array operand of the addition of size n
+ * @param      right_arr  The right array operand of the addition of size n
+ *
+ */
 #define VEC_ADD(n, dst_arr, left_arr, right_arr) \
 {\
 	for (size_t i = 0; i < (n); i++)\
@@ -30,14 +39,15 @@
 	}\
 }\
 
-#define VEC_SCL(n, dst_arr, left_arr, right_arr) \
-{\
-	for (size_t i = 0; i < (n); i++)\
-	{\
-		(dst_arr)[i] = (left_arr)[i] + (right_arr)[i];\
-	}\
-}\
-
+/**
+ * @brief      Compute vector subtraction between two vectors
+ *
+ * @param      n          Dimensionality of the vectors
+ * @param      dst_arr    The destination array to contain the result of size n
+ * @param      left_arr   The left array operand of the subtraction of size n
+ * @param      right_arr  The right array operand of the subtraction of size n
+ *
+ */
 #define VEC_SUB(n, dst_arr, left_arr, right_arr) \
 {\
 	for (size_t i = 0; i < (n); i++)\
@@ -46,6 +56,33 @@
 	}\
 }\
 
+/**
+ * @brief      Scales each element of a vector by a scalar
+ *
+ * @param      n          Dimensionality of the vectors
+ * @param      dst_arr    The destination array to contain the result of size n
+ * @param      left_arr   The left array operand of the addition of size n
+ * @param      right_scalar  The scalar by which each element is multiplied.
+ *
+ */
+#define VEC_SCL(n, dst_arr, left_arr, right_scalar) \
+{\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		(dst_arr)[i] = (left_arr)[i] * (right_scalar);\
+	}\
+}\
+
+/**
+ * @brief      Computes the Hadamard product (element wise product) between two
+ *             vectors.
+ *
+ * @param      n          Dimensionality of the vectors.
+ * @param      dst_arr    The destination array to contain the result of size n.
+ * @param      left_arr   The left array operand of size n of the operation.
+ * @param      right_arr  The right array operand of size n of the operation.
+ *
+ */
 #define VEC_HADAMARD(n, dst_arr, left_arr, right_arr)\
 {\
 	for (size_t i = 0; i < (n); i++)\
@@ -54,6 +91,15 @@
 	}\
 }\
 
+/**
+ * @brief      Computes the dot product (inner product) between two vectors.
+ *
+ * @param      n          Dimensionality of the vectors.
+ * @param      dst_arr    The destination array to contain the result of size n.
+ * @param      left_arr   The left array operand of size n of the operation.
+ * @param      right_arr  The right array operand of size n of the operation.
+ *
+ */
 #define VEC_DOT(TYPE, n, left_arr, right_arr)\
 {\
 	TYPE dot = 0;\
@@ -64,53 +110,42 @@
 	return dot;\
 }\
 
-static inline void vec_sub(size_t n, REAL dst[n], REAL left[n], REAL right[n])
-{
-	for (size_t i = 0; i < n; i++)
-	{
-		dst[i] = left[i] - right[i];
-	}
-}
+/**
+ * @brief      Computes the magnitude, or length of a vector.
+ *
+ * @param      TYPE  The type of the values in the vector
+ * @param      n     Dimensionality of the vector.
+ * @param      arr   The arr representing the vector
+ *
+ * @return     The magnitude of the vector.
+ */
+#define VEC_MAG(TYPE, n, arr)\
+{\
+	TYPE dot = 0;\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		dot += (arr)[i] * (arr)[i];\
+	}\
+	return (TYPE)sqrt(dot);\
+}\
 
+static inline void vec_add(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+{ VEC_ADD(n, dst, left, right) }
 
-static inline void vec_scl(size_t n, REAL dst[n], REAL in[n], REAL scalar)
-{
-	for (size_t i = 0; i < n; i++)
-	{
-		dst[i] = in[i] * scalar;
-	 }
-}
+static inline void vec_sub(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+{ VEC_SUB(n, dst, left, right) }
 
+static inline void vec_scl(size_t n, TYPE dst[n], TYPE in[n], TYPE scalar)
+{ VEC_SCL(n, dst, in, scalar) }
 
-static inline REAL vec_dot(size_t n, REAL left[n], REAL right[n])
-{
-	REAL dot = 0;
-	for (size_t i = 0; i < n; i++)
-	{
-		dot += left[i] * right[i];
-	}
+static inline void vec_hadamard(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+{ VEC_HADAMARD(n, dst, left, right) }
 
-	return dot;
-}
+static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
+{ VEC_DOT(TYPE, n, left, right) }
 
-static inline void vec_hadamard(size_t n, REAL dst[n], REAL left[n], REAL right[n])
-{
-	for (size_t i = 0; i < n; i++)
-	{
-		dst[i] = left[i] * right[i];
-	}
-}
+static inline TYPE vec_mag(size_t n, TYPE left[n])
+{ VEC_MAG(TYPE, n, left, left) }
 
-
-static inline void vec_each_ele(size_t n, REAL dst[n], REAL src[n], REAL (*func)(REAL x))
-{
-	for (size_t i = 0; i < n; i++)
-	{
-		dst[i] = func(src[i]);
-	}
-}
-
-
-// static inline void mat_add()
 
 #endif
