@@ -22,14 +22,47 @@
 #define REAL float
 #endif
 
-static inline void vec_add(size_t n, REAL dst[n], REAL left[n], REAL right[n])
-{
-	for (size_t i = 0; i < n; i++)
-	{
-		dst[i] = left[i] + right[i];
-	}
-}
+#define VEC_ADD(n, dst_arr, left_arr, right_arr) \
+{\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		(dst_arr)[i] = (left_arr)[i] + (right_arr)[i];\
+	}\
+}\
 
+#define VEC_SCL(n, dst_arr, left_arr, right_arr) \
+{\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		(dst_arr)[i] = (left_arr)[i] + (right_arr)[i];\
+	}\
+}\
+
+#define VEC_SUB(n, dst_arr, left_arr, right_arr) \
+{\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		(dst_arr)[i] = (left_arr)[i] - (right_arr)[i];\
+	}\
+}\
+
+#define VEC_HADAMARD(n, dst_arr, left_arr, right_arr)\
+{\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		(dst_arr)[i] = (left_arr)[i] * (right_arr)[i];\
+	}\
+}\
+
+#define VEC_DOT(TYPE, n, left_arr, right_arr)\
+{\
+	TYPE dot = 0;\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		dot += (left_arr)[i] * (right_arr)[i];\
+	}\
+	return dot;\
+}\
 
 static inline void vec_sub(size_t n, REAL dst[n], REAL left[n], REAL right[n])
 {
@@ -78,6 +111,6 @@ static inline void vec_each_ele(size_t n, REAL dst[n], REAL src[n], REAL (*func)
 }
 
 
-static inline void mat_add()
+// static inline void mat_add()
 
 #endif
