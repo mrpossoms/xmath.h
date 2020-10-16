@@ -92,6 +92,24 @@
 }\
 
 /**
+ * @brief      Element wise division with the left vector elements as numerators
+ *             and right vector elements as denominators
+ *
+ * @param      n          Dimensionality of the vectors.
+ * @param      dst_arr    The destination array to contain the result of size n.
+ * @param      left_arr   The left array operand of size n of the operation.
+ * @param      right_arr  The right array operand of size n of the operation.
+ *
+ */
+#define VEC_DIV(n, dst_arr, left_arr, right_arr)\
+{\
+	for (size_t i = 0; i < (n); i++)\
+	{\
+		(dst_arr)[i] = (left_arr)[i] * (right_arr)[i];\
+	}\
+}\
+
+/**
  * @brief      Computes the dot product (inner product) between two vectors.
  *
  * @param      n          Dimensionality of the vectors.
@@ -145,7 +163,244 @@ static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
 { VEC_DOT(TYPE, n, left, right) }
 
 static inline TYPE vec_mag(size_t n, TYPE left[n])
-{ VEC_MAG(TYPE, n, left, left) }
+{ VEC_MAG(TYPE, n, left) }
 
+#ifdef __cplusplus
+namespace xmath
+{
+
+template<size_t D, typename S=TYPE>
+struct vec
+{
+	vec()
+	{
+		for (auto i = D; i--;) { v[i] = {}; }
+	}
+
+	vec(const S* arr)
+	{
+		for (auto i = D; i--;) { v[i] = arr[i]; }
+	}
+
+	vec(std::initializer_list<S> init)
+	{
+		if (init.size() < D)
+		{
+			for (auto i = D; i--;)
+			{
+				v[i] = *init.begin();
+			}
+		}
+		else
+		{
+			auto i = 0;
+			for (auto s : init)
+			{
+				v[i++] = s;
+			}
+		}
+	}
+
+	inline S operator[](int i) const { return v[i]; }
+
+	inline S& operator[](int i) { return v[i]; }
+
+	inline S at(int i) const { return v[i]; }
+
+	inline S* ptr() { return v; }
+
+	inline bool is_finite() const
+	{
+		for (auto i = D; i--;)
+		{
+			if (!isfinite(v[i])) { return false; }
+		}
+
+		return true;
+	}
+
+	inline vec<D,S> operator+(const vec<D,S>& v) const
+	{
+		vec<D,S> out;
+		VEC_ADD(D, out.v, this->v, v.v)
+		return out;
+	}
+
+
+	inline vec<D,S> operator-(const vec<D,S>& v) const
+	{
+		vec<D,S> out;
+		VEC_SUB(D, out.v, this->v, v.v)
+		return out;
+	}
+
+
+	inline vec<D,S> operator*(const vec<D,S>& v) const
+	{
+		vec<D,S> out;
+		VEC_HADAMARD(D, out.v, this->v, v.v)
+		return out;
+	}
+
+
+	inline vec<D,S> operator*(const S s) const
+	{
+		vec<D,S> out;
+		VEC_SCL(D, out.v, this->v, s)
+		return out;
+	}
+
+
+	inline vec<D,S>  operator/(const vec<D,S>& v) const
+	{
+		vec<D,S> out;
+		VEC_DIV(D, out.v, this->v, s)
+		return out;
+	}
+
+
+	inline vec<D,S> operator/(const S s) const
+	{
+		vec<D,S> out;
+		VEC_SCL(D, out.v, this->v, 1.f/s)
+		return out;
+	}
+
+
+	inline vec<D,S>& operator=(const vec<D,S>& v)
+	{
+		for (auto i = D; i--;)
+		{
+			this->v[i] = v.v[i];
+		}
+		return *this;
+	}
+
+
+	inline vec<D,S>& operator+=(const vec<D,S>& v) { return *this = *this + v; }
+
+	inline vec<D,S>& operator-=(const vec<D,S>& v) { return *this = *this - v; }
+
+	inline vec<D,S>& operator*=(const vec<D,S>& v) { return *this = *this * v; }
+
+	inline vec<D,S>& operator*=(const S s) { return *this = *this * s; }
+
+	inline vec<D,S>& operator/=(const vec<D,S>& v) { return *this = *this / v; }
+
+	inline vec<D,S>& operator/=(const S s) { return *this = *this / s; }
+
+	inline bool operator!=(const vec<D,S>& v) const { return !(*this == v); }
+
+	inline bool operator==(const vec<D,S>& v) const
+	{
+		for (auto i = D; i--;)
+		{
+			if (v.at(i) != this->at(i)) { return false; }
+		}
+
+		return true;
+	}
+
+	template<typename T>
+	inline vec<D,T> cast() const
+	{
+		vec<D,T> v;
+		for (size_t i = 0; i < D; ++i)
+		{
+			v[i] = (T)this->v[i];
+		}
+
+		return v;
+	}
+
+	template<size_t ND>
+	vec<ND,S> slice(size_t start = 0)
+	{
+		vec<ND,S> r;
+		for (size_t i = 0; i < ND; ++i) { r[i] = v[i + start]; }
+		return r;
+	}
+
+
+	std::string to_string(bool parens=true) const
+	{
+		std::string str = parens ? "(" : "";
+		for (size_t i = 0; i < D; ++i)
+		{
+			str += std::to_string(v[i]);
+			if (i < D - 1) { str += ", "; }
+		} str += parens ? ")" : "";
+
+		return str;
+	}
+
+
+	inline S magnitude() const { VEC_MAG(S, D, this->v) }
+
+
+	vec<D,S> unit() const { return *this / magnitude(); }
+
+	S dot(vec<D,S> const& v) const { VEC_DOT(S, D, this->v, v.v) }
+
+	vec<D,S> project_onto(vec<D,S> const& v) const
+	{
+		auto v_hat = v.norm();
+		auto len = this->dot(v_hat);
+		return *this - (v_hat * len);
+	}
+
+	vec<D,S> lerp(const vec<D,S>& to, S p)
+	{
+		return (*this * (static_cast<S>(1) - p)) + (to * p);
+	}
+
+	bool is_near(const vec<D,S>& v, S threshold=0.0001)
+	{
+		auto diff = *this - v;
+		return diff.dot(diff) <= threshold;
+	}
+
+	vec<D,S>& take_min(const vec<D,S>& v)
+	{
+		for (size_t i = 0; i < D; ++i)
+		{
+			auto& cur = this->v[i];
+			cur = v[i] < cur ? v[i] : cur;
+		}
+
+		return *this;
+	}
+
+
+	vec<D,S>& take_max(const vec<D,S>& v)
+	{
+		for (size_t i = 0; i < D; ++i)
+		{
+			auto& cur = this->v[i];
+			cur = v[i] > cur ? v[i] : cur;
+		}
+
+		return *this;
+	}
+
+	static S cross(vec<2,S>& a, vec<2,S>& b)
+	{
+		return a[0]*b[1] - a[1]*b[0];
+	}
+
+	static vec<3,S> cross(vec<3,S> const& a, vec<3,S> const& b)
+	{
+		return {
+			a[1]*b[2] - a[2]*b[1],
+			a[2]*b[0] - a[0]*b[2],
+			a[0]*b[1] - a[1]*b[0],
+		};
+	}
+
+	S v[D]; // value store
+};
+
+} // namespace xmath end
+#endif
 
 #endif
