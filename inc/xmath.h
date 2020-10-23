@@ -19,7 +19,7 @@
 #include <math.h>
 
 #ifndef TYPE
-#define TYPE float
+#define TYPE double 
 #endif
 
 /**
@@ -147,6 +147,7 @@
 	return (TYPE)sqrt(dot);\
 }\
 
+#ifndef __cplusplus
 static inline void vec_add(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
 { VEC_ADD(n, dst, left, right) }
 
@@ -164,6 +165,7 @@ static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
 
 static inline TYPE vec_mag(size_t n, TYPE left[n])
 { VEC_MAG(TYPE, n, left) }
+#endif
 
 #ifdef __cplusplus
 #include <initializer_list>

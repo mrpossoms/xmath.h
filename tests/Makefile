@@ -5,12 +5,12 @@ LINK+=-lm
 
 CFLAGS+=-std=c++11 -g
 
-TESTS=$(patsubst %.c,bin/%,$(wildcard *.c))
+TESTS=$(patsubst %.cpp,bin/%,$(wildcard *.cpp))
 
 bin:
 	mkdir bin
 
-bin/%: %.c bin
+bin/%: %.cpp bin
 	$(CXX) $(CFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
 
 .PHONY: test clean
