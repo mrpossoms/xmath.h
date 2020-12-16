@@ -26,16 +26,16 @@
  * @brief      Compute vector addition between two vectors
  *
  * @param      n          Dimensionality of the vectors
- * @param      dst_arr    The destination array to contain the result of size n
- * @param      left_arr   The left array operand of the addition of size n
- * @param      right_arr  The right array operand of the addition of size n
+ * @param      dst_vec    The destination array to contain the result of size n
+ * @param      left_vec   The left array operand of the addition of size n
+ * @param      right_vec  The right array operand of the addition of size n
  *
  */
-#define VEC_ADD(n, dst_arr, left_arr, right_arr) \
+#define VEC_ADD(n, dst_vec, left_vec, right_vec) \
 {\
 	for (size_t i = 0; i < (n); i++)\
 	{\
-		(dst_arr)[i] = (left_arr)[i] + (right_arr)[i];\
+		(dst_vec)[i] = (left_vec)[i] + (right_vec)[i];\
 	}\
 }\
 
@@ -43,16 +43,16 @@
  * @brief      Compute vector subtraction between two vectors
  *
  * @param      n          Dimensionality of the vectors
- * @param      dst_arr    The destination array to contain the result of size n
- * @param      left_arr   The left array operand of the subtraction of size n
- * @param      right_arr  The right array operand of the subtraction of size n
+ * @param      dst_vec    The destination array to contain the result of size n
+ * @param      left_vec   The left array operand of the subtraction of size n
+ * @param      right_vec  The right array operand of the subtraction of size n
  *
  */
-#define VEC_SUB(n, dst_arr, left_arr, right_arr) \
+#define VEC_SUB(n, dst_vec, left_vec, right_vec) \
 {\
 	for (size_t i = 0; i < (n); i++)\
 	{\
-		(dst_arr)[i] = (left_arr)[i] - (right_arr)[i];\
+		(dst_vec)[i] = (left_vec)[i] - (right_vec)[i];\
 	}\
 }\
 
@@ -60,16 +60,16 @@
  * @brief      Scales each element of a vector by a scalar
  *
  * @param      n          Dimensionality of the vectors
- * @param      dst_arr    The destination array to contain the result of size n
- * @param      left_arr   The left array operand of the addition of size n
+ * @param      dst_vec    The destination array to contain the result of size n
+ * @param      left_vec   The left array operand of the addition of size n
  * @param      right_scalar  The scalar by which each element is multiplied.
  *
  */
-#define VEC_SCL(n, dst_arr, left_arr, right_scalar) \
+#define VEC_SCL(n, dst_vec, left_vec, right_scalar) \
 {\
 	for (size_t i = 0; i < (n); i++)\
 	{\
-		(dst_arr)[i] = (left_arr)[i] * (right_scalar);\
+		(dst_vec)[i] = (left_vec)[i] * (right_scalar);\
 	}\
 }\
 
@@ -78,16 +78,16 @@
  *             vectors.
  *
  * @param      n          Dimensionality of the vectors.
- * @param      dst_arr    The destination array to contain the result of size n.
- * @param      left_arr   The left array operand of size n of the operation.
- * @param      right_arr  The right array operand of size n of the operation.
+ * @param      dst_vec    The destination array to contain the result of size n.
+ * @param      left_vec   The left array operand of size n of the operation.
+ * @param      right_vec  The right array operand of size n of the operation.
  *
  */
-#define VEC_HADAMARD(n, dst_arr, left_arr, right_arr)\
+#define VEC_HADAMARD(n, dst_vec, left_vec, right_vec)\
 {\
 	for (size_t i = 0; i < (n); i++)\
 	{\
-		(dst_arr)[i] = (left_arr)[i] * (right_arr)[i];\
+		(dst_vec)[i] = (left_vec)[i] * (right_vec)[i];\
 	}\
 }\
 
@@ -96,16 +96,16 @@
  *             and right vector elements as denominators
  *
  * @param      n          Dimensionality of the vectors.
- * @param      dst_arr    The destination array to contain the result of size n.
- * @param      left_arr   The left array operand of size n of the operation.
- * @param      right_arr  The right array operand of size n of the operation.
+ * @param      dst_vec    The destination array to contain the result of size n.
+ * @param      left_vec   The left array operand of size n of the operation.
+ * @param      right_vec  The right array operand of size n of the operation.
  *
  */
-#define VEC_DIV(n, dst_arr, left_arr, right_arr)\
+#define VEC_DIV(n, dst_vec, left_vec, right_vec)\
 {\
 	for (size_t i = 0; i < (n); i++)\
 	{\
-		(dst_arr)[i] = (left_arr)[i] * (right_arr)[i];\
+		(dst_vec)[i] = (left_vec)[i] * (right_vec)[i];\
 	}\
 }\
 
@@ -113,17 +113,17 @@
  * @brief      Computes the dot product (inner product) between two vectors.
  *
  * @param      n          Dimensionality of the vectors.
- * @param      dst_arr    The destination array to contain the result of size n.
- * @param      left_arr   The left array operand of size n of the operation.
- * @param      right_arr  The right array operand of size n of the operation.
+ * @param      dst_vec    The destination array to contain the result of size n.
+ * @param      left_vec   The left array operand of size n of the operation.
+ * @param      right_vec  The right array operand of size n of the operation.
  *
  */
-#define VEC_DOT(TYPE, n, left_arr, right_arr)\
+#define VEC_DOT(TYPE, n, left_vec, right_vec)\
 {\
 	TYPE dot = 0;\
 	for (size_t i = 0; i < (n); i++)\
 	{\
-		dot += (left_arr)[i] * (right_arr)[i];\
+		dot += (left_vec)[i] * (right_vec)[i];\
 	}\
 	return dot;\
 }\
@@ -133,18 +133,187 @@
  *
  * @param      TYPE  The type of the values in the vector
  * @param      n     Dimensionality of the vector.
- * @param      arr   The arr representing the vector
+ * @param      vec   The vec representing the vector
  *
  * @return     The magnitude of the vector.
  */
-#define VEC_MAG(TYPE, n, arr)\
+#define VEC_MAG(TYPE, n, vec)\
 {\
 	TYPE dot = 0;\
 	for (size_t i = 0; i < (n); i++)\
 	{\
-		dot += (arr)[i] * (arr)[i];\
+		dot += (vec)[i] * (vec)[i];\
 	}\
 	return (TYPE)sqrt(dot);\
+}\
+
+/**
+ * @brief      Performs a matrix multiplication between two matrices which are
+ *             compatible.
+ *
+ * @param      TYPE  The type
+ * @param      m_R   Rows in matrix 'm'
+ * @param      m_C   Columns in matrix 'm'
+ * @param      n_R   Rows in matrix 'n'
+ * @param      n_C   Columns in matrix 'n'
+ * @param      r     Resulting matrix of size (m_R, n_C)
+ * @param      m     Left hand operand of size (m_R, m_C)
+ * @param      n     Right hand operand of size (n_R, n_C)
+ */
+#define MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n)\
+{\
+    for (TYPE row = m_R; row--;)\
+    for (TYPE col = n_C; col--;)\
+    {\
+        for (TYPE i = m_C; i--;)\
+        {\
+            (r)[row][col] += (m)[row][i] * (n)[i][col];\
+        }\
+    }\
+}\
+
+/**
+ * @brief      Performs matrix-vector multiplication resulting in another
+ *             vector.
+ *
+ * @param      TYPE  The type
+ * @param      m_R   Rows in matrix 'm'
+ * @param      m_C   Columns in matrix 'm'
+ * @param      r     Resulting vector of size m_R.
+ * @param      m     Left hand operand matrix of size (m_R, m_C).
+ * @param      v     Right hand operand vector of size m_C.
+ */
+#define MAT_MUL_VEC(TYPE, m_R, m_C, r, m, v)\
+{\
+    for (TYPE row = (m_R); row--;)\
+    { \
+    	(r)[row] = 0;\
+	    for (TYPE col = (n_C); col--;)\
+	    {\
+	        (r)[row] += (m)[row][col] * (n)[col];\
+	    }\
+    {\
+}\
+
+/**
+ * @brief      Scales each element of a matrix with a scalar and stores the
+ *             result in another matrix of matching size.
+ *
+ * @param      TYPE  The type
+ * @param      m_R   Rows in matrix 'm'
+ * @param      m_C   Columns in matrix 'm'
+ * @param      r     Resulting matrix with scale applied of size (m_R, m_C)
+ * @param      m     Left hand operand matrix of size (m_R, m_C)
+ * @param      s     Scalar which will be multiplied agains each element of 'm'
+ */
+#define MAT_MUL_E(TYPE, m_R, m_C, r, m, s)\
+{\
+    for (TYPE row = (m_R); row--;)\
+    { \
+	    for (TYPE col = (n_C); col--;)\
+	    {\
+	        (r)[row][col] = (m)[row][col] * (s);\
+	    }\
+    {\
+}\
+
+/**
+ * @brief      Performs an elementwise addition between two matrices
+ *
+ * @param      TYPE  The type
+ * @param      m_R   Rows in matrix 'm'
+ * @param      m_C   Columns in matrix 'm'
+ * @param      r     Resulting matrix of size (m_R, m_C)
+ * @param      m     Left hand operand in the addition of size (m_R, m_C) 
+ * @param      n     Right hand operand in the addition of size (m_R, m_C)
+ */
+#define MAT_ADD_E(TYPE, m_R, m_C, r, m, n)\
+{\
+    for (TYPE row = (m_R); row--;)\
+    { \
+	    for (TYPE col = (n_C); col--;)\
+	    {\
+	        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+	    }\
+    {\
+}\
+
+/**
+ * @brief      Performs an elementwise subtraction between two matrices
+ *
+ * @param      TYPE  The type
+ * @param      m_R   Rows in matrix 'm'
+ * @param      m_C   Columns in matrix 'm'
+ * @param      r     Resulting matrix of size (m_R, m_C)
+ * @param      m     Left hand operand in the subtraction of size (m_R, m_C) 
+ * @param      n     Right hand operand in the subtraction of size (m_R, m_C)
+ */
+#define MAT_SUB_E(TYPE, m_R, m_C, r, m, n)\
+{\
+    for (TYPE row = (m_R); row--;)\
+    { \
+	    for (TYPE col = (n_C); col--;)\
+	    {\
+	        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+	    }\
+    {\
+}\
+
+#define MAT_RREF(TYPE, R, C, M)\
+{\
+	size_t piv_c = 0;\
+	for (size_t r = 0; r < (R); r++)\
+	{\
+		if (M[r][piv_c] == 0)\
+		{\
+			ssize_t swap_ri = -1;\
+			for (size_t ri = r + 1; ri < (R); ri++)\
+			{\
+				if (M[ri][piv_c] != 0)\
+				{\
+					swap_ri = ri;\
+					break;\
+				}\
+			}\
+			if (swap_ri > -1)\
+			{\
+				TYPE tmp[(C)];\
+				memcpy(tmp, M[swap_ri], sizeof(TYPE) * (C));\
+				memcpy(M[swap_ri], M[r], sizeof(TYPE) * (C));\
+				memcpy(M[r], tmp, sizeof(TYPE) * (C));\
+			}\
+		}\
+		{\
+			TYPE d = 1 / M[r][piv_c];\
+			for (size_t c = piv_c; c < (C); c++) { M[r][c] *= d; }\
+		}\
+		for (size_t ri = 0; ri < (R); ri++)\
+		{\
+			if (M[ri][piv_c] == 0 || ri == r) { continue; }\
+			TYPE d = M[ri][piv_c];\
+			for (size_t c = piv_c; c < (C); c++)\
+			{\
+				M[ri][c] -= d * M[r][c];\
+			}\
+		}\
+		++piv_c;\
+	}\
+}\
+
+#define MAT_INV(TYPE, R, C, M)\
+{\
+	TYPE aug[(R)][(C) << 1];\
+	for (size_t r = (R); r--;)\
+	{\
+		aug[r][r + (C)] = 1;\
+		for (size_t c = (C); c--;) { aug[r][c] = (M)[r][c]; }\
+	}\
+	MAT_RREF(TYPE, (R), (C) << 1, aug);\
+	for (size_t r = (R); r--;)\
+	for (size_t c = (C); c--;)\
+	{\
+		(M)[r][c] = aug[r][c + (C)];\
+	}\
 }\
 
 #ifndef __cplusplus
@@ -165,33 +334,36 @@ static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
 
 static inline TYPE vec_mag(size_t n, TYPE left[n])
 { VEC_MAG(TYPE, n, left) }
+
+
 #endif
 
 #ifdef __cplusplus
 #include <initializer_list>
+#include <functional>
 #include <string>
 
 namespace xmath
 {
 
-template<size_t D, typename S=TYPE>
+template <size_t N, typename S=TYPE>
 struct vec
 {
 	vec()
 	{
-		for (auto i = D; i--;) { v[i] = {}; }
+		for (auto i = N; i--;) { v[i] = {}; }
 	}
 
 	vec(const S* arr)
 	{
-		for (auto i = D; i--;) { v[i] = arr[i]; }
+		for (auto i = N; i--;) { v[i] = arr[i]; }
 	}
 
 	vec(std::initializer_list<S> init)
 	{
-		if (init.size() < D)
+		if (init.size() < N)
 		{
-			for (auto i = D; i--;)
+			for (auto i = N; i--;)
 			{
 				v[i] = *init.begin();
 			}
@@ -216,7 +388,7 @@ struct vec
 
 	inline bool is_finite() const
 	{
-		for (auto i = D; i--;)
+		for (auto i = N; i--;)
 		{
 			if (!isfinite(v[i])) { return false; }
 		}
@@ -224,57 +396,57 @@ struct vec
 		return true;
 	}
 
-	inline vec<D,S> operator+(const vec<D,S>& v) const
+	inline vec<N,S> operator+(const vec<N,S>& v) const
 	{
-		vec<D,S> out;
-		VEC_ADD(D, out.v, this->v, v.v)
+		vec<N,S> out;
+		VEC_ADD(N, out.v, this->v, v.v)
 		return out;
 	}
 
 
-	inline vec<D,S> operator-(const vec<D,S>& v) const
+	inline vec<N,S> operator-(const vec<N,S>& v) const
 	{
-		vec<D,S> out;
-		VEC_SUB(D, out.v, this->v, v.v)
+		vec<N,S> out;
+		VEC_SUB(N, out.v, this->v, v.v)
 		return out;
 	}
 
 
-	inline vec<D,S> operator*(const vec<D,S>& v) const
+	inline vec<N,S> operator*(const vec<N,S>& v) const
 	{
-		vec<D,S> out;
-		VEC_HADAMARD(D, out.v, this->v, v.v)
+		vec<N,S> out;
+		VEC_HADAMARD(N, out.v, this->v, v.v)
 		return out;
 	}
 
 
-	inline vec<D,S> operator*(const S s) const
+	inline vec<N,S> operator*(const S s) const
 	{
-		vec<D,S> out;
-		VEC_SCL(D, out.v, this->v, s)
+		vec<N,S> out;
+		VEC_SCL(N, out.v, this->v, s)
 		return out;
 	}
 
 
-	inline vec<D,S>  operator/(const vec<D,S>& v) const
+	inline vec<N,S>  operator/(const vec<N,S>& v) const
 	{
-		vec<D,S> out;
-		VEC_DIV(D, out.v, this->v, v.v)
+		vec<N,S> out;
+		VEC_DIV(N, out.v, this->v, v.v)
 		return out;
 	}
 
 
-	inline vec<D,S> operator/(const S s) const
+	inline vec<N,S> operator/(const S s) const
 	{
-		vec<D,S> out;
-		VEC_SCL(D, out.v, this->v, 1.f/s)
+		vec<N,S> out;
+		VEC_SCL(N, out.v, this->v, 1.f/s)
 		return out;
 	}
 
 
-	inline vec<D,S>& operator=(const vec<D,S>& v)
+	inline vec<N,S>& operator=(const vec<N,S>& v)
 	{
-		for (auto i = D; i--;)
+		for (auto i = N; i--;)
 		{
 			this->v[i] = v.v[i];
 		}
@@ -282,23 +454,23 @@ struct vec
 	}
 
 
-	inline vec<D,S>& operator+=(const vec<D,S>& v) { return *this = *this + v; }
+	inline vec<N,S>& operator+=(const vec<N,S>& v) { return *this = *this + v; }
 
-	inline vec<D,S>& operator-=(const vec<D,S>& v) { return *this = *this - v; }
+	inline vec<N,S>& operator-=(const vec<N,S>& v) { return *this = *this - v; }
 
-	inline vec<D,S>& operator*=(const vec<D,S>& v) { return *this = *this * v; }
+	inline vec<N,S>& operator*=(const vec<N,S>& v) { return *this = *this * v; }
 
-	inline vec<D,S>& operator*=(const S s) { return *this = *this * s; }
+	inline vec<N,S>& operator*=(const S s) { return *this = *this * s; }
 
-	inline vec<D,S>& operator/=(const vec<D,S>& v) { return *this = *this / v; }
+	inline vec<N,S>& operator/=(const vec<N,S>& v) { return *this = *this / v; }
 
-	inline vec<D,S>& operator/=(const S s) { return *this = *this / s; }
+	inline vec<N,S>& operator/=(const S s) { return *this = *this / s; }
 
-	inline bool operator!=(const vec<D,S>& v) const { return !(*this == v); }
+	inline bool operator!=(const vec<N,S>& v) const { return !(*this == v); }
 
-	inline bool operator==(const vec<D,S>& v) const
+	inline bool operator==(const vec<N,S>& v) const
 	{
-		for (auto i = D; i--;)
+		for (auto i = N; i--;)
 		{
 			if (v.at(i) != this->at(i)) { return false; }
 		}
@@ -307,10 +479,10 @@ struct vec
 	}
 
 	template<typename T>
-	inline vec<D,T> cast() const
+	inline vec<N,T> cast() const
 	{
-		vec<D,T> v;
-		for (size_t i = 0; i < D; ++i)
+		vec<N,T> v;
+		for (size_t i = 0; i < N; ++i)
 		{
 			v[i] = (T)this->v[i];
 		}
@@ -318,11 +490,11 @@ struct vec
 		return v;
 	}
 
-	template<size_t ND>
-	vec<ND,S> slice(size_t start = 0)
+	template<size_t NN>
+	vec<NN,S> slice(size_t start = 0)
 	{
-		vec<ND,S> r;
-		for (size_t i = 0; i < ND; ++i) { r[i] = v[i + start]; }
+		vec<NN,S> r;
+		for (size_t i = 0; i < NN; ++i) { r[i] = v[i + start]; }
 		return r;
 	}
 
@@ -330,44 +502,44 @@ struct vec
 	std::string to_string(bool parens=true) const
 	{
 		std::string str = parens ? "(" : "";
-		for (size_t i = 0; i < D; ++i)
+		for (size_t i = 0; i < N; ++i)
 		{
 			str += std::to_string(v[i]);
-			if (i < D - 1) { str += ", "; }
+			if (i < N - 1) { str += ", "; }
 		} str += parens ? ")" : "";
 
 		return str;
 	}
 
 
-	inline S magnitude() const { VEC_MAG(S, D, this->v) }
+	inline S magnitude() const { VEC_MAG(S, N, this->v) }
 
 
-	vec<D,S> unit() const { return *this / magnitude(); }
+	vec<N,S> unit() const { return *this / magnitude(); }
 
-	S dot(vec<D,S> const& v) const { VEC_DOT(S, D, this->v, v.v) }
+	S dot(vec<N,S> const& v) const { VEC_DOT(S, N, this->v, v.v) }
 
-	vec<D,S> project_onto(vec<D,S> const& v) const
+	vec<N,S> project_onto(vec<N,S> const& v) const
 	{
 		auto v_hat = v.norm();
 		auto len = this->dot(v_hat);
 		return *this - (v_hat * len);
 	}
 
-	vec<D,S> lerp(const vec<D,S>& to, S p)
+	vec<N,S> lerp(const vec<N,S>& to, S p)
 	{
 		return (*this * (static_cast<S>(1) - p)) + (to * p);
 	}
 
-	bool is_near(const vec<D,S>& v, S threshold=0.0001)
+	bool is_near(const vec<N,S>& v, S threshold=0.0001)
 	{
 		auto diff = *this - v;
 		return diff.dot(diff) <= threshold;
 	}
 
-	vec<D,S>& take_min(const vec<D,S>& v)
+	vec<N,S>& take_min(const vec<N,S>& v)
 	{
-		for (size_t i = 0; i < D; ++i)
+		for (size_t i = 0; i < N; ++i)
 		{
 			auto& cur = this->v[i];
 			cur = v[i] < cur ? v[i] : cur;
@@ -377,9 +549,9 @@ struct vec
 	}
 
 
-	vec<D,S>& take_max(const vec<D,S>& v)
+	vec<N,S>& take_max(const vec<N,S>& v)
 	{
-		for (size_t i = 0; i < D; ++i)
+		for (size_t i = 0; i < N; ++i)
 		{
 			auto& cur = this->v[i];
 			cur = v[i] > cur ? v[i] : cur;
@@ -402,7 +574,56 @@ struct vec
 		};
 	}
 
-	S v[D]; // value store
+	S v[N]; // value store
+};
+
+template <size_t R, size_t C, typename S=TYPE>
+struct mat
+{
+    mat()
+    {
+        for (auto row = R; row--;)
+        for (auto col = C; col--;)
+        {
+            m[row][col] = {};
+        }
+    }
+
+    mat(std::initializer_list<std::initializer_list<S>> init)
+    {
+        int ri = 0;
+        for (auto row : init)
+        {
+            int ci = 0;
+            for (auto c : row)
+            {
+                m[ri][ci] = c;
+                ci += 1;
+            }
+            ri += 1;
+        }
+
+    }
+
+    mat<R, C, S>& initialize(std::function<S (S r, S c)> init)
+    {
+        for (auto row = R; row--;)
+        for (auto col = C; col--;)
+        {
+            m[row][col] = init(static_cast<S>(row), static_cast<S>(col));
+        }
+
+        return *this;
+    }
+
+    void invert()
+    {
+    	MAT_INV(S, R, C, m)
+    }
+
+    vec<C, S>& operator[](size_t r) { return m[r]; }
+
+	vec<C, S> m[R];
 };
 
 } // namespace xmath end
