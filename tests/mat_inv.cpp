@@ -13,19 +13,22 @@ TEST
 		{ 1, 0, 0, 1, }
 	};
 
-	xmath::mat<4, 4> exp_inv = {
-		{ .25, 0, 0, 0, },
-		{ 0, -1, 1, 0, },
-		{ 0, 0.5, 0, 0, },
-		{ -0.25, 0, 0, 1, }
+	xmath::mat<4, 4> I = {
+		{ 1, 0, 0, 0, },
+		{ 0, 1, 0, 0, },
+		{ 0, 0, 1, 0, },
+		{ 0, 0, 0, 1, }
 	};
 
-	M.invert();
+	auto inv = M.invert();
+
+    // Multiply M by its inverse to get the identity
+	M = M * inv;
 
     for (size_t i = 4; i--;)
     for (size_t j = 4; j--;)
     {
-        assert(fabs(exp_inv[i][j] - M[i][j]) < 1e-8);
+        assert(fabs(I[i][j] - M[i][j]) < 1e-8);
     }
 
     return 0;

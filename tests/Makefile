@@ -1,6 +1,7 @@
 TARGET=$(shell ${CC} -dumpmachine)
 INC+=-I../inc
-LIBS+=-L../lib/$(TARGET) -L/usr/lib
+LIBS+=
+#-L../lib/$(TARGET) -L/usr/lib
 LINK+=-lm
 
 CFLAGS+=-std=c++11 -g

@@ -19,7 +19,7 @@
 #include <math.h>
 
 #ifndef TYPE
-#define TYPE double 
+#define TYPE double
 #endif
 
 /**
@@ -162,15 +162,59 @@
  */
 #define MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n)\
 {\
-    for (TYPE row = m_R; row--;)\
-    for (TYPE col = n_C; col--;)\
+    for (int row = (m_R); row--;)\
+    for (int col = (n_C); col--;)\
     {\
-        for (TYPE i = m_C; i--;)\
+        for (int i = (m_C); i--;)\
         {\
             (r)[row][col] += (m)[row][i] * (n)[i][col];\
         }\
     }\
 }\
+
+
+/**
+ * @brief      Performs a matrix addition. Each element of 'm' is added to its
+ *             corresponding element in the matrix 'n' and stored in 'r'.
+ *
+ * @param      TYPE  The type
+ * @param      mn_R   Rows in matrix 'm' and in 'n'
+ * @param      mn_C   Columns in matrix 'm' and in 'n'
+ * @param      r     Resulting matrix of size (mn_R, mn_C)
+ * @param      m     Left hand operand of size (mn_R, mn_C)
+ * @param      n     Right hand operand of size (mn_R, mn_C)
+ */
+#define MAT_ADD(TYPE, mn_R, mn_C, r, m, n)\
+{\
+    for (int row = (mn_R); row--;)\
+    for (int col = (mn_C); col--;)\
+    {\
+        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+    }\
+}\
+
+
+/**
+ * @brief      Performs a matrix subtraction. Each element of 'm' is subtracted
+ *             from its corresponding element in the matrix 'n' and
+ *             stored in 'r'.
+ *
+ * @param      TYPE  The type
+ * @param      mn_R   Rows in matrix 'm' and in 'n'
+ * @param      mn_C   Columns in matrix 'm' and in 'n'
+ * @param      r     Resulting matrix of size (mn_R, mn_C)
+ * @param      m     Left hand operand of size (mn_R, mn_C)
+ * @param      n     Right hand operand of size (mn_R, mn_C)
+ */
+#define MAT_SUB(TYPE, mn_R, mn_C, r, m, n)\
+{\
+    for (int row = (mn_R); row--;)\
+    for (int col = (mn_C); col--;)\
+    {\
+        (r)[row][col] = (m)[row][col] - (n)[row][col];\
+    }\
+}\
+
 
 /**
  * @brief      Performs matrix-vector multiplication resulting in another
@@ -195,6 +239,7 @@
     {\
 }\
 
+
 /**
  * @brief      Scales each element of a matrix with a scalar and stores the
  *             result in another matrix of matching size.
@@ -217,6 +262,7 @@
     {\
 }\
 
+
 /**
  * @brief      Performs an elementwise addition between two matrices
  *
@@ -224,7 +270,7 @@
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
- * @param      m     Left hand operand in the addition of size (m_R, m_C) 
+ * @param      m     Left hand operand in the addition of size (m_R, m_C)
  * @param      n     Right hand operand in the addition of size (m_R, m_C)
  */
 #define MAT_ADD_E(TYPE, m_R, m_C, r, m, n)\
@@ -238,6 +284,7 @@
     {\
 }\
 
+
 /**
  * @brief      Performs an elementwise subtraction between two matrices
  *
@@ -245,7 +292,7 @@
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
- * @param      m     Left hand operand in the subtraction of size (m_R, m_C) 
+ * @param      m     Left hand operand in the subtraction of size (m_R, m_C)
  * @param      n     Right hand operand in the subtraction of size (m_R, m_C)
  */
 #define MAT_SUB_E(TYPE, m_R, m_C, r, m, n)\
@@ -259,6 +306,35 @@
     {\
 }\
 
+
+/**
+ * @brief      Swaps two rows of a matrix
+ *
+ * @param      TYPE  The storage type for each element.
+ * @param      C     Number of columns in each row.
+ * @param      M     Matrix (2d array) whose rows should be swapped.
+ * @param      ri    Index of the first row to swap.
+ * @param      rj    Index of the second row to swap.
+ */
+#define MAT_SWAP_ROWS(TYPE, C, M, ri, rj)\
+{\
+	for (size_t ci = 0; ci < (C); ci++) \
+	{ \
+		TYPE t = M[(ri)][ci];\
+		M[(ri)][ci] = M[(rj)][ci];\
+		M[(rj)][ci] = t;\
+	} \
+}\
+
+
+/**
+ * @brief      Transforms augmented matrix to row-reduced echelon form.
+ *
+ * @param      TYPE  The storage type for each element.
+ * @param      R     Number of rows in the matrix
+ * @param      C     Number of columns in each row.
+ * @param      M     Matrix (2d array) whose rows should be swapped.
+ */
 #define MAT_RREF(TYPE, R, C, M)\
 {\
 	size_t piv_c = 0;\
@@ -277,10 +353,7 @@
 			}\
 			if (swap_ri > -1)\
 			{\
-				TYPE tmp[(C)];\
-				memcpy(tmp, M[swap_ri], sizeof(TYPE) * (C));\
-				memcpy(M[swap_ri], M[r], sizeof(TYPE) * (C));\
-				memcpy(M[r], tmp, sizeof(TYPE) * (C));\
+				MAT_SWAP_ROWS(TYPE, C, M, swap_ri, r);\
 			}\
 		}\
 		{\
@@ -300,12 +373,21 @@
 	}\
 }\
 
-#define MAT_INV(TYPE, R, C, M)\
+
+/**
+ * @brief      Computes the inverse of an invertible matrix.
+ *
+ * @param      TYPE  The storage type for each element.
+ * @param      R     Number of rows in the matrix
+ * @param      C     Number of columns in each row.
+ * @param      M     Matrix (2d array) whose rows should be swapped.
+ */
+#define MAT_INV_IMP(TYPE, R, C, M)\
 {\
 	TYPE aug[(R)][(C) << 1];\
 	for (size_t r = (R); r--;)\
 	{\
-		aug[r][r + (C)] = 1;\
+		for (size_t c = (C); c--;) { aug[r][c + (C)] = c == r ? 1 : 0; }\
 		for (size_t c = (C); c--;) { aug[r][c] = (M)[r][c]; }\
 	}\
 	MAT_RREF(TYPE, (R), (C) << 1, aug);\
@@ -315,6 +397,7 @@
 		(M)[r][c] = aug[r][c + (C)];\
 	}\
 }\
+
 
 #ifndef __cplusplus
 static inline void vec_add(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
@@ -616,12 +699,41 @@ struct mat
         return *this;
     }
 
-    void invert()
+    void invert_inplace()
     {
-    	MAT_INV(S, R, C, m)
+    	MAT_INV_IMP(S, R, C, m)
+    }
+
+    mat<R, C, S> invert()
+    {
+    	mat<R, C, S> out = *this;
+    	MAT_INV_IMP(S, R, C, out);
+    	return out;
     }
 
     vec<C, S>& operator[](size_t r) { return m[r]; }
+
+    mat<R, C, S> operator+ (const mat<R, C, S>& M)
+    {
+    	mat<R, C, S> out;
+    	MAT_ADD(S, R, C, out, m, M.m);
+    	return out;
+    }
+
+    mat<R, C, S> operator- (const mat<R, C, S>& M)
+    {
+    	mat<R, C, S> out;
+    	MAT_SUB(S, R, C, out, m, M.m);
+    	return out;
+    }
+
+    template<size_t O>
+    mat<R, O, S> operator* (const mat<C, O, S>& N)
+    {
+    	mat<R, O, S> out;
+    	MAT_MUL(S, R, C, C, O, out.m, m, N.m);
+    	return out;
+    }
 
 	vec<C, S> m[R];
 };
