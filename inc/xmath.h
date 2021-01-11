@@ -398,6 +398,26 @@
 	}\
 }\
 
+/**
+ * @brief      Computes the transpose of a matrix.
+ *
+ * @param      TYPE   The storage type for each element.
+ * @param      R      Number of rows in the matrix
+ * @param      C      Number of columns in each row.
+ * @param      IN     Original matrix (2d array).
+ * @param      OUT    The trasnpose of the original matrix.
+ */
+#define MAT_TRANSPOSE(TYPE, R, C, IN, OUT)\
+{\
+	for (size_t r = 0; r < R; r++)\
+	{\
+		for (size_t c = 0; c < C; c++)\
+		{\
+			OUT[c][r] = IN[r][c];\
+		}\
+	}\
+}\
+
 
 #ifndef __cplusplus
 static inline void vec_add(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
@@ -597,7 +617,6 @@ struct vec
 
 	inline S magnitude() const { VEC_MAG(S, N, this->v) }
 
-
 	vec<N,S> unit() const { return *this / magnitude(); }
 
 	S dot(vec<N,S> const& v) const { VEC_DOT(S, N, this->v, v.v) }
@@ -711,6 +730,13 @@ struct mat
     	return out;
     }
 
+    mat<C, R, S> transpose()
+    {
+    	mat<C, R, S> out;
+    	MAT_TRANSPOSE(S, R, C, m, out);	
+	return out;
+    }
+
     vec<C, S>& operator[](size_t r) { return m[r]; }
 
     mat<R, C, S> operator+ (const mat<R, C, S>& M)
@@ -740,5 +766,4 @@ struct mat
 
 } // namespace xmath end
 #endif
-
 #endif

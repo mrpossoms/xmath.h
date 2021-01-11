@@ -16,6 +16,10 @@
 *.gch
 *.pch
 
+# ccls stuff
+*.json
+*.idx
+
 # Libraries
 *.lib
 *.a
