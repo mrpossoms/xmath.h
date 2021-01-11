@@ -730,11 +730,6 @@ struct mat
     	return out;
     }
 
-    void transpose_inplace()
-    {
-    	//MAT_INV_IMP(S, R, C, m)
-    }
-
     mat<C, R, S> transpose()
     {
     	mat<C, R, S> out;
