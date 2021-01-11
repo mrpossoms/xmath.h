@@ -18,6 +18,7 @@
 
 # ccls stuff
 *.json
+*.idx
 
 # Libraries
 *.lib
