@@ -4,7 +4,7 @@ LIBS+=
 #-L../lib/$(TARGET) -L/usr/lib
 LINK+=-lm
 
-CFLAGS+=-std=c++11 -g
+CPPFLAGS+=-std=c++11 -g
 
 TESTS=$(patsubst %.cpp,bin/%,$(wildcard *.cpp))
 
@@ -14,7 +14,7 @@ bin:
 bin/%: %.cpp bin
 	$(CXX) $(CFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
 
-.PHONY: test clean
+.PHONY: test clean 
 test: $(TESTS)
 	@./.test-runner.py
 clean:
