@@ -434,6 +434,9 @@ static inline void vec_hadamard(size_t n, TYPE dst[n], TYPE left[n], TYPE right[
 static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
 { VEC_DOT(TYPE, n, left, right) }
 
+static inline TYPE vec_mag(size_t n, TYPE left[n])
+{ VEC_MAG(TYPE, n, left) }
+
 static inline void mat_transpose(size_t r, size_t c, TYPE in[r][c], TYPE out[c][r])
 { MAT_TRANSPOSE(TYPE, r, c, in, out) }
 
