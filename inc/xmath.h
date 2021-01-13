@@ -46,7 +46,7 @@
  * @param      dst_vec    The destination array to contain the result of size n
  * @param      left_vec   The left array operand of the subtraction of size n
  * @param      right_vec  The right array operand of the subtraction of size n
- *
+ 
  */
 #define VEC_SUB(n, dst_vec, left_vec, right_vec) \
 {\
@@ -418,7 +418,6 @@
 	}\
 }\
 
-
 #ifndef __cplusplus
 static inline void vec_add(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
 { VEC_ADD(n, dst, left, right) }
@@ -438,6 +437,11 @@ static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
 static inline TYPE vec_mag(size_t n, TYPE left[n])
 { VEC_MAG(TYPE, n, left) }
 
+static inline void mat_transpose(size_t r, size_t c, TYPE in[r][c], TYPE out[c][r])
+{ MAT_TRANSPOSE(TYPE, r, c, in, out) }
+
+static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, TYPE r[m_R][n_C], TYPE m[m_R][m_C], TYPE n[n_R][n_C]) 
+{ MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n) }
 
 #endif
 
@@ -733,8 +737,8 @@ struct mat
     mat<C, R, S> transpose()
     {
     	mat<C, R, S> out;
-    	MAT_TRANSPOSE(S, R, C, m, out);	
-	return out;
+    	MAT_TRANSPOSE(S, R, C, m, out);
+	return out;	
     }
 
     vec<C, S>& operator[](size_t r) { return m[r]; }

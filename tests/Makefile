@@ -14,7 +14,7 @@ bin:
 bin/%: %.cpp bin
 	$(CXX) $(CFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
 
-.PHONY: test clean
+.PHONY: test clean 
 test: $(TESTS)
 	@./.test-runner.py
 clean:
