@@ -46,7 +46,7 @@
  * @param      dst_vec    The destination array to contain the result of size n
  * @param      left_vec   The left array operand of the subtraction of size n
  * @param      right_vec  The right array operand of the subtraction of size n
- *
+ 
  */
 #define VEC_SUB(n, dst_vec, left_vec, right_vec) \
 {\
@@ -437,17 +437,8 @@ static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
 static inline void mat_transpose(size_t r, size_t c, TYPE in[r][c], TYPE out[c][r])
 { MAT_TRANSPOSE(TYPE, r, c, in, out) }
 
-static inline void mat_square_multiplication(size_t n, TYPE m[n][m_C], TYPE n[n][n], TYPE resultant[n][n]) 
-{ MAT_MUL(TYPE, n, m_C, n, n, resultant, m, n) }
-
-static inline void mat_multiplication(size_t m_R,
-                                        size_t m_C,
-                                        size_t n_R,
-                                        size_t n_C,
-                                        TYPE m[m_R][m_C],
-                                        TYPE n[n_R][n_C],
-                                        TYPE resultant[m_R][n_C]) 
-{ MAT_MUL(TYPE, m_R, m_C, n_R, n_C, resultant, m, n) }
+static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, TYPE r[m_R][n_C], TYPE m[m_R][m_C], TYPE n[n_R][n_C]) 
+{ MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n) }
 
 #endif
 

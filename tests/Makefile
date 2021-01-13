@@ -4,7 +4,7 @@ LIBS+=
 #-L../lib/$(TARGET) -L/usr/lib
 LINK+=-lm
 
-CPPFLAGS+=-std=c++11 -g
+CFLAGS+=-std=c++11 -g
 
 TESTS=$(patsubst %.cpp,bin/%,$(wildcard *.cpp))
 
