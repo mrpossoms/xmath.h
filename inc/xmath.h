@@ -33,9 +33,9 @@
  */
 #define VEC_ADD(n, dst_vec, left_vec, right_vec) \
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] + (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] + (right_vec)[__i];\
 	}\
 }\
 
@@ -50,9 +50,9 @@
  */
 #define VEC_SUB(n, dst_vec, left_vec, right_vec) \
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] - (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] - (right_vec)[__i];\
 	}\
 }\
 
@@ -67,9 +67,9 @@
  */
 #define VEC_SCL(n, dst_vec, left_vec, right_scalar) \
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] * (right_scalar);\
+		(dst_vec)[__i] = (left_vec)[__i] * (right_scalar);\
 	}\
 }\
 
@@ -85,9 +85,9 @@
  */
 #define VEC_HADAMARD(n, dst_vec, left_vec, right_vec)\
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] * (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] * (right_vec)[__i];\
 	}\
 }\
 
@@ -103,9 +103,9 @@
  */
 #define VEC_DIV(n, dst_vec, left_vec, right_vec)\
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] * (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] * (right_vec)[__i];\
 	}\
 }\
 
@@ -121,9 +121,9 @@
 #define VEC_DOT(TYPE, n, left_vec, right_vec)\
 {\
 	TYPE dot = 0;\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		dot += (left_vec)[i] * (right_vec)[i];\
+		dot += (left_vec)[__i] * (right_vec)[__i];\
 	}\
 	return dot;\
 }\
@@ -140,9 +140,9 @@
 #define VEC_MAG(TYPE, n, vec)\
 {\
 	TYPE dot = 0;\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		dot += (vec)[i] * (vec)[i];\
+		dot += (vec)[__i] * (vec)[__i];\
 	}\
 	return (TYPE)sqrt(dot);\
 }\
@@ -162,12 +162,12 @@
  */
 #define MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n)\
 {\
-    for (int row = (m_R); row--;)\
-    for (int col = (n_C); col--;)\
+    for (int __row = (m_R); __row--;)\
+    for (int __col = (n_C); __col--;)\
     {\
-        for (int i = (m_C); i--;)\
+        for (int __i = (m_C); __i--;)\
         {\
-            (r)[row][col] += (m)[row][i] * (n)[i][col];\
+            (r)[__row][__col] += (m)[__row][__i] * (n)[__i][__col];\
         }\
     }\
 }\
@@ -186,10 +186,10 @@
  */
 #define MAT_ADD(TYPE, mn_R, mn_C, r, m, n)\
 {\
-    for (int row = (mn_R); row--;)\
-    for (int col = (mn_C); col--;)\
+    for (int __row = (mn_R); __row--;)\
+    for (int __col = (mn_C); __col--;)\
     {\
-        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
     }\
 }\
 
@@ -208,10 +208,10 @@
  */
 #define MAT_SUB(TYPE, mn_R, mn_C, r, m, n)\
 {\
-    for (int row = (mn_R); row--;)\
-    for (int col = (mn_C); col--;)\
+    for (int __row = (mn_R); __row--;)\
+    for (int __col = (mn_C); __col--;)\
     {\
-        (r)[row][col] = (m)[row][col] - (n)[row][col];\
+        (r)[__row][__col] = (m)[__row][__col] - (n)[__row][__col];\
     }\
 }\
 
@@ -229,12 +229,12 @@
  */
 #define MAT_MUL_VEC(TYPE, m_R, m_C, r, m, v)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-    	(r)[row] = 0;\
-	    for (TYPE col = (n_C); col--;)\
+    	(r)[__row] = 0;\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row] += (m)[row][col] * (n)[col];\
+	        (r)[__row] += (m)[__row][__col] * (n)[__col];\
 	    }\
     {\
 }\
@@ -253,11 +253,11 @@
  */
 #define MAT_MUL_E(TYPE, m_R, m_C, r, m, s)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-	    for (TYPE col = (n_C); col--;)\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row][col] = (m)[row][col] * (s);\
+	        (r)[__row][__col] = (m)[__row][__col] * (s);\
 	    }\
     {\
 }\
@@ -275,11 +275,11 @@
  */
 #define MAT_ADD_E(TYPE, m_R, m_C, r, m, n)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-	    for (TYPE col = (n_C); col--;)\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
 	    }\
     {\
 }\
@@ -297,11 +297,11 @@
  */
 #define MAT_SUB_E(TYPE, m_R, m_C, r, m, n)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-	    for (TYPE col = (n_C); col--;)\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
 	    }\
     {\
 }\
@@ -318,11 +318,11 @@
  */
 #define MAT_SWAP_ROWS(TYPE, C, M, ri, rj)\
 {\
-	for (size_t ci = 0; ci < (C); ci++) \
+	for (size_t __ci = 0; __ci < (C); __ci++) \
 	{ \
-		TYPE t = M[(ri)][ci];\
-		M[(ri)][ci] = M[(rj)][ci];\
-		M[(rj)][ci] = t;\
+		TYPE t = M[(ri)][__ci];\
+		M[(ri)][__ci] = M[(rj)][__ci];\
+		M[(rj)][__ci] = t;\
 	} \
 }\
 
@@ -338,35 +338,35 @@
 #define MAT_RREF(TYPE, R, C, M)\
 {\
 	size_t piv_c = 0;\
-	for (size_t r = 0; r < (R); r++)\
+	for (size_t __r = 0; __r < (R); __r++)\
 	{\
-		if (M[r][piv_c] == 0)\
+		if (M[__r][piv_c] == 0)\
 		{\
 			ssize_t swap_ri = -1;\
-			for (size_t ri = r + 1; ri < (R); ri++)\
+			for (size_t __ri = __r + 1; __ri < (R); __ri++)\
 			{\
-				if (M[ri][piv_c] != 0)\
+				if (M[__ri][piv_c] != 0)\
 				{\
-					swap_ri = ri;\
+					swap_ri = __ri;\
 					break;\
 				}\
 			}\
 			if (swap_ri > -1)\
 			{\
-				MAT_SWAP_ROWS(TYPE, C, M, swap_ri, r);\
+				MAT_SWAP_ROWS(TYPE, C, M, swap_ri, __r);\
 			}\
 		}\
 		{\
-			TYPE d = 1 / M[r][piv_c];\
-			for (size_t c = piv_c; c < (C); c++) { M[r][c] *= d; }\
+			TYPE d = 1 / M[__r][piv_c];\
+			for (size_t __c = piv_c; __c < (C); __c++) { M[__r][__c] *= d; }\
 		}\
-		for (size_t ri = 0; ri < (R); ri++)\
+		for (size_t __ri = 0; __ri < (R); __ri++)\
 		{\
-			if (M[ri][piv_c] == 0 || ri == r) { continue; }\
-			TYPE d = M[ri][piv_c];\
-			for (size_t c = piv_c; c < (C); c++)\
+			if (M[__ri][piv_c] == 0 || __ri == __r) { continue; }\
+			TYPE d = M[__ri][piv_c];\
+			for (size_t __c = piv_c; __c < (C); __c++)\
 			{\
-				M[ri][c] -= d * M[r][c];\
+				M[__ri][__c] -= d * M[__r][__c];\
 			}\
 		}\
 		++piv_c;\
@@ -385,16 +385,16 @@
 #define MAT_INV_IMP(TYPE, R, C, M)\
 {\
 	TYPE aug[(R)][(C) << 1];\
-	for (size_t r = (R); r--;)\
+	for (size_t __r = (R); __r--;)\
 	{\
-		for (size_t c = (C); c--;) { aug[r][c + (C)] = c == r ? 1 : 0; }\
-		for (size_t c = (C); c--;) { aug[r][c] = (M)[r][c]; }\
+		for (size_t __c = (C); __c--;) { aug[__r][__c + (C)] = __c == __r ? 1 : 0; }\
+		for (size_t __c = (C); __c--;) { aug[__r][__c] = (M)[__r][__c]; }\
 	}\
 	MAT_RREF(TYPE, (R), (C) << 1, aug);\
-	for (size_t r = (R); r--;)\
-	for (size_t c = (C); c--;)\
+	for (size_t __r = (R); __r--;)\
+	for (size_t __c = (C); __c--;)\
 	{\
-		(M)[r][c] = aug[r][c + (C)];\
+		(M)[__r][__c] = aug[__r][__c + (C)];\
 	}\
 }\
 
@@ -409,11 +409,11 @@
  */
 #define MAT_TRANSPOSE(TYPE, R, C, IN, OUT)\
 {\
-	for (size_t m = 0; m < R; m++)\
+	for (size_t __r = 0; __r < R; __r++)\
 	{\
-		for (size_t n = 0; n < C; n++)\
+		for (size_t __c = 0; __c < C; __c++)\
 		{\
-			OUT[n][m] = IN[m][n];\
+			OUT[__c][__r] = IN[__r][__c];\
 		}\
 	}\
 }\
