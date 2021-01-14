@@ -409,11 +409,11 @@
  */
 #define MAT_TRANSPOSE(TYPE, R, C, IN, OUT)\
 {\
-	for (size_t r = 0; r < R; r++)\
+	for (size_t m = 0; m < R; m++)\
 	{\
-		for (size_t c = 0; c < C; c++)\
+		for (size_t n = 0; n < C; n++)\
 		{\
-			OUT[c][r] = IN[r][c];\
+			OUT[n][m] = IN[m][n];\
 		}\
 	}\
 }\
