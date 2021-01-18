@@ -18,8 +18,8 @@
 #define _XMATH_H_
 #include <math.h>
 
-#ifndef TYPE
-#define TYPE double
+#ifndef XMTYPE
+#define XMTYPE double
 #endif
 
 /**
@@ -70,6 +70,35 @@
 	for (size_t __i = 0; __i < (n); __i++)\
 	{\
 		(dst_vec)[__i] = (left_vec)[__i] * (right_scalar);\
+	}\
+}\
+
+/**
+ * @brief      Scales each element of a vector by a scalar
+ *
+ * @param      n          Dimensionality of the vectors
+ * @param      dst_vec    The destination array to contain the result of size n
+ * @param      left_vec   The left array operand of the addition of size n
+ * @param      right_scalar  The scalar by which each element is multiplied.
+ *
+ */
+
+/**
+ * @brief Performs element-wise addition of left and right vectors after the 
+ * right vector has been scaled by a scalar operand.
+ * 
+ * @param      n          Dimensionality of the vectors
+ * @param      dst_vec    The destination array to contain the result of size n.
+ * @param      left_vec   The left array operand of size n of the operation.
+ * @param      right_vec  The right array operand of size n of the operation.
+ * @param      scalar     The scalar by which each element of the right_vec is 
+ * multiplied.
+ */
+#define VEC_ADD_SCL(n, dst_vec, left_vec, right_vec, scalar) \
+{\
+	for (size_t __i = 0; __i < (n); __i++)\
+	{\
+		(dst_vec)[__i] = (left_vec)[__i] + ((right_vec)[__i] * (scalar));\
 	}\
 }\
 
@@ -419,29 +448,35 @@
 }\
 
 #ifndef __cplusplus
-static inline void vec_add(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+static inline void vec_add(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n])
 { VEC_ADD(n, dst, left, right) }
 
-static inline void vec_sub(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+static inline void vec_sub(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n])
 { VEC_SUB(n, dst, left, right) }
 
-static inline void vec_scl(size_t n, TYPE dst[n], TYPE in[n], TYPE scalar)
+static inline void vec_scl(size_t n, XMTYPE dst[n], XMTYPE in[n], XMTYPE scalar)
 { VEC_SCL(n, dst, in, scalar) }
 
-static inline void vec_hadamard(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+static inline void vec_add_scl(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n], XMTYPE s)
+{ VEC_ADD_SCL(n, dst, left, right, s) }
+
+static inline void vec_hadamard(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n])
 { VEC_HADAMARD(n, dst, left, right) }
 
-static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
-{ VEC_DOT(TYPE, n, left, right) }
+static inline XMTYPE vec_dot(size_t n, XMTYPE left[n], XMTYPE right[n])
+{ VEC_DOT(XMTYPE, n, left, right) }
 
-static inline TYPE vec_mag(size_t n, TYPE left[n])
-{ VEC_MAG(TYPE, n, left) }
+static inline XMTYPE vec_mag(size_t n, XMTYPE left[n])
+{ VEC_MAG(XMTYPE, n, left) }
 
-static inline void mat_transpose(size_t r, size_t c, TYPE in[r][c], TYPE out[c][r])
-{ MAT_TRANSPOSE(TYPE, r, c, in, out) }
+static inline void mat_transpose(size_t r, size_t c, XMTYPE in[r][c], XMTYPE out[c][r])
+{ MAT_TRANSPOSE(XMTYPE, r, c, in, out) }
 
-static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, TYPE r[m_R][n_C], TYPE m[m_R][m_C], TYPE n[n_R][n_C]) 
-{ MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n) }
+static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], XMTYPE m[m_R][m_C], XMTYPE n[n_R][n_C]) 
+{ MAT_MUL(XMTYPE, m_R, m_C, n_R, n_C, r, m, n) }
+
+static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], XMTYPE m[m_R][m_C], XMTYPE n[m_R][m_C]) 
+{ MAT_ADD(XMTYPE, m_R, m_C, r, m, n) }
 
 #endif
 
@@ -453,7 +488,7 @@ static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, TYPE
 namespace xmath
 {
 
-template <size_t N, typename S=TYPE>
+template <size_t N, typename S=XMTYPE>
 struct vec
 {
 	vec()
