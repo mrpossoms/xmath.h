@@ -15,7 +15,6 @@ TEST
         expected[i] = a[i] + b[i] * 5;
     }
 
-    //vec_add(5, r, a, b);
     VEC_ADD_SCL(5, r.v, a.v, b.v, 5);
 
     for (int i = 5; i--;)
