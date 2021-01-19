@@ -718,7 +718,7 @@ struct vec
 	S v[N]; // value store
 };
 
-template <size_t R, size_t C, typename S=TYPE>
+template <size_t R, size_t C, typename S=XMTYPE>
 struct mat
 {
     mat()
