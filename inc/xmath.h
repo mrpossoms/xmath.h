@@ -478,6 +478,17 @@ static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTY
 static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], XMTYPE m[m_R][m_C], XMTYPE n[m_R][m_C]) 
 { MAT_ADD(XMTYPE, m_R, m_C, r, m, n) }
 
+static inline void mat_inv(size_t r, size_t c, XMTYPE in[r][c], XMTYPE out[r][c])
+{ 
+	for (size_t i = 0; i < r; i++)
+	{
+		for (size_t j = 0; j < c; j++)
+		{
+			out[i][j] = in[i][j];	
+		}
+	}
+	MAT_INV_IMP(XMTYPE, r, c, out)
+} 
 #endif
 
 #ifdef __cplusplus
