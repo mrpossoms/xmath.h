@@ -1,21 +1,25 @@
 TARGET=$(shell ${CC} -dumpmachine)
 INC+=-I../inc
 LIBS+=
-#-L../lib/$(TARGET) -L/usr/lib
 LINK+=-lm
-
-CFLAGS+=-std=c++11 -g
+CC=gcc
+CPPFLAGS+=-std=c++11 -g
+CFLAGS=-std=c99 -g
 
 TESTS=$(patsubst %.cpp,bin/%,$(wildcard *.cpp))
+C_TESTS=$(patsubst %.c,cbin/%_c,$(wildcard *.c))
 
 bin:
 	mkdir bin
 
 bin/%: %.cpp bin
-	$(CXX) $(CFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
+	$(CXX) $(CPPFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
+
+cbin/%_c: %.c bin
+	$(CC) $(CFLAGS) $(INC) $(LIBDS) $< -o bin/$<.test $(LINK) 
 
 .PHONY: test clean 
-test: $(TESTS)
+test: $(C_TESTS) $(TESTS)
 	@./.test-runner.py
 clean:
 	rm -rf bin/
