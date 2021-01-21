@@ -484,10 +484,10 @@ static inline void mat_inv(size_t r, size_t c, XMTYPE in[r][c], XMTYPE out[r][c]
 	{
 		for (size_t j = 0; j < c; j++)
 		{
-			out[r][c] = in[r][c];	
+			out[i][j] = in[i][j];	
 		}
 	}
-	MAT_INV_IMP(TYPE, r, c, out)
+	MAT_INV_IMP(XMTYPE, r, c, out)
 } 
 #endif
 
