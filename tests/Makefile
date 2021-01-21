@@ -3,7 +3,7 @@ INC+=-I../inc
 LIBS+=
 LINK+=-lm
 CC=gcc
-CPPFLAGS+=-std=c++11 -g
+CXXFLAGS+=-std=c++11 -g
 CFLAGS=-std=c99 -g
 
 TESTS=$(patsubst %.cpp,bin/%,$(wildcard *.cpp))
