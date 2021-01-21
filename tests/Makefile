@@ -7,7 +7,7 @@ CXXFLAGS+=-std=c++11 -g
 CFLAGS=-std=c99 -g
 
 TESTS=$(patsubst %.cpp,bin/%,$(wildcard *.cpp))
-C_TESTS=$(patsubst %.c,cbin/%_c,$(wildcard *.c))
+TESTS+=$(patsubst %.c,bin/%_c,$(wildcard *.c))
 
 bin:
 	mkdir bin
