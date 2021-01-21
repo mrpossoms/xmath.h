@@ -15,7 +15,7 @@ bin:
 bin/%: %.cpp bin
 	$(CXX) $(CPPFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
 
-cbin/%_c: %.c bin
+bin/%_c: %.c bin
 	$(CC) $(CFLAGS) $(INC) $(LIBDS) $< -o bin/$<.test $(LINK) 
 
 .PHONY: test clean 
