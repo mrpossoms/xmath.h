@@ -31,5 +31,5 @@ TEST
         assert(fabs(I[i][j] - M[i][j]) < 1e-8);
     }
 
-    return 0;
+    return 1;
 }
