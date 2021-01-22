@@ -47,3 +47,6 @@ if testsPassed != len(testNames):
 print(str(testsRan) + " of " + str(len(testNames)) + " ran")
 print(status + str(testsPassed) + " of " + str(len(testNames)) + " passed\033[0m")
 
+# some tests failed, do not return success
+if status == COLOR_RED:
+    exit(1)
