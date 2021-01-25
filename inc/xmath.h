@@ -447,6 +447,26 @@
 	}\
 }\
 
+/**
+ * @brief      Sets an identity matrix.
+ *
+ * @param      TYPE   The storage type for each element.
+ * @param      R      Number of rows in the matrix
+ * @param      C      Number of columns in each row.
+ * @param      MAT    The matrix in question.
+ */
+#define MAT_IDENTITY(TYPE, R, C, MAT)\
+{\
+	for (size_t __r = 0; __r < R; __r++)\
+	{\
+		for (size_t __c = 0; __c < C; __c++)\
+		{\
+			if (__r == __c) MAT[__r][__c] = 1;\
+			else MAT[__r][__c] = 0;\
+		}\
+	}\
+}\
+
 #ifndef __cplusplus
 static inline void vec_add(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n])
 { VEC_ADD(n, dst, left, right) }
@@ -491,7 +511,10 @@ static inline void mat_inv(size_t r, size_t c, XMTYPE in[r][c], XMTYPE out[r][c]
 		}
 	}
 	MAT_INV_IMP(XMTYPE, r, c, out)
-} 
+}
+
+static inline void mat_identity(size_t r, size_t c, XMTYPE mat[r][c])
+{ MAT_IDENTITY(XMTYPE, r, c, mat) }
 #endif
 
 #ifdef __cplusplus
