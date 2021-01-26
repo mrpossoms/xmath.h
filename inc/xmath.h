@@ -455,7 +455,7 @@
  * @param      C      Number of columns in each row.
  * @param      MAT    The matrix in question.
  */
-#define MAT_IDENTITY(TYPE, R, C, MAT)\
+#define MAT_IDENTITY(R, C, MAT)\
 {\
 	for (size_t __r = 0; __r < (R); __r++)\
 	{\
