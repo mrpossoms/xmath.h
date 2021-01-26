@@ -459,7 +459,7 @@
 {\
 	for (size_t __r = 0; __r < (R); __r++)\
 	{\
-		for (size_t __c = 0; __c < C; __c++)\
+		for (size_t __c = 0; __c < (C); __c++)\
 		{\
 			if (__r == __c) MAT[__r][__c] = 1;\
 			else MAT[__r][__c] = 0;\
