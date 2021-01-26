@@ -794,16 +794,18 @@ struct mat
         return *this;
     }
 
-    void set_identity()
+    static inline mat<R, C, S> I()
     {
+	mat<R, C, S> m;
 	MAT_IDENTITY(R, C, m);
-    } 
+	return m;
+    }
 
     void invert_inplace()
     {
     	MAT_INV_IMP(S, R, C, m)
     }
-
+    
     mat<R, C, S> invert()
     {
     	mat<R, C, S> out = *this;
