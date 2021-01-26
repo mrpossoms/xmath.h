@@ -794,6 +794,11 @@ struct mat
         return *this;
     }
 
+    void set_identity()
+    {
+	MAT_IDENTITY(R, C, m);
+    } 
+
     void invert_inplace()
     {
     	MAT_INV_IMP(S, R, C, m)
