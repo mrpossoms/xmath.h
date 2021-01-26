@@ -468,40 +468,40 @@
 }\
 
 #ifndef __cplusplus
-static inline void vec_add(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n])
+static inline void vec_add(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
 { VEC_ADD(n, dst, left, right) }
 
-static inline void vec_sub(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n])
+static inline void vec_sub(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
 { VEC_SUB(n, dst, left, right) }
 
-static inline void vec_scl(size_t n, XMTYPE dst[n], XMTYPE in[n], XMTYPE scalar)
+static inline void vec_scl(size_t n, XMTYPE dst[n], const XMTYPE in[n], XMTYPE scalar)
 { VEC_SCL(n, dst, in, scalar) }
 
-static inline void vec_add_scl(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n], XMTYPE s)
+static inline void vec_add_scl(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n], XMTYPE s)
 { VEC_ADD_SCL(n, dst, left, right, s) }
 
-static inline void vec_hadamard(size_t n, XMTYPE dst[n], XMTYPE left[n], XMTYPE right[n])
+static inline void vec_hadamard(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
 { VEC_HADAMARD(n, dst, left, right) }
 
-static inline XMTYPE vec_dot(size_t n, XMTYPE left[n], XMTYPE right[n])
+static inline XMTYPE vec_dot(size_t n, const XMTYPE left[n], const XMTYPE right[n])
 { VEC_DOT(XMTYPE, n, left, right) }
 
-static inline XMTYPE vec_mag(size_t n, XMTYPE left[n])
+static inline XMTYPE vec_mag(size_t n, const XMTYPE left[n])
 { VEC_MAG(XMTYPE, n, left) }
 
-static inline void mat_transpose(size_t r, size_t c, XMTYPE in[r][c], XMTYPE out[c][r])
+static inline void mat_transpose(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[c][r])
 { MAT_TRANSPOSE(XMTYPE, r, c, in, out) }
 
-static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], XMTYPE m[m_R][m_C], XMTYPE n[n_R][n_C]) 
+static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C]) 
 { MAT_MUL(XMTYPE, m_R, m_C, n_R, n_C, r, m, n) }
 
-static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], XMTYPE m[m_R][m_C], XMTYPE n[m_R][m_C]) 
+static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C]) 
 { MAT_ADD(XMTYPE, m_R, m_C, r, m, n) }
 
-static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], XMTYPE m[m_R][m_C], XMTYPE n[m_R][m_C])
+static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
 { MAT_SUB(XMTYPE, m_R, m_C, r, m, n) }
 
-static inline void mat_inv(size_t r, size_t c, XMTYPE in[r][c], XMTYPE out[r][c])
+static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[r][c])
 { 
 	for (size_t i = 0; i < r; i++)
 	{
