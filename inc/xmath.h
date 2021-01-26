@@ -514,7 +514,7 @@ static inline void mat_inv(size_t r, size_t c, XMTYPE in[r][c], XMTYPE out[r][c]
 }
 
 static inline void mat_identity(size_t r, size_t c, XMTYPE mat[r][c])
-{ MAT_IDENTITY(XMTYPE, r, c, mat) }
+{ MAT_IDENTITY(r, c, mat) }
 #endif
 
 #ifdef __cplusplus
