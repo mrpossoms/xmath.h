@@ -455,11 +455,11 @@
  * @param      C      Number of columns in each row.
  * @param      MAT    The matrix in question.
  */
-#define MAT_IDENTITY(R, C, MAT)\
+#define MAT_IDENTITY(N, MAT)\
 {\
-	for (size_t __r = 0; __r < (R); __r++)\
+	for (size_t __r = 0; __r < (N); __r++)\
 	{\
-		for (size_t __c = 0; __c < (C); __c++)\
+		for (size_t __c = 0; __c < (N); __c++)\
 		{\
 			if (__r == __c) (MAT)[__r][__c] = 1;\
 			else (MAT)[__r][__c] = 0;\
@@ -513,8 +513,8 @@ static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out
 	MAT_INV_IMP(XMTYPE, r, c, out)
 }
 
-static inline void mat_identity(size_t r, size_t c, XMTYPE mat[r][c])
-{ MAT_IDENTITY(r, c, mat) }
+static inline void mat_identity(size_t n, XMTYPE mat[n][n])
+{ MAT_IDENTITY(n, mat) }
 #endif
 
 #ifdef __cplusplus
@@ -797,7 +797,7 @@ struct mat
     static inline mat<R, C, S> I()
     {
 	mat<R, C, S> m;
-	MAT_IDENTITY(R, C, m);
+	MAT_IDENTITY(R, m);
 	return m;
     }
 
