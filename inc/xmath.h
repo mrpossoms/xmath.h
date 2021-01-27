@@ -18,8 +18,8 @@
 #define _XMATH_H_
 #include <math.h>
 
-#ifndef TYPE
-#define TYPE double
+#ifndef XMTYPE
+#define XMTYPE double
 #endif
 
 /**
@@ -33,9 +33,9 @@
  */
 #define VEC_ADD(n, dst_vec, left_vec, right_vec) \
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] + (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] + (right_vec)[__i];\
 	}\
 }\
 
@@ -46,13 +46,13 @@
  * @param      dst_vec    The destination array to contain the result of size n
  * @param      left_vec   The left array operand of the subtraction of size n
  * @param      right_vec  The right array operand of the subtraction of size n
- *
+ 
  */
 #define VEC_SUB(n, dst_vec, left_vec, right_vec) \
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] - (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] - (right_vec)[__i];\
 	}\
 }\
 
@@ -67,9 +67,38 @@
  */
 #define VEC_SCL(n, dst_vec, left_vec, right_scalar) \
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] * (right_scalar);\
+		(dst_vec)[__i] = (left_vec)[__i] * (right_scalar);\
+	}\
+}\
+
+/**
+ * @brief      Scales each element of a vector by a scalar
+ *
+ * @param      n          Dimensionality of the vectors
+ * @param      dst_vec    The destination array to contain the result of size n
+ * @param      left_vec   The left array operand of the addition of size n
+ * @param      right_scalar  The scalar by which each element is multiplied.
+ *
+ */
+
+/**
+ * @brief Performs element-wise addition of left and right vectors after the 
+ * right vector has been scaled by a scalar operand.
+ * 
+ * @param      n          Dimensionality of the vectors
+ * @param      dst_vec    The destination array to contain the result of size n.
+ * @param      left_vec   The left array operand of size n of the operation.
+ * @param      right_vec  The right array operand of size n of the operation.
+ * @param      scalar     The scalar by which each element of the right_vec is 
+ * multiplied.
+ */
+#define VEC_ADD_SCL(n, dst_vec, left_vec, right_vec, scalar) \
+{\
+	for (size_t __i = 0; __i < (n); __i++)\
+	{\
+		(dst_vec)[__i] = (left_vec)[__i] + ((right_vec)[__i] * (scalar));\
 	}\
 }\
 
@@ -85,9 +114,9 @@
  */
 #define VEC_HADAMARD(n, dst_vec, left_vec, right_vec)\
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] * (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] * (right_vec)[__i];\
 	}\
 }\
 
@@ -103,9 +132,9 @@
  */
 #define VEC_DIV(n, dst_vec, left_vec, right_vec)\
 {\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		(dst_vec)[i] = (left_vec)[i] * (right_vec)[i];\
+		(dst_vec)[__i] = (left_vec)[__i] * (right_vec)[__i];\
 	}\
 }\
 
@@ -121,9 +150,9 @@
 #define VEC_DOT(TYPE, n, left_vec, right_vec)\
 {\
 	TYPE dot = 0;\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		dot += (left_vec)[i] * (right_vec)[i];\
+		dot += (left_vec)[__i] * (right_vec)[__i];\
 	}\
 	return dot;\
 }\
@@ -140,9 +169,9 @@
 #define VEC_MAG(TYPE, n, vec)\
 {\
 	TYPE dot = 0;\
-	for (size_t i = 0; i < (n); i++)\
+	for (size_t __i = 0; __i < (n); __i++)\
 	{\
-		dot += (vec)[i] * (vec)[i];\
+		dot += (vec)[__i] * (vec)[__i];\
 	}\
 	return (TYPE)sqrt(dot);\
 }\
@@ -162,12 +191,12 @@
  */
 #define MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n)\
 {\
-    for (int row = (m_R); row--;)\
-    for (int col = (n_C); col--;)\
+    for (int __row = (m_R); __row--;)\
+    for (int __col = (n_C); __col--;)\
     {\
-        for (int i = (m_C); i--;)\
+        for (int __i = (m_C); __i--;)\
         {\
-            (r)[row][col] += (m)[row][i] * (n)[i][col];\
+            (r)[__row][__col] += (m)[__row][__i] * (n)[__i][__col];\
         }\
     }\
 }\
@@ -186,10 +215,10 @@
  */
 #define MAT_ADD(TYPE, mn_R, mn_C, r, m, n)\
 {\
-    for (int row = (mn_R); row--;)\
-    for (int col = (mn_C); col--;)\
+    for (int __row = (mn_R); __row--;)\
+    for (int __col = (mn_C); __col--;)\
     {\
-        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
     }\
 }\
 
@@ -208,10 +237,10 @@
  */
 #define MAT_SUB(TYPE, mn_R, mn_C, r, m, n)\
 {\
-    for (int row = (mn_R); row--;)\
-    for (int col = (mn_C); col--;)\
+    for (int __row = (mn_R); __row--;)\
+    for (int __col = (mn_C); __col--;)\
     {\
-        (r)[row][col] = (m)[row][col] - (n)[row][col];\
+        (r)[__row][__col] = (m)[__row][__col] - (n)[__row][__col];\
     }\
 }\
 
@@ -229,12 +258,12 @@
  */
 #define MAT_MUL_VEC(TYPE, m_R, m_C, r, m, v)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-    	(r)[row] = 0;\
-	    for (TYPE col = (n_C); col--;)\
+    	(r)[__row] = 0;\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row] += (m)[row][col] * (n)[col];\
+	        (r)[__row] += (m)[__row][__col] * (n)[__col];\
 	    }\
     {\
 }\
@@ -253,11 +282,11 @@
  */
 #define MAT_MUL_E(TYPE, m_R, m_C, r, m, s)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-	    for (TYPE col = (n_C); col--;)\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row][col] = (m)[row][col] * (s);\
+	        (r)[__row][__col] = (m)[__row][__col] * (s);\
 	    }\
     {\
 }\
@@ -275,11 +304,11 @@
  */
 #define MAT_ADD_E(TYPE, m_R, m_C, r, m, n)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-	    for (TYPE col = (n_C); col--;)\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
 	    }\
     {\
 }\
@@ -297,11 +326,11 @@
  */
 #define MAT_SUB_E(TYPE, m_R, m_C, r, m, n)\
 {\
-    for (TYPE row = (m_R); row--;)\
+    for (TYPE __row = (m_R); __row--;)\
     { \
-	    for (TYPE col = (n_C); col--;)\
+	    for (TYPE __col = (n_C); __col--;)\
 	    {\
-	        (r)[row][col] = (m)[row][col] + (n)[row][col];\
+	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
 	    }\
     {\
 }\
@@ -318,11 +347,11 @@
  */
 #define MAT_SWAP_ROWS(TYPE, C, M, ri, rj)\
 {\
-	for (size_t ci = 0; ci < (C); ci++) \
+	for (size_t __ci = 0; __ci < (C); __ci++) \
 	{ \
-		TYPE t = M[(ri)][ci];\
-		M[(ri)][ci] = M[(rj)][ci];\
-		M[(rj)][ci] = t;\
+		TYPE t = M[(ri)][__ci];\
+		M[(ri)][__ci] = M[(rj)][__ci];\
+		M[(rj)][__ci] = t;\
 	} \
 }\
 
@@ -338,35 +367,35 @@
 #define MAT_RREF(TYPE, R, C, M)\
 {\
 	size_t piv_c = 0;\
-	for (size_t r = 0; r < (R); r++)\
+	for (size_t __r = 0; __r < (R); __r++)\
 	{\
-		if (M[r][piv_c] == 0)\
+		if (M[__r][piv_c] == 0)\
 		{\
 			ssize_t swap_ri = -1;\
-			for (size_t ri = r + 1; ri < (R); ri++)\
+			for (size_t __ri = __r + 1; __ri < (R); __ri++)\
 			{\
-				if (M[ri][piv_c] != 0)\
+				if (M[__ri][piv_c] != 0)\
 				{\
-					swap_ri = ri;\
+					swap_ri = __ri;\
 					break;\
 				}\
 			}\
 			if (swap_ri > -1)\
 			{\
-				MAT_SWAP_ROWS(TYPE, C, M, swap_ri, r);\
+				MAT_SWAP_ROWS(TYPE, C, M, swap_ri, __r);\
 			}\
 		}\
 		{\
-			TYPE d = 1 / M[r][piv_c];\
-			for (size_t c = piv_c; c < (C); c++) { M[r][c] *= d; }\
+			TYPE d = 1 / M[__r][piv_c];\
+			for (size_t __c = piv_c; __c < (C); __c++) { M[__r][__c] *= d; }\
 		}\
-		for (size_t ri = 0; ri < (R); ri++)\
+		for (size_t __ri = 0; __ri < (R); __ri++)\
 		{\
-			if (M[ri][piv_c] == 0 || ri == r) { continue; }\
-			TYPE d = M[ri][piv_c];\
-			for (size_t c = piv_c; c < (C); c++)\
+			if (M[__ri][piv_c] == 0 || __ri == __r) { continue; }\
+			TYPE d = M[__ri][piv_c];\
+			for (size_t __c = piv_c; __c < (C); __c++)\
 			{\
-				M[ri][c] -= d * M[r][c];\
+				M[__ri][__c] -= d * M[__r][__c];\
 			}\
 		}\
 		++piv_c;\
@@ -385,40 +414,107 @@
 #define MAT_INV_IMP(TYPE, R, C, M)\
 {\
 	TYPE aug[(R)][(C) << 1];\
-	for (size_t r = (R); r--;)\
+	for (size_t __r = (R); __r--;)\
 	{\
-		for (size_t c = (C); c--;) { aug[r][c + (C)] = c == r ? 1 : 0; }\
-		for (size_t c = (C); c--;) { aug[r][c] = (M)[r][c]; }\
+		for (size_t __c = (C); __c--;) { aug[__r][__c + (C)] = __c == __r ? 1 : 0; }\
+		for (size_t __c = (C); __c--;) { aug[__r][__c] = (M)[__r][__c]; }\
 	}\
 	MAT_RREF(TYPE, (R), (C) << 1, aug);\
-	for (size_t r = (R); r--;)\
-	for (size_t c = (C); c--;)\
+	for (size_t __r = (R); __r--;)\
+	for (size_t __c = (C); __c--;)\
 	{\
-		(M)[r][c] = aug[r][c + (C)];\
+		(M)[__r][__c] = aug[__r][__c + (C)];\
 	}\
 }\
 
+/**
+ * @brief      Computes the transpose of a matrix.
+ *
+ * @param      TYPE   The storage type for each element.
+ * @param      R      Number of rows in the matrix
+ * @param      C      Number of columns in each row.
+ * @param      IN     Original matrix (2d array).
+ * @param      OUT    The trasnpose of the original matrix.
+ */
+#define MAT_TRANSPOSE(TYPE, R, C, IN, OUT)\
+{\
+	for (size_t __r = 0; __r < R; __r++)\
+	{\
+		for (size_t __c = 0; __c < C; __c++)\
+		{\
+			OUT[__c][__r] = IN[__r][__c];\
+		}\
+	}\
+}\
+
+/**
+ * @brief      Sets an identity matrix.
+ *
+ * @param      TYPE   The storage type for each element.
+ * @param      R      Number of rows in the matrix
+ * @param      C      Number of columns in each row.
+ * @param      MAT    The matrix in question.
+ */
+#define MAT_IDENTITY(R, C, MAT)\
+{\
+	for (size_t __r = 0; __r < (R); __r++)\
+	{\
+		for (size_t __c = 0; __c < (C); __c++)\
+		{\
+			if (__r == __c) (MAT)[__r][__c] = 1;\
+			else (MAT)[__r][__c] = 0;\
+		}\
+	}\
+}\
 
 #ifndef __cplusplus
-static inline void vec_add(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+static inline void vec_add(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
 { VEC_ADD(n, dst, left, right) }
 
-static inline void vec_sub(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+static inline void vec_sub(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
 { VEC_SUB(n, dst, left, right) }
 
-static inline void vec_scl(size_t n, TYPE dst[n], TYPE in[n], TYPE scalar)
+static inline void vec_scl(size_t n, XMTYPE dst[n], const XMTYPE in[n], XMTYPE scalar)
 { VEC_SCL(n, dst, in, scalar) }
 
-static inline void vec_hadamard(size_t n, TYPE dst[n], TYPE left[n], TYPE right[n])
+static inline void vec_add_scl(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n], XMTYPE s)
+{ VEC_ADD_SCL(n, dst, left, right, s) }
+
+static inline void vec_hadamard(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
 { VEC_HADAMARD(n, dst, left, right) }
 
-static inline TYPE vec_dot(size_t n, TYPE left[n], TYPE right[n])
-{ VEC_DOT(TYPE, n, left, right) }
+static inline XMTYPE vec_dot(size_t n, const XMTYPE left[n], const XMTYPE right[n])
+{ VEC_DOT(XMTYPE, n, left, right) }
 
-static inline TYPE vec_mag(size_t n, TYPE left[n])
-{ VEC_MAG(TYPE, n, left) }
+static inline XMTYPE vec_mag(size_t n, const XMTYPE left[n])
+{ VEC_MAG(XMTYPE, n, left) }
 
+static inline void mat_transpose(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[c][r])
+{ MAT_TRANSPOSE(XMTYPE, r, c, in, out) }
 
+static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C]) 
+{ MAT_MUL(XMTYPE, m_R, m_C, n_R, n_C, r, m, n) }
+
+static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C]) 
+{ MAT_ADD(XMTYPE, m_R, m_C, r, m, n) }
+
+static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
+{ MAT_SUB(XMTYPE, m_R, m_C, r, m, n) }
+
+static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[r][c])
+{ 
+	for (size_t i = 0; i < r; i++)
+	{
+		for (size_t j = 0; j < c; j++)
+		{
+			out[i][j] = in[i][j];	
+		}
+	}
+	MAT_INV_IMP(XMTYPE, r, c, out)
+}
+
+static inline void mat_identity(size_t r, size_t c, XMTYPE mat[r][c])
+{ MAT_IDENTITY(r, c, mat) }
 #endif
 
 #ifdef __cplusplus
@@ -429,7 +525,7 @@ static inline TYPE vec_mag(size_t n, TYPE left[n])
 namespace xmath
 {
 
-template <size_t N, typename S=TYPE>
+template <size_t N, typename S=XMTYPE>
 struct vec
 {
 	vec()
@@ -597,7 +693,6 @@ struct vec
 
 	inline S magnitude() const { VEC_MAG(S, N, this->v) }
 
-
 	vec<N,S> unit() const { return *this / magnitude(); }
 
 	S dot(vec<N,S> const& v) const { VEC_DOT(S, N, this->v, v.v) }
@@ -660,7 +755,7 @@ struct vec
 	S v[N]; // value store
 };
 
-template <size_t R, size_t C, typename S=TYPE>
+template <size_t R, size_t C, typename S=XMTYPE>
 struct mat
 {
     mat()
@@ -699,16 +794,30 @@ struct mat
         return *this;
     }
 
+    static inline mat<R, C, S> I()
+    {
+	mat<R, C, S> m;
+	MAT_IDENTITY(R, C, m);
+	return m;
+    }
+
     void invert_inplace()
     {
     	MAT_INV_IMP(S, R, C, m)
     }
-
+    
     mat<R, C, S> invert()
     {
     	mat<R, C, S> out = *this;
     	MAT_INV_IMP(S, R, C, out);
     	return out;
+    }
+
+    mat<C, R, S> transpose()
+    {
+    	mat<C, R, S> out;
+    	MAT_TRANSPOSE(S, R, C, m, out);
+	return out;	
     }
 
     vec<C, S>& operator[](size_t r) { return m[r]; }
@@ -740,5 +849,4 @@ struct mat
 
 } // namespace xmath end
 #endif
-
 #endif
