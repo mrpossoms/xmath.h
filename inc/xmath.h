@@ -191,14 +191,14 @@
  */
 #define MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n)\
 {\
-    for (int __row = (m_R); __row--;)\
-    for (int __col = (n_C); __col--;)\
-    {\
-        for (int __i = (m_C); __i--;)\
-        {\
-            (r)[__row][__col] += (m)[__row][__i] * (n)[__i][__col];\
-        }\
-    }\
+	for (int __row = (m_R); __row--;)\
+	for (int __col = (n_C); __col--;)\
+	{\
+		for (int __i = (m_C); __i--;)\
+		{\
+			(r)[__row][__col] += (m)[__row][__i] * (n)[__i][__col];\
+		}\
+	}\
 }\
 
 
@@ -215,11 +215,11 @@
  */
 #define MAT_ADD(TYPE, mn_R, mn_C, r, m, n)\
 {\
-    for (int __row = (mn_R); __row--;)\
-    for (int __col = (mn_C); __col--;)\
-    {\
-        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
-    }\
+	for (int __row = (mn_R); __row--;)\
+	for (int __col = (mn_C); __col--;)\
+	{\
+		(r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+	}\
 }\
 
 
@@ -237,11 +237,11 @@
  */
 #define MAT_SUB(TYPE, mn_R, mn_C, r, m, n)\
 {\
-    for (int __row = (mn_R); __row--;)\
-    for (int __col = (mn_C); __col--;)\
-    {\
-        (r)[__row][__col] = (m)[__row][__col] - (n)[__row][__col];\
-    }\
+	for (int __row = (mn_R); __row--;)\
+	for (int __col = (mn_C); __col--;)\
+	{\
+		(r)[__row][__col] = (m)[__row][__col] - (n)[__row][__col];\
+	}\
 }\
 
 
@@ -258,14 +258,14 @@
  */
 #define MAT_MUL_VEC(TYPE, m_R, m_C, r, m, v)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
-    { \
-    	(r)[__row] = 0;\
-	    for (TYPE __col = (n_C); __col--;)\
-	    {\
-	        (r)[__row] += (m)[__row][__col] * (n)[__col];\
-	    }\
-    {\
+	for (TYPE __row = (m_R); __row--;)\
+	{ \
+		(r)[__row] = 0;\
+		for (TYPE __col = (n_C); __col--;)\
+		{\
+			(r)[__row] += (m)[__row][__col] * (n)[__col];\
+		}\
+	{\
 }\
 
 
@@ -282,13 +282,13 @@
  */
 #define MAT_MUL_E(TYPE, m_R, m_C, r, m, s)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
-    { \
-	    for (TYPE __col = (n_C); __col--;)\
-	    {\
-	        (r)[__row][__col] = (m)[__row][__col] * (s);\
-	    }\
-    {\
+	for (TYPE __row = (m_R); __row--;)\
+	{ \
+		for (TYPE __col = (n_C); __col--;)\
+		{\
+			(r)[__row][__col] = (m)[__row][__col] * (s);\
+		}\
+	{\
 }\
 
 
@@ -304,13 +304,13 @@
  */
 #define MAT_ADD_E(TYPE, m_R, m_C, r, m, n)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
-    { \
-	    for (TYPE __col = (n_C); __col--;)\
-	    {\
-	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
-	    }\
-    {\
+	for (TYPE __row = (m_R); __row--;)\
+	{ \
+		for (TYPE __col = (n_C); __col--;)\
+		{\
+			(r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+		}\
+	{\
 }\
 
 
@@ -326,13 +326,13 @@
  */
 #define MAT_SUB_E(TYPE, m_R, m_C, r, m, n)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
-    { \
-	    for (TYPE __col = (n_C); __col--;)\
-	    {\
-	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
-	    }\
-    {\
+	for (TYPE __row = (m_R); __row--;)\
+	{ \
+		for (TYPE __col = (n_C); __col--;)\
+		{\
+			(r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+		}\
+	{\
 }\
 
 
@@ -563,7 +563,7 @@ struct vec
 
 	inline S at(int i) const { return v[i]; }
 
-	inline S* ptr() { return v; }
+	inline S* ptr() const { return v; }
 
 	inline bool is_finite() const
 	{
@@ -758,91 +758,93 @@ struct vec
 template <size_t R, size_t C, typename S=XMTYPE>
 struct mat
 {
-    mat()
-    {
-        for (auto row = R; row--;)
-        for (auto col = C; col--;)
-        {
-            m[row][col] = {};
-        }
-    }
+	mat()
+	{
+		for (auto row = R; row--;)
+		for (auto col = C; col--;)
+		{
+			m[row][col] = {};
+		}
+	}
 
-    mat(std::initializer_list<std::initializer_list<S>> init)
-    {
-        int ri = 0;
-        for (auto row : init)
-        {
-            int ci = 0;
-            for (auto c : row)
-            {
-                m[ri][ci] = c;
-                ci += 1;
-            }
-            ri += 1;
-        }
+	mat(std::initializer_list<std::initializer_list<S>> init)
+	{
+		int ri = 0;
+		for (auto row : init)
+		{
+			int ci = 0;
+			for (auto c : row)
+			{
+				m[ri][ci] = c;
+				ci += 1;
+			}
+			ri += 1;
+		}
 
-    }
+	}
 
-    mat<R, C, S>& initialize(std::function<S (S r, S c)> init)
-    {
-        for (auto row = R; row--;)
-        for (auto col = C; col--;)
-        {
-            m[row][col] = init(static_cast<S>(row), static_cast<S>(col));
-        }
+	mat<R, C, S>& initialize(std::function<S (S r, S c)> init)
+	{
+		for (auto row = R; row--;)
+		for (auto col = C; col--;)
+		{
+			m[row][col] = init(static_cast<S>(row), static_cast<S>(col));
+		}
 
-        return *this;
-    }
+		return *this;
+	}
 
-    static inline mat<R, C, S> I()
-    {
+	static inline mat<R, C, S> I()
+	{
 	mat<R, C, S> m;
 	MAT_IDENTITY(R, C, m);
 	return m;
-    }
+	}
 
-    void invert_inplace()
-    {
-    	MAT_INV_IMP(S, R, C, m)
-    }
-    
-    mat<R, C, S> invert()
-    {
-    	mat<R, C, S> out = *this;
-    	MAT_INV_IMP(S, R, C, out);
-    	return out;
-    }
+	void invert_inplace()
+	{
+		MAT_INV_IMP(S, R, C, m)
+	}
+	
+	mat<R, C, S> invert()
+	{
+		mat<R, C, S> out = *this;
+		MAT_INV_IMP(S, R, C, out);
+		return out;
+	}
 
-    mat<C, R, S> transpose()
-    {
-    	mat<C, R, S> out;
-    	MAT_TRANSPOSE(S, R, C, m, out);
+	mat<C, R, S> transpose()
+	{
+		mat<C, R, S> out;
+		MAT_TRANSPOSE(S, R, C, m, out);
 	return out;	
-    }
+	}
 
-    vec<C, S>& operator[](size_t r) { return m[r]; }
+	vec<C, S>& operator[](size_t r) { return m[r]; }
 
-    mat<R, C, S> operator+ (const mat<R, C, S>& M)
-    {
-    	mat<R, C, S> out;
-    	MAT_ADD(S, R, C, out, m, M.m);
-    	return out;
-    }
+	mat<R, C, S> operator+ (const mat<R, C, S>& M)
+	{
+		mat<R, C, S> out;
+		MAT_ADD(S, R, C, out, m, M.m);
+		return out;
+	}
 
-    mat<R, C, S> operator- (const mat<R, C, S>& M)
-    {
-    	mat<R, C, S> out;
-    	MAT_SUB(S, R, C, out, m, M.m);
-    	return out;
-    }
+	mat<R, C, S> operator- (const mat<R, C, S>& M)
+	{
+		mat<R, C, S> out;
+		MAT_SUB(S, R, C, out, m, M.m);
+		return out;
+	}
 
-    template<size_t O>
-    mat<R, O, S> operator* (const mat<C, O, S>& N)
-    {
-    	mat<R, O, S> out;
-    	MAT_MUL(S, R, C, C, O, out.m, m, N.m);
-    	return out;
-    }
+	template<size_t O>
+	mat<R, O, S> operator* (const mat<C, O, S>& N)
+	{
+		mat<R, O, S> out;
+		MAT_MUL(S, R, C, C, O, out.m, m, N.m);
+		return out;
+	}
+
+	const S* ptr() const { return m[0].v; }
 
 	vec<C, S> m[R];
 };
