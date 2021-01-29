@@ -846,6 +846,21 @@ struct mat
 
 	const S* ptr() const { return m[0].v; }
 
+	static mat<4, 4> rotation(vec<3> axis, float angle)
+	{
+		const auto a = axis;
+		const auto c = cosf(angle);
+		const auto s = sinf(angle);
+		const auto omc = 1 - c;
+
+		return {
+			{c+a[0]*a[0]*omc,      a[1]*a[0]*omc+a[2]*s, a[2]*a[0]*omc-a[1]*s, 0},
+			{a[0]*a[1]*omc-a[2]*s, c+a[1]*a[1]*omc,      a[2]*a[1]*omc+a[0]*s, 0},
+			{a[0]*a[2]*omc+a[1]*s, a[1]*a[2]*omc-a[0]*s, c+a[2]*a[2]*omc,      0},
+			{                   0,                    0,                    0, 1}
+		};
+	}
+
 	static mat<4, 4> translation(vec<3> t)
 	{
 		return {
