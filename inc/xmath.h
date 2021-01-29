@@ -17,6 +17,7 @@
 #ifndef _XMATH_H_
 #define _XMATH_H_
 #include <math.h>
+#include <sys/types.h>
 
 #ifndef XMTYPE
 #define XMTYPE double
