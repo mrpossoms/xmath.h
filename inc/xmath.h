@@ -846,6 +846,31 @@ struct mat
 
 	const S* ptr() const { return m[0].v; }
 
+	static mat<4, 4> translation(vec<3> t)
+	{
+		return {
+			{    1,    0,    0,    0    },
+			{    0,    1,    0,    0    },
+			{    0,    0,    1,    0    },
+			{  t[0], t[1], t[2],   1.   }
+		};
+	}
+
+	static mat<4, 4> perspective(S near, S far, S fov, S aspect)
+	{
+		const auto a = tanf(M_PI * 0.5f - 0.5f * fov);
+		const auto fsn = far - near;
+		const auto fpn = far + near;
+		const auto ftn = far * near;
+
+		return {
+			{  a/aspect,         0,          0,         0 },
+			{         0,         a,          0,         0 },
+			{         0,         0,   -fpn/fsn,        -1 },
+			{         0,         0, -2*ftn/fsn,         0 }
+		};
+	}
+
 	vec<C, S> m[R];
 };
 
