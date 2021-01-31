@@ -670,7 +670,7 @@ struct vec
 	}
 
 	template<size_t NN>
-	vec<NN,S> slice(size_t start = 0)
+	vec<NN,S> slice(size_t start = 0) const
 	{
 		vec<NN,S> r;
 		for (size_t i = 0; i < NN; ++i) { r[i] = v[i + start]; }
@@ -887,6 +887,154 @@ struct mat
 	}
 
 	vec<C, S> m[R];
+};
+
+struct quat : public vec<4>
+{
+    quat() : vec({ 0, 0, 0, 1 })
+    {
+        // NOP
+    }
+
+    quat(const float* v) : vec({ v[0], v[1], v[2], v[3] })
+    {
+        // NOP
+    }
+
+    quat(float x, float y, float z, float w) : vec({ x, y, z, w })
+    {
+        // NOP
+    }
+
+    quat(vec<4> v) : vec(v)
+    {
+        // NOP
+    }
+
+
+    quat operator*(quat const& other) const
+    {
+        auto t3 = this->slice<3>(0);
+        auto o3 = other.slice<3>(0);
+
+        auto r = vec::cross(t3, o3);
+        auto w = t3 * other[3];
+        r += w;
+        w = o3 * this->v[3];
+        r += w;
+
+        return {
+            r[0], r[1], r[2],
+            this->v[3] * other.v[3] - t3.dot(o3)
+        };
+    }
+
+
+    quat operator*(float s) const
+    {
+        return { slice<4>(0) * s };
+    }
+
+
+    quat& operator*=(quat const& other)
+    {
+        *this = *this * std::move(other);
+        return *this;
+    }
+
+    quat conjugate() const
+    {
+        auto& q = *this;
+        return { -q[0], -q[1], -q[2], q[3] };
+    }
+
+    quat inverse() const
+    {
+        auto inv = conjugate();
+        auto mag2 = dot(*this);
+        static_cast<vec<4>>(inv) /= mag2;
+        return inv;
+    }
+
+    inline float rotational_difference(quat const& q) const
+    {
+        auto q_d = q * this->inverse();
+        return 2 * atan2(q_d.slice<3>(0).magnitude(), fabsf(q_d[3]));
+    }
+
+    quat slerp_to(quat const& p1, float t) const
+    {
+        const auto& p0 = *this;
+        auto W = rotational_difference(p1);
+        auto sin_W = sin(W);
+        if (sin_W < 0.0001f) { sin_W = 0.0001f; }
+        return p0 * (sin((1 - t) * W) / sin_W) + p1 * (sin(t * W) / sin_W);
+    }
+
+    vec<3> rotate(vec<3> const& v) const
+    {
+        auto q_xyz = this->slice<3>(0);
+
+        auto t = vec::cross(q_xyz, v);
+        t *= 2;
+
+        auto u = vec::cross(q_xyz, t);
+        t *= this->v[3];
+
+        return v + t + u;
+    }
+
+    inline mat<4, 4> to_matrix()
+    {
+        auto v = static_cast<vec<4>>(*this);
+        auto a = v[3], b = v[0], c = v[1], d = v[2];
+        auto a2 = a * a, b2 = b * b, c2 = c * c, d2 = d * d;
+
+        return {
+            { a2 + b2 - c2 - d2, 2 * (b*c - a*d)  , 2 * (b*d + a*c)  , 0},
+            { 2 * (b*c + a*d)  , a2 - b2 + c2 - d2, 2 * (c*d - a*b)  , 0},
+            { 2 * (b*d - a*c)  , 2 * (c*d + a*b)  , a2 - b2 - c2 + d2, 0},
+            { 0                , 0                , 0                , 1},
+        };
+    }
+
+    template <class S>
+    vec<3, S> to_roll_pitch_yaw()
+    {
+        S roll, pitch, yaw;
+        // roll (x-axis rotation)
+        S sinr_cosp = +2.0 * (v[3] * v[0] + v[1] * v[2]);
+        S cosr_cosp = +1.0 - 2.0 * (v[0] * v[0] + v[1] * v[1]);
+        roll = atan2(sinr_cosp, cosr_cosp);
+
+        // pitch (y-axis rotation)
+        S sinp = +2.0 * (v[3] * v[1] - v[2] * v[0]);
+        if (fabs(sinp) >= 1)
+        {
+            pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+        }
+        else
+        {
+            pitch = asin(sinp);
+        }
+
+        // yaw (z-axis rotation)
+        S siny_cosp = +2.0 * (v[3] * v[2] + v[0] * v[1]);
+        S cosy_cosp = +1.0 - 2.0 * (v[1] * v[1] + v[2] * v[2]);
+        yaw = atan2(siny_cosp, cosy_cosp);
+
+        return { roll, pitch, yaw };
+    }
+
+    static quat from_axis_angle(vec<3> axis, float angle)
+    {
+        auto a_2 = angle / 2;
+        auto a = sinf(a_2);
+
+        axis *= a;
+
+        return { axis[0], axis[1], axis[2], cosf(a_2) };
+    }
 };
 
 } // namespace xmath end
