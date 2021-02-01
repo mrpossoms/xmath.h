@@ -195,6 +195,7 @@
     for (int __row = (m_R); __row--;)\
     for (int __col = (n_C); __col--;)\
     {\
+    	(r)[__row][__col] = 0;\
         for (int __i = (m_C); __i--;)\
         {\
             (r)[__row][__col] += (m)[__row][__i] * (n)[__i][__col];\
