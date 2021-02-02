@@ -861,6 +861,16 @@ struct mat
 		};
 	}
 
+	static mat<4, 4> scale(vec<3> t)
+	{
+		return {
+			{ t[0],    0,     0,    0    },
+			{    0,  t[1],    0,    0    },
+			{    0,    0,  t[2],    0    },
+			{    0,    0,     0,    1.   }
+		};
+	}
+
 	static mat<4, 4> translation(vec<3> t)
 	{
 		return {
@@ -984,7 +994,7 @@ struct quat : public vec<4>
         return v + t + u;
     }
 
-    inline mat<4, 4> to_matrix()
+    inline mat<4, 4> to_matrix() const
     {
         auto v = static_cast<vec<4>>(*this);
         auto a = v[3], b = v[0], c = v[1], d = v[2];
