@@ -896,6 +896,23 @@ struct mat
 		};
 	}
 
+	static mat<4, 4> orthographic(S near, S far, S left, S right, S top, S bottom)
+	{
+		const auto rml = right - left;
+		const auto rpl = right + left;
+		const auto tmb = top - bottom;
+		const auto tpb = top + bottom;
+		const auto fmn = far - near;
+		const auto fpn = far + near;
+
+		return {
+			{2/rml,     0,      0,     0},
+			{    0, 2/tmb,      0,     0},
+			{    0,     0, -2/fmn,     0},
+			{    0,     0,      0,     1},
+		};
+	}
+
 	vec<C, S> m[R];
 };
 
