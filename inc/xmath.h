@@ -17,6 +17,7 @@
 #ifndef _XMATH_H_
 #define _XMATH_H_
 #include <math.h>
+#include <sys/types.h>
 
 #ifndef XMTYPE
 #define XMTYPE double
@@ -46,7 +47,7 @@
  * @param      dst_vec    The destination array to contain the result of size n
  * @param      left_vec   The left array operand of the subtraction of size n
  * @param      right_vec  The right array operand of the subtraction of size n
- 
+
  */
 #define VEC_SUB(n, dst_vec, left_vec, right_vec) \
 {\
@@ -84,14 +85,14 @@
  */
 
 /**
- * @brief Performs element-wise addition of left and right vectors after the 
+ * @brief Performs element-wise addition of left and right vectors after the
  * right vector has been scaled by a scalar operand.
- * 
+ *
  * @param      n          Dimensionality of the vectors
  * @param      dst_vec    The destination array to contain the result of size n.
  * @param      left_vec   The left array operand of size n of the operation.
  * @param      right_vec  The right array operand of size n of the operation.
- * @param      scalar     The scalar by which each element of the right_vec is 
+ * @param      scalar     The scalar by which each element of the right_vec is
  * multiplied.
  */
 #define VEC_ADD_SCL(n, dst_vec, left_vec, right_vec, scalar) \
@@ -492,22 +493,22 @@ static inline XMTYPE vec_mag(size_t n, const XMTYPE left[n])
 static inline void mat_transpose(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[c][r])
 { MAT_TRANSPOSE(XMTYPE, r, c, in, out) }
 
-static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C]) 
+static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C])
 { MAT_MUL(XMTYPE, m_R, m_C, n_R, n_C, r, m, n) }
 
-static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C]) 
+static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
 { MAT_ADD(XMTYPE, m_R, m_C, r, m, n) }
 
 static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
 { MAT_SUB(XMTYPE, m_R, m_C, r, m, n) }
 
 static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[r][c])
-{ 
+{
 	for (size_t i = 0; i < r; i++)
 	{
 		for (size_t j = 0; j < c; j++)
 		{
-			out[i][j] = in[i][j];	
+			out[i][j] = in[i][j];
 		}
 	}
 	MAT_INV_IMP(XMTYPE, r, c, out)
@@ -805,7 +806,7 @@ struct mat
 	{
 		MAT_INV_IMP(S, R, C, m)
 	}
-	
+
 	mat<R, C, S> invert()
 	{
 		mat<R, C, S> out = *this;
@@ -817,7 +818,7 @@ struct mat
 	{
 		mat<C, R, S> out;
 		MAT_TRANSPOSE(S, R, C, m, out);
-	return out;	
+	return out;
 	}
 
 	vec<C, S>& operator[](size_t r) { return m[r]; }
