@@ -823,6 +823,8 @@ struct mat
 
 	vec<C, S>& operator[](size_t r) { return m[r]; }
 
+	const vec<C, S>& operator[](size_t r) const { return m[r]; }
+
 	mat<R, C, S> operator+ (const mat<R, C, S>& M)
 	{
 		mat<R, C, S> out;
@@ -846,6 +848,31 @@ struct mat
 	}
 
 	const S* ptr() const { return m[0].v; }
+
+	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
+	{
+		const auto r = vec<3>::cross(forward, up);
+		const auto u = up;
+		const auto t = vec<3>::cross(r, forward).unit();
+		const auto f = forward;
+		const auto p = position;
+
+		mat<4, 4> ori = {
+			{ r[0], t[0], f[0], 0 },
+			{ r[1], t[1], f[1], 0 },
+			{ r[2], t[2], f[2], 0 },
+			{    0,    0,    0, 1 }
+		};
+
+		mat<4, 4> trans = {
+			{    1,     0,     0,    0 },
+			{    0,     1,     0,    0 },
+			{    0,     0,     1,    0 },
+			{-p[0], -p[1], -p[2],    1 }
+		};
+
+		return ori;
+	}
 
 	static mat<4, 4> rotation(vec<3> axis, float angle)
 	{
@@ -990,6 +1017,7 @@ struct quat : public vec<4>
         return 2 * atan2(q_d.slice<3>(0).magnitude(), fabsf(q_d[3]));
     }
 
+
     quat slerp_to(quat const& p1, float t) const
     {
         const auto& p0 = *this;
@@ -1052,6 +1080,47 @@ struct quat : public vec<4>
         yaw = atan2(siny_cosp, cosy_cosp);
 
         return { roll, pitch, yaw };
+    }
+
+    static quat from_matrix(const mat<4, 4>& m)
+    {
+    	quat q;
+		auto tr = m[0][0] + m[1][1] + m[2][2];
+
+		if (tr > 0)
+		{ 
+			auto s = sqrt(tr+1.0) * 2; // s=4*qw 
+			q[3] = 0.25 * s;
+			q[0] = (m[2][1] - m[1][2]) / s;
+			q[1] = (m[0][2] - m[2][0]) / s; 
+			q[2] = (m[1][0] - m[0][1]) / s; 
+		}
+		else if ((m[0][0] > m[1][1])&&(m[0][0] > m[2][2]))
+		{ 
+			auto s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // s=4*q[0] 
+			q[3] = (m[2][1] - m[1][2]) / s;
+			q[0] = 0.25 * s;
+			q[1] = (m[0][1] + m[1][0]) / s; 
+			q[2] = (m[0][2] + m[2][0]) / s; 
+		}
+		else if (m[1][1] > m[2][2])
+		{ 
+			auto s = sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2; // s=4*q[1]
+			q[3] = (m[0][2] - m[2][0]) / s;
+			q[0] = (m[0][1] + m[1][0]) / s; 
+			q[1] = 0.25 * s;
+			q[2] = (m[1][2] + m[2][1]) / s; 
+		}
+		else
+		{ 
+			auto s = sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2; // s=4*q[2]
+			q[3] = (m[1][0] - m[0][1]) / s;
+			q[0] = (m[0][2] + m[2][0]) / s;
+			q[1] = (m[1][2] + m[2][1]) / s;
+			q[2] = 0.25 * s;
+		}
+
+		return q;
     }
 
     static quat from_axis_angle(vec<3> axis, float angle)
