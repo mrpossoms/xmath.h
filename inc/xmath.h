@@ -864,14 +864,9 @@ struct mat
 			{    0,    0,    0, 1 }
 		};
 
-		mat<4, 4> trans = {
-			{    1,     0,     0,    0 },
-			{    0,     1,     0,    0 },
-			{    0,     0,     1,    0 },
-			{-p[0], -p[1], -p[2],    1 }
-		};
+		mat<4, 4> trans = translation(p);
 
-		return ori;
+		return trans * ori;
 	}
 
 	static mat<4, 4> rotation(vec<3> axis, float angle)
