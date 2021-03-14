@@ -847,6 +847,18 @@ struct mat
 		return out;
 	}
 
+	vec<R, S> operator* (const vec<C, S>& V)
+	{
+		vec<R, S> out = {};
+		for (size_t r = 0; r < R; r++)
+		for (size_t c = 0; c < C; c++)
+		{
+			out[r] += m[r][c] * V[c];
+		}
+
+		return out;
+	}
+
 	const S* ptr() const { return m[0].v; }
 
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
