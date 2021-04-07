@@ -190,7 +190,7 @@
  * @param      m     Left hand operand of size (m_R, m_C)
  * @param      n     Right hand operand of size (n_R, n_C)
  */
-#define MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n)\
+#define MAT_MUL(m_R, m_C, n_R, n_C, r, m, n)\
 {\
     for (int __row = (m_R); __row--;)\
     for (int __col = (n_C); __col--;)\
@@ -208,14 +208,13 @@
  * @brief      Performs a matrix addition. Each element of 'm' is added to its
  *             corresponding element in the matrix 'n' and stored in 'r'.
  *
- * @param      TYPE  The type
  * @param      mn_R   Rows in matrix 'm' and in 'n'
  * @param      mn_C   Columns in matrix 'm' and in 'n'
  * @param      r     Resulting matrix of size (mn_R, mn_C)
  * @param      m     Left hand operand of size (mn_R, mn_C)
  * @param      n     Right hand operand of size (mn_R, mn_C)
  */
-#define MAT_ADD(TYPE, mn_R, mn_C, r, m, n)\
+#define MAT_ADD(mn_R, mn_C, r, m, n)\
 {\
     for (int __row = (mn_R); __row--;)\
     for (int __col = (mn_C); __col--;)\
@@ -230,14 +229,13 @@
  *             from its corresponding element in the matrix 'n' and
  *             stored in 'r'.
  *
- * @param      TYPE  The type
  * @param      mn_R   Rows in matrix 'm' and in 'n'
  * @param      mn_C   Columns in matrix 'm' and in 'n'
  * @param      r     Resulting matrix of size (mn_R, mn_C)
  * @param      m     Left hand operand of size (mn_R, mn_C)
  * @param      n     Right hand operand of size (mn_R, mn_C)
  */
-#define MAT_SUB(TYPE, mn_R, mn_C, r, m, n)\
+#define MAT_SUB(mn_R, mn_C, r, m, n)\
 {\
     for (int __row = (mn_R); __row--;)\
     for (int __col = (mn_C); __col--;)\
@@ -251,23 +249,22 @@
  * @brief      Performs matrix-vector multiplication resulting in another
  *             vector.
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting vector of size m_R.
  * @param      m     Left hand operand matrix of size (m_R, m_C).
  * @param      v     Right hand operand vector of size m_C.
  */
-#define MAT_MUL_VEC(TYPE, m_R, m_C, r, m, v)\
+#define MAT_MUL_VEC(m_R, m_C, r, m, v)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
+    for (int __row = (m_R); __row--;)\
     { \
     	(r)[__row] = 0;\
-	    for (TYPE __col = (n_C); __col--;)\
+	    for (int __col = (n_C); __col--;)\
 	    {\
 	        (r)[__row] += (m)[__row][__col] * (n)[__col];\
 	    }\
-    {\
+    }\
 }\
 
 
@@ -275,66 +272,63 @@
  * @brief      Scales each element of a matrix with a scalar and stores the
  *             result in another matrix of matching size.
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix with scale applied of size (m_R, m_C)
  * @param      m     Left hand operand matrix of size (m_R, m_C)
  * @param      s     Scalar which will be multiplied agains each element of 'm'
  */
-#define MAT_MUL_E(TYPE, m_R, m_C, r, m, s)\
+#define MAT_MUL_E(m_R, m_C, r, m, s)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
-    { \
-	    for (TYPE __col = (n_C); __col--;)\
+    for (int __row = (m_R); __row--;)\
+    {\
+	    for (int __col = (m_C); __col--;)\
 	    {\
 	        (r)[__row][__col] = (m)[__row][__col] * (s);\
 	    }\
-    {\
+    }\
 }\
 
 
 /**
  * @brief      Performs an elementwise addition between two matrices
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
  * @param      m     Left hand operand in the addition of size (m_R, m_C)
  * @param      n     Right hand operand in the addition of size (m_R, m_C)
  */
-#define MAT_ADD_E(TYPE, m_R, m_C, r, m, n)\
+#define MAT_ADD_E(m_R, m_C, r, m, n)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
+    for (int __row = (m_R); __row--;)\
     { \
-	    for (TYPE __col = (n_C); __col--;)\
+	    for (int __col = (n_C); __col--;)\
 	    {\
 	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
 	    }\
-    {\
+    }\
 }\
 
 
 /**
  * @brief      Performs an elementwise subtraction between two matrices
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
  * @param      m     Left hand operand in the subtraction of size (m_R, m_C)
  * @param      n     Right hand operand in the subtraction of size (m_R, m_C)
  */
-#define MAT_SUB_E(TYPE, m_R, m_C, r, m, n)\
+#define MAT_SUB_E(m_R, m_C, r, m, n)\
 {\
-    for (TYPE __row = (m_R); __row--;)\
+    for (int __row = (m_R); __row--;)\
     { \
-	    for (TYPE __col = (n_C); __col--;)\
+	    for (int __col = (n_C); __col--;)\
 	    {\
 	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
 	    }\
-    {\
+    }\
 }\
 
 
@@ -438,7 +432,7 @@
  * @param      IN     Original matrix (2d array).
  * @param      OUT    The trasnpose of the original matrix.
  */
-#define MAT_TRANSPOSE(TYPE, R, C, IN, OUT)\
+#define MAT_TRANSPOSE(R, C, IN, OUT)\
 {\
 	for (size_t __r = 0; __r < R; __r++)\
 	{\
@@ -492,16 +486,16 @@ static inline XMTYPE vec_mag(size_t n, const XMTYPE left[n])
 { VEC_MAG(XMTYPE, n, left) }
 
 static inline void mat_transpose(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[c][r])
-{ MAT_TRANSPOSE(XMTYPE, r, c, in, out) }
+{ MAT_TRANSPOSE(r, c, in, out) }
 
 static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C]) 
-{ MAT_MUL(XMTYPE, m_R, m_C, n_R, n_C, r, m, n) }
+{ MAT_MUL(m_R, m_C, n_R, n_C, r, m, n) }
 
 static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C]) 
-{ MAT_ADD(XMTYPE, m_R, m_C, r, m, n) }
+{ MAT_ADD(m_R, m_C, r, m, n) }
 
 static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
-{ MAT_SUB(XMTYPE, m_R, m_C, r, m, n) }
+{ MAT_SUB(m_R, m_C, r, m, n) }
 
 static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[r][c])
 { 
@@ -818,7 +812,7 @@ struct mat
     mat<C, R, S> transpose()
     {
     	mat<C, R, S> out;
-    	MAT_TRANSPOSE(S, R, C, m, out);
+    	MAT_TRANSPOSE(R, C, m, out);
 	return out;	
     }
 
@@ -827,14 +821,14 @@ struct mat
     mat<R, C, S> operator+ (const mat<R, C, S>& M)
     {
     	mat<R, C, S> out;
-    	MAT_ADD(S, R, C, out, m, M.m);
+    	MAT_ADD(R, C, out, m, M.m);
     	return out;
     }
 
     mat<R, C, S> operator- (const mat<R, C, S>& M)
     {
     	mat<R, C, S> out;
-    	MAT_SUB(S, R, C, out, m, M.m);
+    	MAT_SUB(R, C, out, m, M.m);
     	return out;
     }
 
@@ -842,8 +836,21 @@ struct mat
     mat<R, O, S> operator* (const mat<C, O, S>& N)
     {
     	mat<R, O, S> out;
-    	MAT_MUL(S, R, C, C, O, out.m, m, N.m);
+    	MAT_MUL(R, C, C, O, out.m, m, N.m);
     	return out;
+    }
+
+    inline mat<R, C, S> operator*(const S s)
+    {
+    	mat<R, C, S> out;
+    	MAT_MUL_E(R, C, out.m, m, s);
+    	return out;
+    }
+
+    inline mat<R, C, S>& operator*=(const S s)
+    {
+    	MAT_MUL_E(R, C, m, m, s);
+    	return *this;
     }
 
 	vec<C, S> m[R];
