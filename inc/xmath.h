@@ -47,7 +47,7 @@
  * @param      dst_vec    The destination array to contain the result of size n
  * @param      left_vec   The left array operand of the subtraction of size n
  * @param      right_vec  The right array operand of the subtraction of size n
- 
+
  */
 #define VEC_SUB(n, dst_vec, left_vec, right_vec) \
 {\
@@ -85,14 +85,14 @@
  */
 
 /**
- * @brief Performs element-wise addition of left and right vectors after the 
+ * @brief Performs element-wise addition of left and right vectors after the
  * right vector has been scaled by a scalar operand.
- * 
+ *
  * @param      n          Dimensionality of the vectors
  * @param      dst_vec    The destination array to contain the result of size n.
  * @param      left_vec   The left array operand of size n of the operation.
  * @param      right_vec  The right array operand of size n of the operation.
- * @param      scalar     The scalar by which each element of the right_vec is 
+ * @param      scalar     The scalar by which each element of the right_vec is
  * multiplied.
  */
 #define VEC_ADD_SCL(n, dst_vec, left_vec, right_vec, scalar) \
@@ -216,11 +216,11 @@
  */
 #define MAT_ADD(mn_R, mn_C, r, m, n)\
 {\
-    for (int __row = (mn_R); __row--;)\
-    for (int __col = (mn_C); __col--;)\
-    {\
-        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
-    }\
+	for (int __row = (mn_R); __row--;)\
+	for (int __col = (mn_C); __col--;)\
+	{\
+		(r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+	}\
 }\
 
 
@@ -237,11 +237,11 @@
  */
 #define MAT_SUB(mn_R, mn_C, r, m, n)\
 {\
-    for (int __row = (mn_R); __row--;)\
-    for (int __col = (mn_C); __col--;)\
-    {\
-        (r)[__row][__col] = (m)[__row][__col] - (n)[__row][__col];\
-    }\
+	for (int __row = (mn_R); __row--;)\
+	for (int __col = (mn_C); __col--;)\
+	{\
+		(r)[__row][__col] = (m)[__row][__col] - (n)[__row][__col];\
+	}\
 }\
 
 
@@ -498,12 +498,12 @@ static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMT
 { MAT_SUB(m_R, m_C, r, m, n) }
 
 static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[r][c])
-{ 
+{
 	for (size_t i = 0; i < r; i++)
 	{
 		for (size_t j = 0; j < c; j++)
 		{
-			out[i][j] = in[i][j];	
+			out[i][j] = in[i][j];
 		}
 	}
 	MAT_INV_IMP(XMTYPE, r, c, out)
@@ -559,7 +559,7 @@ struct vec
 
 	inline S at(int i) const { return v[i]; }
 
-	inline S* ptr() { return v; }
+	inline S* ptr() const { return v; }
 
 	inline bool is_finite() const
 	{
@@ -666,7 +666,7 @@ struct vec
 	}
 
 	template<size_t NN>
-	vec<NN,S> slice(size_t start = 0)
+	vec<NN,S> slice(size_t start = 0) const
 	{
 		vec<NN,S> r;
 		for (size_t i = 0; i < NN; ++i) { r[i] = v[i + start]; }
@@ -754,106 +754,399 @@ struct vec
 template <size_t R, size_t C, typename S=XMTYPE>
 struct mat
 {
-    mat()
+	mat()
+	{
+		for (auto row = R; row--;)
+		for (auto col = C; col--;)
+		{
+			m[row][col] = {};
+		}
+	}
+
+	mat(std::initializer_list<std::initializer_list<S>> init)
+	{
+		int ri = 0;
+		for (auto row : init)
+		{
+			int ci = 0;
+			for (auto c : row)
+			{
+				m[ri][ci] = c;
+				ci += 1;
+			}
+			ri += 1;
+		}
+
+	}
+
+	mat<R, C, S>& initialize(std::function<S (S r, S c)> init)
+	{
+		for (auto row = R; row--;)
+		for (auto col = C; col--;)
+		{
+			m[row][col] = init(static_cast<S>(row), static_cast<S>(col));
+		}
+
+		return *this;
+	}
+
+	static inline mat<R, C, S> I()
+	{
+	mat<R, C, S> m;
+	MAT_IDENTITY(R, C, m);
+	return m;
+	}
+
+	void invert_inplace()
+	{
+		MAT_INV_IMP(S, R, C, m)
+	}
+
+	mat<R, C, S> invert()
+	{
+		mat<R, C, S> out = *this;
+		MAT_INV_IMP(S, R, C, out);
+		return out;
+	}
+
+	mat<C, R, S> transpose()
+	{
+		mat<C, R, S> out;
+		MAT_TRANSPOSE(S, R, C, m, out);
+	return out;
+	}
+
+	vec<C, S>& operator[](size_t r) { return m[r]; }
+
+	const vec<C, S>& operator[](size_t r) const { return m[r]; }
+
+	mat<R, C, S> operator+ (const mat<R, C, S>& M)
+	{
+		mat<R, C, S> out;
+		MAT_ADD(S, R, C, out, m, M.m);
+		return out;
+	}
+
+	mat<R, C, S> operator- (const mat<R, C, S>& M)
+	{
+		mat<R, C, S> out;
+		MAT_SUB(S, R, C, out, m, M.m);
+		return out;
+	}
+
+	template<size_t O>
+	mat<R, O, S> operator* (const mat<C, O, S>& N)
+	{
+		mat<R, O, S> out;
+		MAT_MUL(S, R, C, C, O, out.m, m, N.m);
+		return out;
+	}
+
+  inline mat<R, C, S> operator*(const S s)
+  {
+    mat<R, C, S> out;
+    MAT_MUL_E(R, C, out.m, m, s);
+    return out;
+  }
+  
+	vec<R, S> operator* (const vec<C, S>& V)
+	{
+		vec<R, S> out = {};
+		for (size_t r = 0; r < R; r++)
+		for (size_t c = 0; c < C; c++)
+		{
+			out[r] += m[r][c] * V[c];
+		}
+
+		return out;
+	}
+
+  inline mat<R, C, S>& operator*=(const S s)
+  {
+    MAT_MUL_E(R, C, m, m, s);
+    return *this;
+  }
+  
+	const S* ptr() const { return m[0].v; }
+
+	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
+	{
+		const auto r = vec<3>::cross(forward, up);
+		const auto u = up;
+		const auto t = vec<3>::cross(r, forward).unit();
+		const auto f = forward;
+		const auto p = position;
+
+		mat<4, 4> ori = {
+			{ r[0], t[0], f[0], 0 },
+			{ r[1], t[1], f[1], 0 },
+			{ r[2], t[2], f[2], 0 },
+			{    0,    0,    0, 1 }
+		};
+
+		mat<4, 4> trans = translation(p);
+
+		return trans * ori;
+	}
+
+	static mat<4, 4> rotation(vec<3> axis, float angle)
+	{
+		const auto a = axis;
+		const auto c = cosf(angle);
+		const auto s = sinf(angle);
+		const auto omc = 1 - c;
+
+		return {
+			{c+a[0]*a[0]*omc,      a[1]*a[0]*omc+a[2]*s, a[2]*a[0]*omc-a[1]*s, 0},
+			{a[0]*a[1]*omc-a[2]*s, c+a[1]*a[1]*omc,      a[2]*a[1]*omc+a[0]*s, 0},
+			{a[0]*a[2]*omc+a[1]*s, a[1]*a[2]*omc-a[0]*s, c+a[2]*a[2]*omc,      0},
+			{                   0,                    0,                    0, 1}
+		};
+	}
+
+	static mat<4, 4> scale(vec<3> t)
+	{
+		return {
+			{ t[0],    0,     0,    0    },
+			{    0,  t[1],    0,    0    },
+			{    0,    0,  t[2],    0    },
+			{    0,    0,     0,    1.   }
+		};
+	}
+
+	static mat<4, 4> translation(vec<3> t)
+	{
+		return {
+			{    1,    0,    0,    0    },
+			{    0,    1,    0,    0    },
+			{    0,    0,    1,    0    },
+			{  t[0], t[1], t[2],   1.   }
+		};
+	}
+
+	static mat<4, 4> perspective(S near, S far, S fov, S aspect)
+	{
+		const auto a = tanf(M_PI * 0.5f - 0.5f * fov);
+		const auto fsn = far - near;
+		const auto fpn = far + near;
+		const auto ftn = far * near;
+
+		return {
+			{  a/aspect,         0,          0,         0 },
+			{         0,         a,          0,         0 },
+			{         0,         0,   -fpn/fsn,        -1 },
+			{         0,         0, -2*ftn/fsn,         0 }
+		};
+	}
+
+	static mat<4, 4> orthographic(S near, S far, S left, S right, S top, S bottom)
+	{
+		const auto rml = right - left;
+		const auto rpl = right + left;
+		const auto tmb = top - bottom;
+		const auto tpb = top + bottom;
+		const auto fmn = far - near;
+		const auto fpn = far + near;
+
+		return {
+			{2/rml,     0,      0,     0},
+			{    0, 2/tmb,      0,     0},
+			{    0,     0, -2/fmn,     0},
+			{    0,     0,      0,     1},
+		};
+	}
+
+	vec<C, S> m[R];
+};
+
+struct quat : public vec<4>
+{
+    quat() : vec({ 0, 0, 0, 1 })
     {
-        for (auto row = R; row--;)
-        for (auto col = C; col--;)
-        {
-            m[row][col] = {};
-        }
+        // NOP
     }
 
-    mat(std::initializer_list<std::initializer_list<S>> init)
+    quat(const float* v) : vec({ v[0], v[1], v[2], v[3] })
     {
-        int ri = 0;
-        for (auto row : init)
-        {
-            int ci = 0;
-            for (auto c : row)
-            {
-                m[ri][ci] = c;
-                ci += 1;
-            }
-            ri += 1;
-        }
-
+        // NOP
     }
 
-    mat<R, C, S>& initialize(std::function<S (S r, S c)> init)
+    quat(float x, float y, float z, float w) : vec({ x, y, z, w })
     {
-        for (auto row = R; row--;)
-        for (auto col = C; col--;)
-        {
-            m[row][col] = init(static_cast<S>(row), static_cast<S>(col));
-        }
+        // NOP
+    }
 
+    quat(vec<4> v) : vec(v)
+    {
+        // NOP
+    }
+
+
+    quat operator*(quat const& other) const
+    {
+        auto t3 = this->slice<3>(0);
+        auto o3 = other.slice<3>(0);
+
+        auto r = vec::cross(t3, o3);
+        auto w = t3 * other[3];
+        r += w;
+        w = o3 * this->v[3];
+        r += w;
+
+        return {
+            r[0], r[1], r[2],
+            this->v[3] * other.v[3] - t3.dot(o3)
+        };
+    }
+
+
+    quat operator*(float s) const
+    {
+        return { slice<4>(0) * s };
+    }
+
+
+    quat& operator*=(quat const& other)
+    {
+        *this = *this * std::move(other);
         return *this;
     }
 
-    static inline mat<R, C, S> I()
+    quat conjugate() const
     {
-	mat<R, C, S> m;
-	MAT_IDENTITY(R, m);
-	return m;
+        auto& q = *this;
+        return { -q[0], -q[1], -q[2], q[3] };
     }
 
-    void invert_inplace()
+    quat inverse() const
     {
-    	MAT_INV_IMP(S, R, C, m)
-    }
-    
-    mat<R, C, S> invert()
-    {
-    	mat<R, C, S> out = *this;
-    	MAT_INV_IMP(S, R, C, out);
-    	return out;
+        auto inv = conjugate();
+        auto mag2 = dot(*this);
+        static_cast<vec<4>>(inv) /= mag2;
+        return inv;
     }
 
-    mat<C, R, S> transpose()
+    inline float rotational_difference(quat const& q) const
     {
-    	mat<C, R, S> out;
-    	MAT_TRANSPOSE(R, C, m, out);
-	return out;	
+        auto q_d = q * this->inverse();
+        return 2 * atan2(q_d.slice<3>(0).magnitude(), fabsf(q_d[3]));
     }
 
-    vec<C, S>& operator[](size_t r) { return m[r]; }
 
-    mat<R, C, S> operator+ (const mat<R, C, S>& M)
+    quat slerp_to(quat const& p1, float t) const
     {
-    	mat<R, C, S> out;
-    	MAT_ADD(R, C, out, m, M.m);
-    	return out;
+        const auto& p0 = *this;
+        auto W = rotational_difference(p1);
+        auto sin_W = sin(W);
+        if (sin_W < 0.0001f) { sin_W = 0.0001f; }
+        return p0 * (sin((1 - t) * W) / sin_W) + p1 * (sin(t * W) / sin_W);
     }
 
-    mat<R, C, S> operator- (const mat<R, C, S>& M)
+    vec<3> rotate(vec<3> const& v) const
     {
-    	mat<R, C, S> out;
-    	MAT_SUB(R, C, out, m, M.m);
-    	return out;
+        auto q_xyz = this->slice<3>(0);
+
+        auto t = vec::cross(q_xyz, v);
+        t *= 2;
+
+        auto u = vec::cross(q_xyz, t);
+        t *= this->v[3];
+
+        return v + t + u;
     }
 
-    template<size_t O>
-    mat<R, O, S> operator* (const mat<C, O, S>& N)
+    inline mat<4, 4> to_matrix() const
     {
-    	mat<R, O, S> out;
-    	MAT_MUL(R, C, C, O, out.m, m, N.m);
-    	return out;
+        auto v = static_cast<vec<4>>(*this);
+        auto a = v[3], b = v[0], c = v[1], d = v[2];
+        auto a2 = a * a, b2 = b * b, c2 = c * c, d2 = d * d;
+
+        return {
+            { a2 + b2 - c2 - d2, 2 * (b*c - a*d)  , 2 * (b*d + a*c)  , 0},
+            { 2 * (b*c + a*d)  , a2 - b2 + c2 - d2, 2 * (c*d - a*b)  , 0},
+            { 2 * (b*d - a*c)  , 2 * (c*d + a*b)  , a2 - b2 - c2 + d2, 0},
+            { 0                , 0                , 0                , 1},
+        };
     }
 
-    inline mat<R, C, S> operator*(const S s)
+    template <class S>
+    vec<3, S> to_roll_pitch_yaw()
     {
-    	mat<R, C, S> out;
-    	MAT_MUL_E(R, C, out.m, m, s);
-    	return out;
+        S roll, pitch, yaw;
+        // roll (x-axis rotation)
+        S sinr_cosp = +2.0 * (v[3] * v[0] + v[1] * v[2]);
+        S cosr_cosp = +1.0 - 2.0 * (v[0] * v[0] + v[1] * v[1]);
+        roll = atan2(sinr_cosp, cosr_cosp);
+
+        // pitch (y-axis rotation)
+        S sinp = +2.0 * (v[3] * v[1] - v[2] * v[0]);
+        if (fabs(sinp) >= 1)
+        {
+            pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+        }
+        else
+        {
+            pitch = asin(sinp);
+        }
+
+        // yaw (z-axis rotation)
+        S siny_cosp = +2.0 * (v[3] * v[2] + v[0] * v[1]);
+        S cosy_cosp = +1.0 - 2.0 * (v[1] * v[1] + v[2] * v[2]);
+        yaw = atan2(siny_cosp, cosy_cosp);
+
+        return { roll, pitch, yaw };
     }
 
-    inline mat<R, C, S>& operator*=(const S s)
+    static quat from_matrix(const mat<4, 4>& m)
     {
-    	MAT_MUL_E(R, C, m, m, s);
-    	return *this;
+    	quat q;
+		auto tr = m[0][0] + m[1][1] + m[2][2];
+
+		if (tr > 0)
+		{ 
+			auto s = sqrt(tr+1.0) * 2; // s=4*qw 
+			q[3] = 0.25 * s;
+			q[0] = (m[2][1] - m[1][2]) / s;
+			q[1] = (m[0][2] - m[2][0]) / s; 
+			q[2] = (m[1][0] - m[0][1]) / s; 
+		}
+		else if ((m[0][0] > m[1][1])&&(m[0][0] > m[2][2]))
+		{ 
+			auto s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // s=4*q[0] 
+			q[3] = (m[2][1] - m[1][2]) / s;
+			q[0] = 0.25 * s;
+			q[1] = (m[0][1] + m[1][0]) / s; 
+			q[2] = (m[0][2] + m[2][0]) / s; 
+		}
+		else if (m[1][1] > m[2][2])
+		{ 
+			auto s = sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2; // s=4*q[1]
+			q[3] = (m[0][2] - m[2][0]) / s;
+			q[0] = (m[0][1] + m[1][0]) / s; 
+			q[1] = 0.25 * s;
+			q[2] = (m[1][2] + m[2][1]) / s; 
+		}
+		else
+		{ 
+			auto s = sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2; // s=4*q[2]
+			q[3] = (m[1][0] - m[0][1]) / s;
+			q[0] = (m[0][2] + m[2][0]) / s;
+			q[1] = (m[1][2] + m[2][1]) / s;
+			q[2] = 0.25 * s;
+		}
+
+		return q;
     }
 
-	vec<C, S> m[R];
+    static quat from_axis_angle(vec<3> axis, float angle)
+    {
+        auto a_2 = angle / 2;
+        auto a = sinf(a_2);
+
+        axis *= a;
+
+        return { axis[0], axis[1], axis[2], cosf(a_2) };
+    }
 };
 
 } // namespace xmath end
