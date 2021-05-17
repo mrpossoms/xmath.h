@@ -792,9 +792,9 @@ struct mat
 
 	static inline mat<R, C, S> I()
 	{
-	mat<R, C, S> m;
-	MAT_IDENTITY(R, C, m);
-	return m;
+		mat<R, C, S> m;
+		MAT_IDENTITY(R, m);
+		return m;
 	}
 
 	void invert_inplace()
@@ -812,7 +812,7 @@ struct mat
 	mat<C, R, S> transpose()
 	{
 		mat<C, R, S> out;
-		MAT_TRANSPOSE(S, R, C, m, out);
+		MAT_TRANSPOSE(R, C, m, out);
 	return out;
 	}
 
@@ -823,14 +823,14 @@ struct mat
 	mat<R, C, S> operator+ (const mat<R, C, S>& M)
 	{
 		mat<R, C, S> out;
-		MAT_ADD(S, R, C, out, m, M.m);
+		MAT_ADD(R, C, out, m, M.m);
 		return out;
 	}
 
 	mat<R, C, S> operator- (const mat<R, C, S>& M)
 	{
 		mat<R, C, S> out;
-		MAT_SUB(S, R, C, out, m, M.m);
+		MAT_SUB(R, C, out, m, M.m);
 		return out;
 	}
 
@@ -838,7 +838,7 @@ struct mat
 	mat<R, O, S> operator* (const mat<C, O, S>& N)
 	{
 		mat<R, O, S> out;
-		MAT_MUL(S, R, C, C, O, out.m, m, N.m);
+		MAT_MUL(R, C, C, O, out.m, m, N.m);
 		return out;
 	}
 
@@ -959,24 +959,25 @@ struct mat
 	vec<C, S> m[R];
 };
 
-struct quat : public vec<4>
+template<typename QS=XMTYPE>
+struct quat : public vec<4, QS>
 {
-    quat() : vec({ 0, 0, 0, 1 })
+    quat() : vec<4, QS>({ 0, 0, 0, 1 })
     {
         // NOP
     }
 
-    quat(const float* v) : vec({ v[0], v[1], v[2], v[3] })
+    quat(const float* v) : vec<4, QS>({ v[0], v[1], v[2], v[3] })
     {
         // NOP
     }
 
-    quat(float x, float y, float z, float w) : vec({ x, y, z, w })
+    quat(float x, float y, float z, float w) : vec<4, QS>({ x, y, z, w })
     {
         // NOP
     }
 
-    quat(vec<4> v) : vec(v)
+    quat(vec<4> v) : vec<4, QS>(v)
     {
         // NOP
     }
@@ -987,7 +988,7 @@ struct quat : public vec<4>
         auto t3 = this->slice<3>(0);
         auto o3 = other.slice<3>(0);
 
-        auto r = vec::cross(t3, o3);
+        auto r = vec<3, QS>::cross(t3, o3);
         auto w = t3 * other[3];
         r += w;
         w = o3 * this->v[3];
@@ -1002,7 +1003,7 @@ struct quat : public vec<4>
 
     quat operator*(float s) const
     {
-        return { slice<4>(0) * s };
+        return { this->slice<4>(0) * s };
     }
 
 
@@ -1015,7 +1016,7 @@ struct quat : public vec<4>
     quat conjugate() const
     {
         auto& q = *this;
-        return { -q[0], -q[1], -q[2], q[3] };
+        return { (QS)-q[0], (QS)-q[1], (QS)-q[2], (QS)q[3] };
     }
 
     quat inverse() const
@@ -1029,7 +1030,8 @@ struct quat : public vec<4>
     inline float rotational_difference(quat const& q) const
     {
         auto q_d = q * this->inverse();
-        return 2 * atan2(q_d.slice<3>(0).magnitude(), fabsf(q_d[3]));
+	auto cplx = q_d.slice<3>();
+        return 2 * atan2(cplx.magnitude(), fabsf(q_d[3]));
     }
 
 
@@ -1046,10 +1048,10 @@ struct quat : public vec<4>
     {
         auto q_xyz = this->slice<3>(0);
 
-        auto t = vec::cross(q_xyz, v);
+        auto t = vec<3, QS>::cross(q_xyz, v);
         t *= 2;
 
-        auto u = vec::cross(q_xyz, t);
+        auto u = vec<3, QS>::cross(q_xyz, t);
         t *= this->v[3];
 
         return v + t + u;
@@ -1069,17 +1071,16 @@ struct quat : public vec<4>
         };
     }
 
-    template <class S>
-    vec<3, S> to_roll_pitch_yaw()
+    vec<3, QS> to_roll_pitch_yaw()
     {
-        S roll, pitch, yaw;
+        QS roll, pitch, yaw;
         // roll (x-axis rotation)
-        S sinr_cosp = +2.0 * (v[3] * v[0] + v[1] * v[2]);
-        S cosr_cosp = +1.0 - 2.0 * (v[0] * v[0] + v[1] * v[1]);
+        auto sinr_cosp = +2.0 * (this->v[3] * this->v[0] + this->v[1] * this->v[2]);
+        auto cosr_cosp = +1.0 - 2.0 * (this->v[0] * this->v[0] + this->v[1] * this->v[1]);
         roll = atan2(sinr_cosp, cosr_cosp);
 
         // pitch (y-axis rotation)
-        S sinp = +2.0 * (v[3] * v[1] - v[2] * v[0]);
+        auto sinp = +2.0 * (this->v[3] * this->v[1] - this->v[2] * this->v[0]);
         if (fabs(sinp) >= 1)
         {
             pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
@@ -1090,8 +1091,8 @@ struct quat : public vec<4>
         }
 
         // yaw (z-axis rotation)
-        S siny_cosp = +2.0 * (v[3] * v[2] + v[0] * v[1]);
-        S cosy_cosp = +1.0 - 2.0 * (v[1] * v[1] + v[2] * v[2]);
+        auto siny_cosp = +2.0 * (this->v[3] * this->v[2] + this->v[0] * this->v[1]);
+        auto cosy_cosp = +1.0 - 2.0 * (this->v[1] * this->v[1] + this->v[2] * this->v[2]);
         yaw = atan2(siny_cosp, cosy_cosp);
 
         return { roll, pitch, yaw };
