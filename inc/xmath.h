@@ -488,10 +488,10 @@ static inline XMTYPE vec_mag(size_t n, const XMTYPE left[n])
 static inline void mat_transpose(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[c][r])
 { MAT_TRANSPOSE(r, c, in, out) }
 
-static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C]) 
+static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C])
 { MAT_MUL(m_R, m_C, n_R, n_C, r, m, n) }
 
-static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C]) 
+static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
 { MAT_ADD(m_R, m_C, r, m, n) }
 
 static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
@@ -848,7 +848,7 @@ struct mat
     MAT_MUL_E(R, C, out.m, m, s);
     return out;
   }
-  
+
 	vec<R, S> operator* (const vec<C, S>& V)
 	{
 		vec<R, S> out = {};
@@ -866,7 +866,7 @@ struct mat
     MAT_MUL_E(R, C, m, m, s);
     return *this;
   }
-  
+
 	const S* ptr() const { return m[0].v; }
 
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
@@ -1030,7 +1030,7 @@ struct quat : public vec<4, QS>
     inline float rotational_difference(quat const& q) const
     {
         auto q_d = q * this->inverse();
-	auto cplx = q_d.slice<3>();
+		auto cplx = q_d.template slice<3>();
         return 2 * atan2(cplx.magnitude(), fabsf(q_d[3]));
     }
 
@@ -1104,31 +1104,31 @@ struct quat : public vec<4, QS>
 		auto tr = m[0][0] + m[1][1] + m[2][2];
 
 		if (tr > 0)
-		{ 
-			auto s = sqrt(tr+1.0) * 2; // s=4*qw 
+		{
+			auto s = sqrt(tr+1.0) * 2; // s=4*qw
 			q[3] = 0.25 * s;
 			q[0] = (m[2][1] - m[1][2]) / s;
-			q[1] = (m[0][2] - m[2][0]) / s; 
-			q[2] = (m[1][0] - m[0][1]) / s; 
+			q[1] = (m[0][2] - m[2][0]) / s;
+			q[2] = (m[1][0] - m[0][1]) / s;
 		}
 		else if ((m[0][0] > m[1][1])&&(m[0][0] > m[2][2]))
-		{ 
-			auto s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // s=4*q[0] 
+		{
+			auto s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // s=4*q[0]
 			q[3] = (m[2][1] - m[1][2]) / s;
 			q[0] = 0.25 * s;
-			q[1] = (m[0][1] + m[1][0]) / s; 
-			q[2] = (m[0][2] + m[2][0]) / s; 
+			q[1] = (m[0][1] + m[1][0]) / s;
+			q[2] = (m[0][2] + m[2][0]) / s;
 		}
 		else if (m[1][1] > m[2][2])
-		{ 
+		{
 			auto s = sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2; // s=4*q[1]
 			q[3] = (m[0][2] - m[2][0]) / s;
-			q[0] = (m[0][1] + m[1][0]) / s; 
+			q[0] = (m[0][1] + m[1][0]) / s;
 			q[1] = 0.25 * s;
-			q[2] = (m[1][2] + m[2][1]) / s; 
+			q[2] = (m[1][2] + m[2][1]) / s;
 		}
 		else
-		{ 
+		{
 			auto s = sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2; // s=4*q[2]
 			q[3] = (m[1][0] - m[0][1]) / s;
 			q[0] = (m[0][2] + m[2][0]) / s;
