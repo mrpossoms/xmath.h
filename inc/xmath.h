@@ -985,8 +985,8 @@ struct quat : public vec<4, QS>
 
     quat operator*(quat const& other) const
     {
-        auto t3 = this->slice<3>(0);
-        auto o3 = other.slice<3>(0);
+        auto t3 = this->template slice<3>(0);
+        auto o3 = other.template slice<3>(0);
 
         auto r = vec<3, QS>::cross(t3, o3);
         auto w = t3 * other[3];
