@@ -967,12 +967,12 @@ struct quat : public vec<4, QS>
         // NOP
     }
 
-    quat(const float* v) : vec<4, QS>({ v[0], v[1], v[2], v[3] })
+    quat(const QS* v) : vec<4, QS>({ v[0], v[1], v[2], v[3] })
     {
         // NOP
     }
 
-    quat(float x, float y, float z, float w) : vec<4, QS>({ x, y, z, w })
+    quat(QS x, QS y, QS z, QS w) : vec<4, QS>({ x, y, z, w })
     {
         // NOP
     }
@@ -1046,7 +1046,7 @@ struct quat : public vec<4, QS>
 
     vec<3> rotate(vec<3> const& v) const
     {
-        auto q_xyz = this->slice<3>(0);
+        auto q_xyz = this->template slice<3>(0);
 
         auto t = vec<3, QS>::cross(q_xyz, v);
         t *= 2;
@@ -1139,14 +1139,14 @@ struct quat : public vec<4, QS>
 		return q;
     }
 
-    static quat from_axis_angle(vec<3> axis, float angle)
+    static quat from_axis_angle(vec<3, QS> axis, QS angle)
     {
         auto a_2 = angle / 2;
         auto a = sinf(a_2);
 
         axis *= a;
 
-        return { axis[0], axis[1], axis[2], cosf(a_2) };
+        return { (QS)axis[0], (QS)axis[1], (QS)axis[2], (QS)cosf(a_2) };
     }
 };
 
