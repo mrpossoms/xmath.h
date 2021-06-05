@@ -1022,7 +1022,7 @@ struct quat : public vec<4, QS>
     quat inverse() const
     {
         auto inv = conjugate();
-        auto mag2 = dot(*this);
+        auto mag2 = this->dot(*this);
         static_cast<vec<4>>(inv) /= mag2;
         return inv;
     }
