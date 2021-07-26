@@ -872,7 +872,6 @@ struct mat
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
 	{
 		const auto r = vec<3>::cross(forward, up);
-		const auto u = up;
 		const auto t = vec<3>::cross(r, forward).unit();
 		const auto f = forward;
 		const auto p = position;
@@ -942,11 +941,8 @@ struct mat
 	static mat<4, 4> orthographic(S near, S far, S left, S right, S top, S bottom)
 	{
 		const auto rml = right - left;
-		const auto rpl = right + left;
 		const auto tmb = top - bottom;
-		const auto tpb = top + bottom;
 		const auto fmn = far - near;
-		const auto fpn = far + near;
 
 		return {
 			{2/rml,     0,      0,     0},
