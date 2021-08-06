@@ -194,16 +194,17 @@
  * @param      m     Left hand operand of size (m_R, m_C)
  * @param      n     Right hand operand of size (n_R, n_C)
  */
-#define MAT_MUL(TYPE, m_R, m_C, n_R, n_C, r, m, n)\
+#define MAT_MUL(m_R, m_C, n_R, n_C, r, m, n)\
 {\
-	for (int __row = (m_R); __row--;)\
-	for (int __col = (n_C); __col--;)\
-	{\
-		for (int __i = (m_C); __i--;)\
-		{\
-			(r)[__row][__col] += (m)[__row][__i] * (n)[__i][__col];\
-		}\
-	}\
+    for (int __row = (m_R); __row--;)\
+    for (int __col = (n_C); __col--;)\
+    {\
+    	(r)[__row][__col] = 0;\
+        for (int __i = (m_C); __i--;)\
+        {\
+            (r)[__row][__col] += (m)[__row][__i] * (n)[__i][__col];\
+        }\
+    }\
 }\
 
 
@@ -211,14 +212,13 @@
  * @brief      Performs a matrix addition. Each element of 'm' is added to its
  *             corresponding element in the matrix 'n' and stored in 'r'.
  *
- * @param      TYPE  The type
  * @param      mn_R   Rows in matrix 'm' and in 'n'
  * @param      mn_C   Columns in matrix 'm' and in 'n'
  * @param      r     Resulting matrix of size (mn_R, mn_C)
  * @param      m     Left hand operand of size (mn_R, mn_C)
  * @param      n     Right hand operand of size (mn_R, mn_C)
  */
-#define MAT_ADD(TYPE, mn_R, mn_C, r, m, n)\
+#define MAT_ADD(mn_R, mn_C, r, m, n)\
 {\
 	for (int __row = (mn_R); __row--;)\
 	for (int __col = (mn_C); __col--;)\
@@ -233,14 +233,13 @@
  *             from its corresponding element in the matrix 'n' and
  *             stored in 'r'.
  *
- * @param      TYPE  The type
  * @param      mn_R   Rows in matrix 'm' and in 'n'
  * @param      mn_C   Columns in matrix 'm' and in 'n'
  * @param      r     Resulting matrix of size (mn_R, mn_C)
  * @param      m     Left hand operand of size (mn_R, mn_C)
  * @param      n     Right hand operand of size (mn_R, mn_C)
  */
-#define MAT_SUB(TYPE, mn_R, mn_C, r, m, n)\
+#define MAT_SUB(mn_R, mn_C, r, m, n)\
 {\
 	for (int __row = (mn_R); __row--;)\
 	for (int __col = (mn_C); __col--;)\
@@ -254,23 +253,22 @@
  * @brief      Performs matrix-vector multiplication resulting in another
  *             vector.
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting vector of size m_R.
  * @param      m     Left hand operand matrix of size (m_R, m_C).
  * @param      v     Right hand operand vector of size m_C.
  */
-#define MAT_MUL_VEC(TYPE, m_R, m_C, r, m, v)\
+#define MAT_MUL_VEC(m_R, m_C, r, m, v)\
 {\
-	for (TYPE __row = (m_R); __row--;)\
-	{ \
-		(r)[__row] = 0;\
-		for (TYPE __col = (n_C); __col--;)\
-		{\
-			(r)[__row] += (m)[__row][__col] * (n)[__col];\
-		}\
-	{\
+    for (int __row = (m_R); __row--;)\
+    { \
+    	(r)[__row] = 0;\
+	    for (int __col = (m_C); __col--;)\
+	    {\
+	        (r)[__row] += (m)[__row][__col] * (n)[__col];\
+	    }\
+    }\
 }\
 
 
@@ -278,66 +276,63 @@
  * @brief      Scales each element of a matrix with a scalar and stores the
  *             result in another matrix of matching size.
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix with scale applied of size (m_R, m_C)
  * @param      m     Left hand operand matrix of size (m_R, m_C)
  * @param      s     Scalar which will be multiplied agains each element of 'm'
  */
-#define MAT_MUL_E(TYPE, m_R, m_C, r, m, s)\
+#define MAT_MUL_E(m_R, m_C, r, m, s)\
 {\
-	for (TYPE __row = (m_R); __row--;)\
-	{ \
-		for (TYPE __col = (n_C); __col--;)\
-		{\
-			(r)[__row][__col] = (m)[__row][__col] * (s);\
-		}\
-	{\
+    for (int __row = (m_R); __row--;)\
+    {\
+	    for (int __col = (m_C); __col--;)\
+	    {\
+	        (r)[__row][__col] = (m)[__row][__col] * (s);\
+	    }\
+    }\
 }\
 
 
 /**
  * @brief      Performs an elementwise addition between two matrices
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
  * @param      m     Left hand operand in the addition of size (m_R, m_C)
  * @param      n     Right hand operand in the addition of size (m_R, m_C)
  */
-#define MAT_ADD_E(TYPE, m_R, m_C, r, m, n)\
+#define MAT_ADD_E(m_R, m_C, r, m, n)\
 {\
-	for (TYPE __row = (m_R); __row--;)\
-	{ \
-		for (TYPE __col = (n_C); __col--;)\
-		{\
-			(r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
-		}\
-	{\
+    for (int __row = (m_R); __row--;)\
+    { \
+	    for (int __col = (m_C); __col--;)\
+	    {\
+	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+	    }\
+    }\
 }\
 
 
 /**
  * @brief      Performs an elementwise subtraction between two matrices
  *
- * @param      TYPE  The type
  * @param      m_R   Rows in matrix 'm'
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
  * @param      m     Left hand operand in the subtraction of size (m_R, m_C)
  * @param      n     Right hand operand in the subtraction of size (m_R, m_C)
  */
-#define MAT_SUB_E(TYPE, m_R, m_C, r, m, n)\
+#define MAT_SUB_E(m_R, m_C, r, m, n)\
 {\
-	for (TYPE __row = (m_R); __row--;)\
-	{ \
-		for (TYPE __col = (n_C); __col--;)\
-		{\
-			(r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
-		}\
-	{\
+    for (int __row = (m_R); __row--;)\
+    { \
+	    for (int __col = (m_C); __col--;)\
+	    {\
+	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+	    }\
+    }\
 }\
 
 
@@ -441,7 +436,7 @@
  * @param      IN     Original matrix (2d array).
  * @param      OUT    The trasnpose of the original matrix.
  */
-#define MAT_TRANSPOSE(TYPE, R, C, IN, OUT)\
+#define MAT_TRANSPOSE(R, C, IN, OUT)\
 {\
 	for (size_t __r = 0; __r < R; __r++)\
 	{\
@@ -460,11 +455,11 @@
  * @param      C      Number of columns in each row.
  * @param      MAT    The matrix in question.
  */
-#define MAT_IDENTITY(R, C, MAT)\
+#define MAT_IDENTITY(N, MAT)\
 {\
-	for (size_t __r = 0; __r < (R); __r++)\
+	for (size_t __r = 0; __r < (N); __r++)\
 	{\
-		for (size_t __c = 0; __c < (C); __c++)\
+		for (size_t __c = 0; __c < (N); __c++)\
 		{\
 			if (__r == __c) (MAT)[__r][__c] = 1;\
 			else (MAT)[__r][__c] = 0;\
@@ -495,16 +490,16 @@ static inline XMTYPE vec_mag(size_t n, const XMTYPE left[n])
 { VEC_MAG(XMTYPE, n, left) }
 
 static inline void mat_transpose(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[c][r])
-{ MAT_TRANSPOSE(XMTYPE, r, c, in, out) }
+{ MAT_TRANSPOSE(r, c, in, out) }
 
 static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C])
-{ MAT_MUL(XMTYPE, m_R, m_C, n_R, n_C, r, m, n) }
+{ MAT_MUL(m_R, m_C, n_R, n_C, r, m, n) }
 
 static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
-{ MAT_ADD(XMTYPE, m_R, m_C, r, m, n) }
+{ MAT_ADD(m_R, m_C, r, m, n) }
 
 static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
-{ MAT_SUB(XMTYPE, m_R, m_C, r, m, n) }
+{ MAT_SUB(m_R, m_C, r, m, n) }
 
 static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[r][c])
 {
@@ -518,8 +513,8 @@ static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out
 	MAT_INV_IMP(XMTYPE, r, c, out)
 }
 
-static inline void mat_identity(size_t r, size_t c, XMTYPE mat[r][c])
-{ MAT_IDENTITY(r, c, mat) }
+static inline void mat_identity(size_t n, XMTYPE mat[n][n])
+{ MAT_IDENTITY(n, mat) }
 #endif
 
 #ifdef __cplusplus
@@ -801,9 +796,9 @@ struct mat
 
 	static inline mat<R, C, S> I()
 	{
-	mat<R, C, S> m;
-	MAT_IDENTITY(R, C, m);
-	return m;
+		mat<R, C, S> m;
+		MAT_IDENTITY(R, m);
+		return m;
 	}
 
 	void invert_inplace()
@@ -821,7 +816,7 @@ struct mat
 	mat<C, R, S> transpose()
 	{
 		mat<C, R, S> out;
-		MAT_TRANSPOSE(S, R, C, m, out);
+		MAT_TRANSPOSE(R, C, m, out);
 	return out;
 	}
 
@@ -832,14 +827,14 @@ struct mat
 	mat<R, C, S> operator+ (const mat<R, C, S>& M)
 	{
 		mat<R, C, S> out;
-		MAT_ADD(S, R, C, out, m, M.m);
+		MAT_ADD(R, C, out, m, M.m);
 		return out;
 	}
 
 	mat<R, C, S> operator- (const mat<R, C, S>& M)
 	{
 		mat<R, C, S> out;
-		MAT_SUB(S, R, C, out, m, M.m);
+		MAT_SUB(R, C, out, m, M.m);
 		return out;
 	}
 
@@ -847,9 +842,16 @@ struct mat
 	mat<R, O, S> operator* (const mat<C, O, S>& N)
 	{
 		mat<R, O, S> out;
-		MAT_MUL(S, R, C, C, O, out.m, m, N.m);
+		MAT_MUL(R, C, C, O, out.m, m, N.m);
 		return out;
 	}
+
+  inline mat<R, C, S> operator*(const S s)
+  {
+    mat<R, C, S> out;
+    MAT_MUL_E(R, C, out.m, m, s);
+    return out;
+  }
 
 	vec<R, S> operator* (const vec<C, S>& V)
 	{
@@ -863,12 +865,17 @@ struct mat
 		return out;
 	}
 
+  inline mat<R, C, S>& operator*=(const S s)
+  {
+    MAT_MUL_E(R, C, m, m, s);
+    return *this;
+  }
+
 	const S* ptr() const { return m[0].v; }
 
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
 	{
 		const auto r = vec<3>::cross(forward, up);
-		const auto u = up;
 		const auto t = vec<3>::cross(r, forward).unit();
 		const auto f = forward;
 		const auto p = position;
@@ -938,11 +945,8 @@ struct mat
 	static mat<4, 4> orthographic(S near, S far, S left, S right, S top, S bottom)
 	{
 		const auto rml = right - left;
-		const auto rpl = right + left;
 		const auto tmb = top - bottom;
-		const auto tpb = top + bottom;
 		const auto fmn = far - near;
-		const auto fpn = far + near;
 
 		return {
 			{2/rml,     0,      0,     0},
@@ -955,24 +959,25 @@ struct mat
 	vec<C, S> m[R];
 };
 
-struct quat : public vec<4>
+template<typename QS=XMTYPE>
+struct quat : public vec<4, QS>
 {
-    quat() : vec({ 0, 0, 0, 1 })
+    quat() : vec<4, QS>({ 0, 0, 0, 1 })
     {
         // NOP
     }
 
-    quat(const float* v) : vec({ v[0], v[1], v[2], v[3] })
+    quat(const QS* v) : vec<4, QS>({ v[0], v[1], v[2], v[3] })
     {
         // NOP
     }
 
-    quat(float x, float y, float z, float w) : vec({ x, y, z, w })
+    quat(QS x, QS y, QS z, QS w) : vec<4, QS>({ x, y, z, w })
     {
         // NOP
     }
 
-    quat(vec<4> v) : vec(v)
+    quat(vec<4> v) : vec<4, QS>(v)
     {
         // NOP
     }
@@ -980,10 +985,10 @@ struct quat : public vec<4>
 
     quat operator*(quat const& other) const
     {
-        auto t3 = this->slice<3>(0);
-        auto o3 = other.slice<3>(0);
+        auto t3 = this->template slice<3>(0);
+        auto o3 = other.template slice<3>(0);
 
-        auto r = vec::cross(t3, o3);
+        auto r = vec<3, QS>::cross(t3, o3);
         auto w = t3 * other[3];
         r += w;
         w = o3 * this->v[3];
@@ -998,7 +1003,7 @@ struct quat : public vec<4>
 
     quat operator*(float s) const
     {
-        return { slice<4>(0) * s };
+        return { this->slice<4>(0) * s };
     }
 
 
@@ -1011,13 +1016,13 @@ struct quat : public vec<4>
     quat conjugate() const
     {
         auto& q = *this;
-        return { -q[0], -q[1], -q[2], q[3] };
+        return { (QS)-q[0], (QS)-q[1], (QS)-q[2], (QS)q[3] };
     }
 
     quat inverse() const
     {
         auto inv = conjugate();
-        auto mag2 = dot(*this);
+        auto mag2 = this->dot(*this);
         static_cast<vec<4>>(inv) /= mag2;
         return inv;
     }
@@ -1025,7 +1030,8 @@ struct quat : public vec<4>
     inline float rotational_difference(quat const& q) const
     {
         auto q_d = q * this->inverse();
-        return 2 * atan2(q_d.slice<3>(0).magnitude(), fabsf(q_d[3]));
+		auto cplx = q_d.template slice<3>();
+        return 2 * atan2(cplx.magnitude(), fabsf(q_d[3]));
     }
 
 
@@ -1040,12 +1046,12 @@ struct quat : public vec<4>
 
     vec<3> rotate(vec<3> const& v) const
     {
-        auto q_xyz = this->slice<3>(0);
+        auto q_xyz = this->template slice<3>(0);
 
-        auto t = vec::cross(q_xyz, v);
+        auto t = vec<3, QS>::cross(q_xyz, v);
         t *= 2;
 
-        auto u = vec::cross(q_xyz, t);
+        auto u = vec<3, QS>::cross(q_xyz, t);
         t *= this->v[3];
 
         return v + t + u;
@@ -1065,17 +1071,16 @@ struct quat : public vec<4>
         };
     }
 
-    template <class S>
-    vec<3, S> to_roll_pitch_yaw()
+    vec<3, QS> to_roll_pitch_yaw()
     {
-        S roll, pitch, yaw;
+        QS roll, pitch, yaw;
         // roll (x-axis rotation)
-        S sinr_cosp = +2.0 * (v[3] * v[0] + v[1] * v[2]);
-        S cosr_cosp = +1.0 - 2.0 * (v[0] * v[0] + v[1] * v[1]);
+        auto sinr_cosp = +2.0 * (this->v[3] * this->v[0] + this->v[1] * this->v[2]);
+        auto cosr_cosp = +1.0 - 2.0 * (this->v[0] * this->v[0] + this->v[1] * this->v[1]);
         roll = atan2(sinr_cosp, cosr_cosp);
 
         // pitch (y-axis rotation)
-        S sinp = +2.0 * (v[3] * v[1] - v[2] * v[0]);
+        auto sinp = +2.0 * (this->v[3] * this->v[1] - this->v[2] * this->v[0]);
         if (fabs(sinp) >= 1)
         {
             pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
@@ -1086,8 +1091,8 @@ struct quat : public vec<4>
         }
 
         // yaw (z-axis rotation)
-        S siny_cosp = +2.0 * (v[3] * v[2] + v[0] * v[1]);
-        S cosy_cosp = +1.0 - 2.0 * (v[1] * v[1] + v[2] * v[2]);
+        auto siny_cosp = +2.0 * (this->v[3] * this->v[2] + this->v[0] * this->v[1]);
+        auto cosy_cosp = +1.0 - 2.0 * (this->v[1] * this->v[1] + this->v[2] * this->v[2]);
         yaw = atan2(siny_cosp, cosy_cosp);
 
         return { roll, pitch, yaw };
@@ -1099,31 +1104,31 @@ struct quat : public vec<4>
 		auto tr = m[0][0] + m[1][1] + m[2][2];
 
 		if (tr > 0)
-		{ 
-			auto s = sqrt(tr+1.0) * 2; // s=4*qw 
+		{
+			auto s = sqrt(tr+1.0) * 2; // s=4*qw
 			q[3] = 0.25 * s;
 			q[0] = (m[2][1] - m[1][2]) / s;
-			q[1] = (m[0][2] - m[2][0]) / s; 
-			q[2] = (m[1][0] - m[0][1]) / s; 
+			q[1] = (m[0][2] - m[2][0]) / s;
+			q[2] = (m[1][0] - m[0][1]) / s;
 		}
 		else if ((m[0][0] > m[1][1])&&(m[0][0] > m[2][2]))
-		{ 
-			auto s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // s=4*q[0] 
+		{
+			auto s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // s=4*q[0]
 			q[3] = (m[2][1] - m[1][2]) / s;
 			q[0] = 0.25 * s;
-			q[1] = (m[0][1] + m[1][0]) / s; 
-			q[2] = (m[0][2] + m[2][0]) / s; 
+			q[1] = (m[0][1] + m[1][0]) / s;
+			q[2] = (m[0][2] + m[2][0]) / s;
 		}
 		else if (m[1][1] > m[2][2])
-		{ 
+		{
 			auto s = sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2; // s=4*q[1]
 			q[3] = (m[0][2] - m[2][0]) / s;
-			q[0] = (m[0][1] + m[1][0]) / s; 
+			q[0] = (m[0][1] + m[1][0]) / s;
 			q[1] = 0.25 * s;
-			q[2] = (m[1][2] + m[2][1]) / s; 
+			q[2] = (m[1][2] + m[2][1]) / s;
 		}
 		else
-		{ 
+		{
 			auto s = sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2; // s=4*q[2]
 			q[3] = (m[1][0] - m[0][1]) / s;
 			q[0] = (m[0][2] + m[2][0]) / s;
@@ -1134,14 +1139,14 @@ struct quat : public vec<4>
 		return q;
     }
 
-    static quat from_axis_angle(vec<3> axis, float angle)
+    static quat from_axis_angle(vec<3, QS> axis, QS angle)
     {
         auto a_2 = angle / 2;
         auto a = sinf(a_2);
 
         axis *= a;
 
-        return { axis[0], axis[1], axis[2], cosf(a_2) };
+        return { (QS)axis[0], (QS)axis[1], (QS)axis[2], (QS)cosf(a_2) };
     }
 };
 

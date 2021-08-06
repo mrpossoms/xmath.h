@@ -13,12 +13,12 @@ bin:
 	mkdir bin
 
 bin/%: %.cpp bin
-	$(CXX) $(CPPFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
+	$(CXX) $(CXXFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
 
 bin/%_c: %.c bin
-	$(CC) $(CFLAGS) $(INC) $(LIBDS) $< -o bin/$<.test $(LINK) 
+	$(CC) $(CFLAGS) $(INC) $(LIBDS) $< -o bin/$<.test $(LINK)
 
-.PHONY: test clean 
+.PHONY: test clean
 test: $(C_TESTS) $(TESTS)
 	@./.test-runner.py
 clean:
