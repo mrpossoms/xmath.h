@@ -1162,6 +1162,63 @@ struct quat : public vec<4, QS>
     }
 };
 
+namespace interesction
+{
+
+static float ray_plane(const vec<3>& ray_o,
+                       const vec<3>& ray_d,
+                       const vec<3>& plane_o,
+                       const vec<3>& plane_n)
+{
+	return NAN;
+}
+
+static float ray_box(const vec<3>& ray_o,
+                       const vec<3>& ray_d,
+                       const vec<3>& box_o,
+                       const vec<3> box_sides[3])
+{
+	const auto epsilon = 0.00000001f;
+	auto t_min = -INFINITY;
+	auto t_max = INFINITY;
+
+	auto p = box_o - ray_o;
+
+	float half_lengths[] = {
+		box_sides[0].magnitude(),
+		box_sides[1].magnitude(),
+		box_sides[2].magnitude(),
+	};
+
+	for (unsigned i = 0; i < 3; i++)
+	{
+		auto e = box_sides[i].dot(p);
+		auto f = box_sides[i].dot(ray_d);
+
+		if (f > epsilon)
+		{
+			auto t_1 = (epsilon + half_lengths[i]) / f;
+			auto t_2 = (epsilon - half_lengths[i]) / f;
+
+			if (t_1 > t_2) { std::swap(t_1, t_2); }
+			if (t_1 > t_min) { t_min = t_1; }
+			if (t_2 < t_max) { t_max = t_2; }
+			if (t_min > t_max) { return NAN; }
+			if (t_max < 0) { return NAN; }
+		}
+		else if (-epsilon - half_lengths[i] > 0 || -epsilon + half_lengths[i] < 0)
+		{
+			return NAN;
+		}
+	}
+
+	if (t_min > 0) { return t_min; }
+
+	return t_max;
+}
+
+} // namespace intersection
+
 } // namespace xmath end
 #endif
 #endif
