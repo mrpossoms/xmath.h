@@ -851,12 +851,12 @@ struct mat
 		return out;
 	}
 
-  inline mat<R, C, S> operator*(const S s)
-  {
-    mat<R, C, S> out;
-    MAT_MUL_E(R, C, out.m, m, s);
-    return out;
-  }
+	inline mat<R, C, S> operator*(const S s)
+	{
+		mat<R, C, S> out;
+		MAT_MUL_E(R, C, out.m, m, s);
+		return out;
+	}
 
 	vec<R, S> operator* (const vec<C, S>& V)
 	{
@@ -870,11 +870,18 @@ struct mat
 		return out;
 	}
 
-  inline mat<R, C, S>& operator*=(const S s)
-  {
-    MAT_MUL_E(R, C, m, m, s);
-    return *this;
-  }
+	inline mat<R, C, S>& operator*=(const S s)
+	{
+		MAT_MUL_E(R, C, m, m, s);
+		return *this;
+	}
+
+	inline mat<R, C, S>& operator*=(const mat<R, C, S>& N)
+	{
+		mat<R, C, S> tmp = *this;
+		MAT_MUL(R, C, R, C, m, tmp.m, N.m);
+		return *this;
+	}
 
 	const S* ptr() const { return m[0].v; }
 
