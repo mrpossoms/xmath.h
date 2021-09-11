@@ -806,6 +806,22 @@ struct mat
 		return m;
 	}
 
+	template<size_t SUB_R, size_t SUB_C>
+	mat<SUB_R, SUB_C, S> slice(size_t r_off=0, size_t c_off=0)
+	{
+		mat<SUB_R, SUB_C, S> out;
+
+		for (auto r = 0; r < SUB_R; r++)
+		{
+			for (auto c = 0; c < SUB_C; c++)
+			{
+				out[r][c] = m[r + r_off][c + c_off];
+			}
+		}
+
+		return out;
+	}
+
 	void invert_inplace()
 	{
 		MAT_INV_IMP(S, R, C, m)
@@ -1162,7 +1178,7 @@ struct quat : public vec<4, QS>
     }
 };
 
-namespace interesction
+namespace intersect
 {
 
 static float ray_plane(const vec<3>& ray_o,
