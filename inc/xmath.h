@@ -1189,7 +1189,7 @@ static float ray_plane(const vec<3>& ray_o,
 	return NAN;
 }
 
-static float ray_box(const vec<3>& ray_o,
+static XMTYPE ray_box(const vec<3>& ray_o,
                        const vec<3>& ray_d,
                        const vec<3>& box_o,
                        const vec<3> box_sides[3])
@@ -1200,7 +1200,7 @@ static float ray_box(const vec<3>& ray_o,
 
 	auto p = box_o - ray_o;
 
-	float half_lengths[] = {
+	XMTYPE half_lengths[] = {
 		box_sides[0].magnitude(),
 		box_sides[1].magnitude(),
 		box_sides[2].magnitude(),
@@ -1208,13 +1208,13 @@ static float ray_box(const vec<3>& ray_o,
 
 	for (unsigned i = 0; i < 3; i++)
 	{
-		auto e = box_sides[i].dot(p);
-		auto f = box_sides[i].dot(ray_d);
+		auto e = p.dot(box_sides[i] / half_lengths[i]);
+		auto f = ray_d.dot(box_sides[i] / half_lengths[i]);
 
-		if (f > epsilon)
+		if (fabs(f) > epsilon)
 		{
-			auto t_1 = (epsilon + half_lengths[i]) / f;
-			auto t_2 = (epsilon - half_lengths[i]) / f;
+			auto t_1 = (e + half_lengths[i]) / f;
+			auto t_2 = (e - half_lengths[i]) / f;
 
 			if (t_1 > t_2) { std::swap(t_1, t_2); }
 			if (t_1 > t_min) { t_min = t_1; }
@@ -1222,7 +1222,7 @@ static float ray_box(const vec<3>& ray_o,
 			if (t_min > t_max) { return NAN; }
 			if (t_max < 0) { return NAN; }
 		}
-		else if (-epsilon - half_lengths[i] > 0 || -epsilon + half_lengths[i] < 0)
+		else if ((-e - half_lengths[i]) > 0 || (-e + half_lengths[i]) < 0)
 		{
 			return NAN;
 		}

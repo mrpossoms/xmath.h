@@ -54,6 +54,27 @@ TEST
     }
 
 
+    { // translational miss
+        xmath::vec<3> ray_o[4] = {
+            { 0.6, 0, -3 },
+            {-0.6, 0, -3 },
+            { 0,  0.6, -3 },
+            { 0, -0.6, -3 },
+        };
+        xmath::vec<3> ray_d = { 0, 0, 1 };
+        xmath::vec<3> box_o = { 0, 0, 0 };
+        xmath::vec<3> box_sides[] = {
+            { 0.5, 0, 0 },
+            { 0, 0.5, 0 },
+            { 0, 0, 0.55 },
+        };
+
+        for (unsigned i = 0; i < 4; i++)
+        {
+            assert(isnan(xmath::intersect::ray_box(ray_o[i], ray_d, box_o, box_sides)));
+        }
+    }
+
     { // translational hit
         xmath::vec<3> ray_o[4] = {
             { 0.999, 0, -3 },
