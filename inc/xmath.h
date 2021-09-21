@@ -595,6 +595,12 @@ struct vec
 		return out;
 	}
 
+	inline vec<N,S> operator-() const
+	{
+		vec<N,S> out;
+		VEC_SCL(N, out.v, this->v, -1)
+		return out;
+	}
 
 	inline vec<N,S> operator*(const vec<N,S>& v) const
 	{
