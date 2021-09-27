@@ -851,14 +851,14 @@ struct mat
 
 	const vec<C, S>& operator[](size_t r) const { return m[r]; }
 
-	mat<R, C, S> operator+ (const mat<R, C, S>& M)
+	mat<R, C, S> operator+ (const mat<R, C, S>& M) const
 	{
 		mat<R, C, S> out;
 		MAT_ADD(R, C, out, m, M.m);
 		return out;
 	}
 
-	mat<R, C, S> operator- (const mat<R, C, S>& M)
+	mat<R, C, S> operator- (const mat<R, C, S>& M) const
 	{
 		mat<R, C, S> out;
 		MAT_SUB(R, C, out, m, M.m);
@@ -866,21 +866,21 @@ struct mat
 	}
 
 	template<size_t O>
-	mat<R, O, S> operator* (const mat<C, O, S>& N)
+	mat<R, O, S> operator* (const mat<C, O, S>& N) const
 	{
 		mat<R, O, S> out;
 		MAT_MUL(R, C, C, O, out.m, m, N.m);
 		return out;
 	}
 
-	inline mat<R, C, S> operator*(const S s)
+	inline mat<R, C, S> operator*(const S s) const
 	{
 		mat<R, C, S> out;
 		MAT_MUL_E(R, C, out.m, m, s);
 		return out;
 	}
 
-	vec<R, S> operator* (const vec<C, S>& V)
+	vec<R, S> operator* (const vec<C, S>& V) const
 	{
 		vec<R, S> out = {};
 		for (size_t r = 0; r < R; r++)
@@ -969,7 +969,7 @@ struct mat
 		const auto ftn = far * near;
 
 		return {
-			{  a/aspect,         0,          0,         0 },
+			{ -a/aspect,         0,          0,         0 },
 			{         0,         a,          0,         0 },
 			{         0,         0,   -fpn/fsn,        -1 },
 			{         0,         0, -2*ftn/fsn,         0 }
