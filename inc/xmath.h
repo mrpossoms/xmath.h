@@ -1078,14 +1078,14 @@ struct quat : public vec<4, QS>
         return p0 * (sin((1 - t) * W) / sin_W) + p1 * (sin(t * W) / sin_W);
     }
 
-    vec<3> rotate(vec<3> const& v) const
+    vec<3> rotate(vec<3, QS> const& v) const
     {
-        auto q_xyz = this->template slice<3>(0);
+        vec<3, QS> q_xyz = this->template slice<3>(0);
 
-        auto t = vec<3, QS>::cross(q_xyz, v);
+        vec<3, QS> t = vec<3, QS>::cross(q_xyz, v);
         t *= 2;
 
-        auto u = vec<3, QS>::cross(q_xyz, t);
+        vec<3, QS> u = vec<3, QS>::cross(q_xyz, t);
         t *= this->v[3];
 
         return v + t + u;
@@ -1093,7 +1093,7 @@ struct quat : public vec<4, QS>
 
     inline mat<4, 4> to_matrix() const
     {
-        auto v = static_cast<vec<4>>(*this);
+        auto v = *((vec<4, QS>*)this);
         auto a = v[3], b = v[0], c = v[1], d = v[2];
         auto a2 = a * a, b2 = b * b, c2 = c * c, d2 = d * d;
 
@@ -1192,7 +1192,42 @@ static float ray_plane(const vec<3>& ray_o,
                        const vec<3>& plane_o,
                        const vec<3>& plane_n)
 {
-	return NAN;
+    // definition of a plane:
+    // p_n . (p_o - p) = 0
+    const auto& p_n = plane_n;
+    const auto& p_o = plane_o;
+    // 
+    // definition of point on ray
+    // r_d * t + r_o = p
+    const auto& r_d = ray_d;
+    const auto& r_o = ray_o;
+
+    // substitute ray point into plane
+    // p_n . (p_o - (r_d * t + r_o)) = 0
+    // p_n . p_o - p_n * r_p = 0
+    // p_n . p_o = p_n * r_p         # expand r_p
+    // p_n . p_o = p_n . r_d * t + p_n . r_o
+    // (p_n . p_o) - (p_n . r_o) = p_n . r_d * t
+    // p_n . (p_o - r_o) / p_n . r_d = t
+
+    auto pn_dot_rd = p_n.dot(r_d);
+    auto d_po_ro = p_o - r_o;
+
+    if (d_po_ro.dot(r_d) < 0)
+    {
+        // ray origin is on the side facing away from the plane normal
+        // an intersection cannot occur
+        return NAN;
+    }
+
+    if (pn_dot_rd >= 0)
+    {
+        // ray direction is parallel, or pointing away from the plane
+        // an intersection cannot occur
+        return NAN;
+    }
+
+    return p_n.dot(d_po_ro) / pn_dot_rd;
 }
 
 static XMTYPE ray_box(const vec<3>& ray_o,
