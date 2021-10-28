@@ -844,7 +844,7 @@ struct mat
 	{
 		mat<C, R, S> out;
 		MAT_TRANSPOSE(R, C, m, out);
-	return out;
+		return out;
 	}
 
 	vec<C, S>& operator[](size_t r) { return m[r]; }
@@ -906,6 +906,17 @@ struct mat
 	}
 
 	const S* ptr() const { return m[0].v; }
+
+	std::string to_string()
+	{
+		std::string str = "";
+		for (size_t r = 0; r < R; r++)
+		{
+			str += "|" + m[r].to_string(false) + "|\n";
+		}
+
+		return str;
+	}
 
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
 	{
