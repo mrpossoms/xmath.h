@@ -12,10 +12,10 @@ TESTS+=$(patsubst %.c,bin/%_c,$(wildcard *.c))
 bin:
 	mkdir bin
 
-bin/%: %.cpp bin
+bin/%: %.cpp bin ../inc/xmath.h
 	$(CXX) $(CXXFLAGS) $(INC) $(LIBS) $< $(SRC_OBJS) -o $@ $(LINK)
 
-bin/%_c: %.c bin
+bin/%_c: %.c bin ../inc/xmath.h
 	$(CC) $(CFLAGS) $(INC) $(LIBDS) $< -o bin/$<.test $(LINK)
 
 .PHONY: test clean

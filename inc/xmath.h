@@ -1143,6 +1143,27 @@ struct quat : public vec<4, QS>
         return { roll, pitch, yaw };
     }
 
+    static quat view(vec<3> forward, vec<3> up={0, 1, 0})
+    {
+    	auto forward_plane = (forward * vec<3>{ 1, 0, 1 }).unit();
+    	auto theta_sign = forward_plane.dot({1, 0, 0}) > 0 ? 1 : -1;
+    	auto theta = theta_sign * acos(forward_plane.dot({0, 0, 1})) + M_PI;
+
+    	auto phi_sign = forward_plane.dot(up) > 0 ? -1 : 1;
+    	auto phi = phi_sign * acos(up.dot({0, 1, 0}));
+
+    	return from_axis_angle({0, 1, 0}, theta) * from_axis_angle({1, 0, 0}, phi);
+
+    	// auto r = vec<3>::cross(forward, up);
+    	// auto m = mat<4,4>{
+    	// 	{ r[0], up[0], forward[0], 0 },
+    	// 	{ r[1], up[1], forward[1], 0 },
+    	// 	{ r[2], up[2], forward[2], 0 },
+    	// 	{    0,     0,          0, 1 },
+    	// };
+    	// return from_matrix(m.invert());
+    }
+
     static quat from_matrix(const mat<4, 4>& m)
     {
     	quat q;
@@ -1207,7 +1228,7 @@ static float ray_plane(const vec<3>& ray_o,
     // p_n . (p_o - p) = 0
     const auto& p_n = plane_n;
     const auto& p_o = plane_o;
-    // 
+    //
     // definition of point on ray
     // r_d * t + r_o = p
     const auto& r_d = ray_d;
