@@ -1091,6 +1091,8 @@ struct quat : public vec<4, QS>
 
     vec<3> rotate(vec<3, QS> const& v) const
     {
+    	if (v[0] == 0 && v[1] == 0 && v[2] == 0) { return v; }
+
         vec<3, QS> q_xyz = this->template slice<3>(0);
 
         vec<3, QS> t = vec<3, QS>::cross(q_xyz, v);
