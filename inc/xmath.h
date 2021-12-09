@@ -1308,6 +1308,28 @@ static XMTYPE ray_box(const vec<3>& ray_o,
 	return t_max;
 }
 
+static XMTYPE ray_sphere(const vec<3>& ray_o,
+	                     const vec<3>& ray_d,
+	                     const vec<3>& sphere_o,
+	                     const XMTYPE  sphere_r)
+{
+	auto l = sphere_o - ray_o;
+	auto s = l.dot(ray_d);
+	auto l2 = l.dot(l);
+	auto r2 = sphere_r * sphere_r;
+
+	if (s < 0 && l2 > r2) { return NAN; }
+
+	auto m2 = l2 - (s * s);
+
+	if (m2 > r2) { return NAN; }
+
+	auto q = sqrt(r2 - m2);
+
+	auto b = l2 > r2;
+	return b * (s - q) + !b * (s + q);
+}
+
 } // namespace intersection
 
 } // namespace xmath end
