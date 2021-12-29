@@ -1218,10 +1218,10 @@ struct quat : public vec<4, QS>
     }
 };
 
-namespace intersect
+struct intersect
 {
 
-static float ray_plane(const vec<3>& ray_o,
+static XMTYPE ray_plane(const vec<3>& ray_o,
                        const vec<3>& ray_d,
                        const vec<3>& plane_o,
                        const vec<3>& plane_n)
@@ -1330,7 +1330,7 @@ static XMTYPE ray_sphere(const vec<3>& ray_o,
 	return b * (s - q) + !b * (s + q);
 }
 
-} // namespace intersection
+}; // namespace intersection
 
 } // namespace xmath end
 #endif
