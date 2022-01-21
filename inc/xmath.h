@@ -588,10 +588,30 @@ struct vec
 	}
 
 
+	inline vec<N,S> operator+(S s) const
+	{
+		vec<N,S> out;
+		for (auto i = N; i--;)
+		{
+			out.v[i] = v[i] + s;
+		}
+		return out;
+	}
+
 	inline vec<N,S> operator-(const vec<N,S>& v) const
 	{
 		vec<N,S> out;
 		VEC_SUB(N, out.v, this->v, v.v)
+		return out;
+	}
+
+	inline vec<N,S> operator-(S s) const
+	{
+		vec<N,S> out;
+		for (auto i = N; i--;)
+		{
+			out.v[i] = v[i] - s;
+		}
 		return out;
 	}
 
@@ -666,6 +686,11 @@ struct vec
 		}
 
 		return true;
+	}
+
+	inline bool operator<(const vec<N, S>& v) const
+	{
+		return this->dot(*this) < v.dot(v);
 	}
 
 	template<typename T>
