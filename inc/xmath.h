@@ -1086,7 +1086,7 @@ struct quat : public vec<4, QS>
 
     quat operator*(float s) const
     {
-        return { this->slice<4>(0) * s };
+        return { this->template slice<4>(0) * s };
     }
 
 
@@ -1114,17 +1114,17 @@ struct quat : public vec<4, QS>
     {
         auto q_d = q * this->inverse();
 		auto cplx = q_d.template slice<3>();
-        return 2 * atan2(cplx.magnitude(), fabsf(q_d[3]));
+        return 2 * atan2(cplx.magnitude(), abs(q_d[3]));
     }
 
 
-    quat slerp_to(quat const& p1, float t) const
+    quat slerp_to(quat const& p1, float p) const
     {
         const auto& p0 = *this;
         auto W = rotational_difference(p1);
         auto sin_W = sin(W);
         if (sin_W < 0.0001f) { sin_W = 0.0001f; }
-        return p0 * (sin((1 - t) * W) / sin_W) + p1 * (sin(t * W) / sin_W);
+        return p0 * (sin((1 - p) * W) / sin_W) + p1 * (sin(p * W) / sin_W);
     }
 
     vec<3> rotate(vec<3, QS> const& v) const
@@ -1189,8 +1189,8 @@ struct quat : public vec<4, QS>
     	auto theta_sign = forward_plane.dot({1, 0, 0}) > 0 ? 1 : -1;
     	auto theta = theta_sign * acos(forward_plane.dot({0, 0, 1})) + M_PI;
 
-    	auto phi_sign = forward_plane.dot(up) > 0 ? -1 : 1;
-    	auto phi = phi_sign * acos(up.dot({0, 1, 0}));
+    	auto phi_sign = forward_plane.dot(forward) > 0 ? -1 : 1;
+    	auto phi = phi_sign * acos(forward_plane.dot(forward));
 
     	return from_axis_angle({0, 1, 0}, theta) * from_axis_angle({1, 0, 0}, phi);
 

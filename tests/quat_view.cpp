@@ -19,7 +19,7 @@ TEST
         auto left = vec<3>::cross(forward, {0, -1, 0});
         auto q = quat<>::view(forward, vec<3>::cross(forward, left));
 
-        auto rotated = q.rotate({0, 0, 1});
+        auto rotated = q.rotate({0, 0, -1});
 
         auto delta = rotated - forward;
         auto mag = delta.magnitude();
