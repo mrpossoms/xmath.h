@@ -776,6 +776,13 @@ struct vec
 		return r;
 	}
 
+	vec<N,S> abs() const
+	{
+		vec<N,S> r;
+		for (size_t i = 0; i < N; ++i) { r[i] = ::abs(v[i]); }
+		return r;
+	}
+
 	vec<N,S>& take_max(const vec<N,S>& v)
 	{
 		for (size_t i = 0; i < N; ++i)
@@ -956,17 +963,17 @@ struct mat
 		return str;
 	}
 
-	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& up)
+	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& u)
 	{
-		const auto r = vec<3>::cross(forward, up);
+		const auto r = vec<3>::cross(forward, u);
 		const auto t = vec<3>::cross(r, forward).unit();
 		const auto f = forward;
 		const auto p = position;
 
 		mat<4, 4> ori = {
-			{ r[0], t[0], f[0], 0 },
-			{ r[1], t[1], f[1], 0 },
-			{ r[2], t[2], f[2], 0 },
+			{ r[0], u[0], f[0], 0 },
+			{ r[1], u[1], f[1], 0 },
+			{ r[2], u[2], f[2], 0 },
 			{    0,    0,    0, 1 }
 		};
 
