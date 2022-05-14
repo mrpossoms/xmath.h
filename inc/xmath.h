@@ -930,6 +930,39 @@ struct mat
 		return out;
 	}
 
+	vec<R-1, S> operator* (const vec<C-1, S>& V) const
+	{
+		vec<R, S> out = {};
+		for (size_t r = 0; r < R-1; r++)
+		for (size_t c = 0; c < C-1; c++)
+		{
+			out[r] += m[r][c] * V[c];
+		}
+
+		for (size_t i = 0; i < R-1; i++)
+		{
+			out[i] += m[i][C-1];
+		}
+
+		return out;
+	}
+
+	// vec<3, float> operator*(const vec<3, float>& V) const
+	// {
+	// 	vec<3, float> out = {};
+	// 	for (size_t r = 0; r < 3; r++)
+	// 	for (size_t c = 0; c < 3; c++)
+	// 	{
+	// 		out[r] += m[r][c] * V[c];
+	// 	}
+
+	// 	out[0] += m[0][3];
+	// 	out[1] += m[1][3];
+	// 	out[2] += m[2][3];
+
+	// 	return out;
+	// }
+
 	inline mat<R, C, S>& operator*=(const S s)
 	{
 		MAT_MUL_E(R, C, m, m, s);
@@ -1041,6 +1074,60 @@ struct mat
 
 	vec<C, S> m[R];
 };
+
+// template<>
+// struct mat<4, 4, XMTYPE>
+// {
+// 	vec<3, XMTYPE> operator*(const vec<3, XMTYPE>& V) const
+// 	{
+// 		vec<3, XMTYPE> out = {};
+// 		for (size_t r = 0; r < 3; r++)
+// 		for (size_t c = 0; c < 3; c++)
+// 		{
+// 			out[r] += this->m[r][c] * V[c];
+// 		}
+
+// 		out[0] += m[0][3];
+// 		out[1] += m[1][3];
+// 		out[2] += m[2][3];
+
+// 		return out;
+// 	}
+// };
+
+// 
+// template<4, float>
+template<> vec<3, float> mat<4, 4, float>::operator*(const vec<3, float>& V) const
+{
+	vec<3, float> out = {};
+	for (size_t r = 0; r < 3; r++)
+	for (size_t c = 0; c < 3; c++)
+	{
+		out[r] += this->m[r][c] * V[c];
+	}
+
+	out[0] += m[0][3];
+	out[1] += m[1][3];
+	out[2] += m[2][3];
+
+	return out;
+}
+
+template<> vec<3, double> mat<4, 4, double>::operator*(const vec<3, double>& V) const
+{
+	vec<3, double> out = {};
+	for (size_t r = 0; r < 3; r++)
+	for (size_t c = 0; c < 3; c++)
+	{
+		out[r] += this->m[r][c] * V[c];
+	}
+
+	out[0] += m[0][3];
+	out[1] += m[1][3];
+	out[2] += m[2][3];
+
+	return out;
+}
 
 template<typename QS=XMTYPE>
 struct quat : public vec<4, QS>
