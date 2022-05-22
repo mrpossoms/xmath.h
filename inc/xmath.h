@@ -745,7 +745,7 @@ struct vec
 		return (*this * (static_cast<S>(1) - p)) + (to * p);
 	}
 
-	bool is_near(const vec<N,S>& v, S threshold=0.0001)
+	bool is_near(const vec<N,S>& v, S threshold=0)
 	{
 		auto diff = *this - v;
 		return diff.dot(diff) <= threshold;
@@ -939,7 +939,7 @@ struct mat
 
 	vec<R-1, S> operator* (const vec<C-1, S>& V) const
 	{
-		vec<R, S> out = {};
+		vec<R-1, S> out = {};
 		for (size_t r = 0; r < R-1; r++)
 		for (size_t c = 0; c < C-1; c++)
 		{
@@ -999,7 +999,6 @@ struct mat
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& u)
 	{
 		const auto r = vec<3>::cross(forward, u);
-		const auto t = vec<3>::cross(r, forward).unit();
 		const auto f = forward;
 		const auto p = position;
 
@@ -1082,59 +1081,37 @@ struct mat
 	vec<C, S> m[R];
 };
 
-// template<>
-// struct mat<4, 4, XMTYPE>
+// template<> vec<3, float> mat<4, 4, float>::operator*(const vec<3, float>& V) const
 // {
-// 	vec<3, XMTYPE> operator*(const vec<3, XMTYPE>& V) const
+// 	vec<3, float> out = {};
+// 	for (size_t r = 0; r < 3; r++)
+// 	for (size_t c = 0; c < 3; c++)
 // 	{
-// 		vec<3, XMTYPE> out = {};
-// 		for (size_t r = 0; r < 3; r++)
-// 		for (size_t c = 0; c < 3; c++)
-// 		{
-// 			out[r] += this->m[r][c] * V[c];
-// 		}
-
-// 		out[0] += m[0][3];
-// 		out[1] += m[1][3];
-// 		out[2] += m[2][3];
-
-// 		return out;
+// 		out[r] += this->m[r][c] * V[c];
 // 	}
-// };
 
-// 
-// template<4, float>
-template<> vec<3, float> mat<4, 4, float>::operator*(const vec<3, float>& V) const
-{
-	vec<3, float> out = {};
-	for (size_t r = 0; r < 3; r++)
-	for (size_t c = 0; c < 3; c++)
-	{
-		out[r] += this->m[r][c] * V[c];
-	}
+// 	out[0] += m[0][3];
+// 	out[1] += m[1][3];
+// 	out[2] += m[2][3];
 
-	out[0] += m[0][3];
-	out[1] += m[1][3];
-	out[2] += m[2][3];
+// 	return out;
+// }
 
-	return out;
-}
+// template<> vec<3, double> mat<4, 4, double>::operator*(const vec<3, double>& V) const
+// {
+// 	vec<3, double> out = {};
+// 	for (size_t r = 0; r < 3; r++)
+// 	for (size_t c = 0; c < 3; c++)
+// 	{
+// 		out[r] += this->m[r][c] * V[c];
+// 	}
 
-template<> vec<3, double> mat<4, 4, double>::operator*(const vec<3, double>& V) const
-{
-	vec<3, double> out = {};
-	for (size_t r = 0; r < 3; r++)
-	for (size_t c = 0; c < 3; c++)
-	{
-		out[r] += this->m[r][c] * V[c];
-	}
+// 	out[0] += m[0][3];
+// 	out[1] += m[1][3];
+// 	out[2] += m[2][3];
 
-	out[0] += m[0][3];
-	out[1] += m[1][3];
-	out[2] += m[2][3];
-
-	return out;
-}
+// 	return out;
+// }
 
 template<typename QS=XMTYPE>
 struct quat : public vec<4, QS>
