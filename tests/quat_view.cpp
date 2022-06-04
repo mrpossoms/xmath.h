@@ -12,14 +12,14 @@ TEST
 
     { // Check simple, no rotation view
         auto q = quat<>::view({0, 0, 1}, {0, 1, 0});
-        // assert(q.is_near(quat<>{}, 0.00001f));
+        assert(q.is_near(quat<>{}, 0.00001f));
     }
 
     { // Check rotation in side plane
-        auto q = quat<>::view({0, 1, 0}, {1, 0, 0});
+        auto q = quat<>::view({0, 1, 0}, {0, 0, -1});
         auto rotated = q.rotate(vec<3>{0, 0, 1});
         std::cerr << rotated.to_string() << std::endl;
-        assert(rotated.is_near(vec<3>{1, 0, 0}, 0.00001f));
+        assert(rotated.is_near(vec<3>{0, 1, 0}, 0.00001f));
     }
 
     for (unsigned i = 100; i--;)
@@ -35,9 +35,13 @@ TEST
 
         auto delta = rotated - forward;
         auto mag = delta.magnitude();
-        std::cerr << mag << std::endl;
-        assert(mag < 0.0001f);
 
+        if (mag < 0.0001f)
+        {
+            std::cerr << "expected: " << forward.to_string() << " actual: " << rotated.to_string() << std::endl;
+            std::cerr << mag << std::endl;
+            assert(false);
+        }
     }
 
     return 0;

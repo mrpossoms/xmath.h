@@ -1285,31 +1285,40 @@ struct quat : public vec<4, QS>
 
     static quat view(vec<3> f, vec<3> u={0, 1, 0})
     {
-    	/**
-    	 * Find some rotation R(q) which statisfies
-    	 * 
-    	 * f = R(q) * {0 0 1}
-    	 * u = R(q) * {0 1 0}
-    	 * 
-    	 */
-    	const auto X = vec<3>{1, 0, 0};
-    	const auto Y = vec<3>{0, 1, 0};
+    	auto t0 = vec<3>{0, 0, 1}.angle_to(f);
+    	auto a0 = vec<3>::cross(vec<3>{1, 0, 0}, f);
+    	auto q0 = from_axis_angle(a0, t0);
 
-    	// both f and u exist in the same plane. In the above case, the normal
-    	// of the plane is pointing along the x axis. Find the angle between
-    	// the normal and the x axis to build the first quaternion q
-    	auto n = vec<3>::cross(f, u);
-    	auto q_a = X.angle_to(n);
-    	auto q = from_axis_angle(vec<3>::cross(X, n), q_a);
+    	auto t1 = vec<3>{0, 1, 0}.angle_to(q0.rotate(u));
+    	auto a1 = vec<3>::cross(vec<3>{0, 1, 0}, u);
+    	auto q1 = from_axis_angle(a1, t1);
 
-    	// within the plane, f and u rotate about the axis defined by the
-    	// normal of the plane described above. The angle could be found by
-    	// rotating the Y axis unit vector by the quaternion q we just found
-    	auto y = q.rotate(Y);
-    	auto r_a = y.angle_to(u);
-    	auto r = from_axis_angle(n, r_a);
+    	return q1 * q0;
+    	// /**
+    	//  * Find some rotation R(q) which statisfies
+    	//  * 
+    	//  * f = R(q) * {0 0 1}
+    	//  * u = R(q) * {0 1 0}
+    	//  * 
+    	//  */
+    	// const auto X = vec<3>{1, 0, 0};
+    	// const auto Y = vec<3>{0, 1, 0};
 
-    	return r * q;
+    	// // both f and u exist in the same plane. In the above case, the normal
+    	// // of the plane is pointing along the x axis. Find the angle between
+    	// // the normal and the x axis to build the first quaternion q
+    	// auto n = vec<3>::cross(f, u);
+    	// auto q_a = X.angle_to(n);
+    	// auto q = from_axis_angle(vec<3>::cross(X, n), q_a);
+
+    	// // within the plane, f and u rotate about the axis defined by the
+    	// // normal of the plane described above. The angle could be found by
+    	// // rotating the Y axis unit vector by the quaternion q we just found
+    	// auto y = q.rotate(Y);
+    	// auto r_a = y.angle_to(u);
+    	// auto r = from_axis_angle(n, r_a);
+
+    	// return r * q;
 
 /**
     	auto forward_plane = (forward * vec<3>{ 1, 0, 1 }).unit();
