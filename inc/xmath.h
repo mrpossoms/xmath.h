@@ -740,6 +740,20 @@ struct vec
 		return *this - (v_hat * len);
 	}
 
+	vec<N,S> project_onto_plane(vec<N,S> const& n) const
+	{
+		auto orthogonal_component = n * dot(n);
+		return *this - orthogonal_component;
+	}	
+
+	inline S angle_to(const vec<N, S>& other) const
+	{
+		auto my_mag = magnitude();
+		auto o_mag = other.magnitude();
+
+		return (S)acos(dot(other) / (my_mag * o_mag));
+	}
+
 	vec<N,S> lerp(const vec<N,S>& to, S p)
 	{
 		return (*this * (static_cast<S>(1) - p)) + (to * p);
@@ -1049,19 +1063,34 @@ struct mat
 		};
 	}
 
-	static mat<4, 4> perspective(S near, S far, S fov, S aspect)
+	static mat<4, 4> perspective(const vec<2, S>& half_film_size, S focal_len, S near, S far)
 	{
-		const auto a = tanf(M_PI * 0.5f - 0.5f * fov);
-		const auto fsn = far - near;
-		const auto fpn = far + near;
-		const auto ftn = far * near;
+		auto r = (half_film_size[0] / focal_len) * near;
+		auto l = -r;
+		auto t = (half_film_size[1] / focal_len) * near;
+		auto b = -t;
+		auto n2 = near * 2;
+		auto rml = r - l;
+		auto tmb = t - b;
+		auto rpl = r + l;
+		auto tpb = t + b;
+		auto fmn = far - near;
+		auto fpn = far + near;
+		auto ftn = far * near;
 
 		return {
-			{ -a/aspect,         0,          0,         0 },
-			{         0,         a,          0,         0 },
-			{         0,         0,   -fpn/fsn,        -1 },
-			{         0,         0, -2*ftn/fsn,         0 }
-		};
+			{    n2/rml,         0,          0,         0 },
+			{         0,    n2/tmb,          0,         0 },
+			{   rpl/rml,   tpb/tmb,   -fpn/fmn,        -1 },
+			{         0,         0, -2*ftn/fmn,         0 }
+		};		
+	}
+
+	static mat<4, 4> perspective(S near, S far, S fov, S aspect)
+	{
+		const auto half_canvas_w = (S)tan(fov / 2) * near;
+		const auto half_canvas_h = half_canvas_w / aspect;
+		return perspective(vec<2, S>{half_canvas_w, half_canvas_h}, near, near, far);
 	}
 
 	static mat<4, 4> orthographic(S near, S far, S left, S right, S top, S bottom)
@@ -1254,8 +1283,35 @@ struct quat : public vec<4, QS>
         return { roll, pitch, yaw };
     }
 
-    static quat view(vec<3> forward, vec<3> up={0, 1, 0})
+    static quat view(vec<3> f, vec<3> u={0, 1, 0})
     {
+    	/**
+    	 * Find some rotation R(q) which statisfies
+    	 * 
+    	 * f = R(q) * {0 0 1}
+    	 * u = R(q) * {0 1 0}
+    	 * 
+    	 */
+    	const auto X = vec<3>{1, 0, 0};
+    	const auto Y = vec<3>{0, 1, 0};
+
+    	// both f and u exist in the same plane. In the above case, the normal
+    	// of the plane is pointing along the x axis. Find the angle between
+    	// the normal and the x axis to build the first quaternion q
+    	auto n = vec<3>::cross(f, u);
+    	auto q_a = X.angle_to(n);
+    	auto q = from_axis_angle(vec<3>::cross(X, n), q_a);
+
+    	// within the plane, f and u rotate about the axis defined by the
+    	// normal of the plane described above. The angle could be found by
+    	// rotating the Y axis unit vector by the quaternion q we just found
+    	auto y = q.rotate(Y);
+    	auto r_a = y.angle_to(u);
+    	auto r = from_axis_angle(n, r_a);
+
+    	return r * q;
+
+/**
     	auto forward_plane = (forward * vec<3>{ 1, 0, 1 }).unit();
     	auto theta_sign = forward_plane.dot({1, 0, 0}) > 0 ? 1 : -1;
     	auto theta = theta_sign * acos(forward_plane.dot({0, 0, 1})) + M_PI;
@@ -1264,7 +1320,7 @@ struct quat : public vec<4, QS>
     	auto phi = phi_sign * acos(up.dot({0, 1, 0}));
 
     	return from_axis_angle({0, 1, 0}, theta) * from_axis_angle({1, 0, 0}, phi);
-
+**/
     	// auto r = vec<3>::cross(forward, up);
     	// auto m = mat<4,4>{
     	// 	{ r[0], up[0], forward[0], 0 },

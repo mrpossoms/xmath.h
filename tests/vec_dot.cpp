@@ -6,17 +6,29 @@
 
 TEST
 {
-    xmath::vec<5> a, b;
-    float expected = 0;
+    using namespace xmath;
 
-    for (int i = 5; i--;)
-    {
-        a[i] = RAND_F;
-        b[i] = RAND_F;
-        expected += a[i] * b[i];
+    { // check dot
+        vec<5> a, b;
+        float expected = 0;
+
+        for (int i = 5; i--;)
+        {
+            a[i] = RAND_F;
+            b[i] = RAND_F;
+            expected += a[i] * b[i];
+        }
+
+        float actual = a.dot(b);
+
+        assert(fabs(expected - actual) < 1e-8);   
     }
 
-    float actual = a.dot(b);
+    { // check angle
+        assert(fabs(vec<2>{1, 0}.angle_to(vec<2>{0, 1}) - (M_PI / 2)) < 1e-8);
 
-    assert(fabs(expected - actual) < 1e-8);
+        assert(fabs(vec<2>{1, 0}.angle_to(vec<2>{1, 0}) - 0) < 1e-8);
+
+        assert(fabs(vec<2>{1, 0}.angle_to(vec<2>{-1, 0}) - M_PI) < 1e-8);
+    }
 }
