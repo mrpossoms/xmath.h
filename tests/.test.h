@@ -17,6 +17,7 @@
 #define TEST int main (int argc, const char* argv[])
 #define TOLERANCE (1e-8)
 
+#define RAND_F (((rand() % 2048) / 1024.f) - 1.f)
 
 #define __MAT_EQ(rows, cols, left_matrix, right_matrix)\
 {\

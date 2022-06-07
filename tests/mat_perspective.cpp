@@ -78,10 +78,11 @@ TEST
 
             auto p0_p = P.invert() * p_w;
 
-            if (std::abs(_z - p0[2]) > 1e-6)
+            if (!p0.slice<3>().is_near(p0_p.slice<3>(), 1e-6))
             {
                 std::cerr << "-" << std::endl;
                 std::cerr << std::endl << "expected z: " << p0[2] << " actual z: " << _z << std::endl;
+                std::cerr << "expected p0: " << p0.to_string() << " actual p0_p: " << p0_p.to_string() << std::endl; 
                 assert(false);
             }
             else

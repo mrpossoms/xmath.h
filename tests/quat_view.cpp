@@ -3,9 +3,6 @@
 #include <iostream>
 #include "xmath.h"
 
-#define RAND_F (((random() % 2048) / 1024.f) - 1.f)
-
-
 TEST
 {
     using namespace xmath;
@@ -24,7 +21,7 @@ TEST
 
     for (unsigned i = 100; i--;)
     {
-        vec<3> target = { (RAND_F) * 10, (RAND_F) * 10, (RAND_F) * 10 };
+        vec<3> target = { (RAND_F * 10), (RAND_F * 10), (RAND_F * 10) };
 
         auto forward = target.unit();
 

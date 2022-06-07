@@ -2,8 +2,6 @@
 
 #include "xmath.h"
 
-#define RAND_F (((random() % 2048) / 1024.f) - 1.f)
-
 TEST
 {
     xmath::vec<5> a, b, r, expected;
