@@ -892,14 +892,14 @@ struct mat
 		MAT_INV_IMP(S, R, C, m)
 	}
 
-	mat<R, C, S> invert()
+	mat<R, C, S> invert() const
 	{
 		mat<R, C, S> out = *this;
 		MAT_INV_IMP(S, R, C, out);
 		return out;
 	}
 
-	mat<C, R, S> transpose()
+	mat<C, R, S> transpose() const
 	{
 		mat<C, R, S> out;
 		MAT_TRANSPOSE(R, C, m, out);
@@ -1023,9 +1023,7 @@ struct mat
 			{    0,    0,    0, 1 }
 		};
 
-		mat<4, 4> trans = translation(p);
-
-		return trans * ori;
+		return translation(p) * ori;
 	}
 
 	static mat<4, 4> rotation(vec<3> axis, float angle)

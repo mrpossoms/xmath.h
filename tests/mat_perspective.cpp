@@ -31,9 +31,10 @@ TEST
 
     std::cerr << "Projection mat" << std::endl << P.to_string() << std::endl;
 
+    for (float x = -1; x < 0 ; x += 0.1f)
     for (float z = n + 1; z < f; z += 1.f)
     {
-        auto p0 = xmath::vec<4>{1, 0, z, 1};
+        auto p0 = xmath::vec<4>{x, 0, z, 1};
         auto x = P * p0;
         // More distant points must be closer to the optical axis of the camera
         auto p = x / x[3];
