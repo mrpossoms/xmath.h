@@ -27,14 +27,14 @@ TEST
     // auto P = perspective_linear(n, 20);
     // auto s0 = xmath::vec<4>{0, 0, 10, 1};
     // auto t = P * s0;
-    auto p_1 = P * xmath::vec<4>{1, 0, n, 1};
+    auto p_1 = P * xmath::mat<4,1>{{1}, {0}, {n}, {1}};
 
     std::cerr << "Projection mat" << std::endl << P.to_string() << std::endl;
 
     for (float x = -1; x < 0 ; x += 0.1f)
     for (float z = n + 1; z < f; z += 1.f)
     {
-        auto p0 = xmath::vec<4>{x, 0, z, 1};
+        auto p0 = xmath::mat<4, 1>{{x}, {0}, {z}, {1}};
         auto x = P * p0;
         // More distant points must be closer to the optical axis of the camera
         auto p = x / x[3];
@@ -65,7 +65,7 @@ TEST
             // z' = ((z * b) - 1) / (z * a)
             // z' * (z * a) = (z * b) - 1
             // (z * z' * a) - (z * b) = -1
-            // z * (z' * a - b) = -1
+            // z * ((z' * a) - b) = -1
             // z = -1 / ((z' * a) - b)
             auto _z = -1 / ((p[2] * P[3][2]) - P[2][2]);
 
@@ -77,13 +77,20 @@ TEST
                 _z * P[3][2]
             };
 
+            if (!p_w.is_near(x, 1e-6))
+            {
+                std::cerr << "-" << std::endl;
+                std::cerr << "expected p_w: " << x.to_string() << " actual p_w: " << p_w.to_string() << std::endl; 
+                assert(false);
+            }
+
             auto p0_p = P.invert() * p_w;
 
-            if (!p0.slice<3>().is_near(p0_p.slice<3>(), 1e-6))
+            if (!p0_p.is_near(x, 1e-6))
             {
                 std::cerr << "-" << std::endl;
                 std::cerr << std::endl << "expected z: " << p0[2] << " actual z: " << _z << std::endl;
-                std::cerr << "expected p0: " << p0.to_string() << " actual p0_p: " << p0_p.to_string() << std::endl; 
+                std::cerr << "expected p0: " << x.to_string() << " actual p0_p: " << p0_p.to_string() << std::endl; 
                 assert(false);
             }
             else
