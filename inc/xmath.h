@@ -887,6 +887,20 @@ struct mat
 		return out;
 	}
 
+	vec<R * C, S> flatten(bool row_major = true)
+	{
+		vec<R * C, S> out;
+		
+		for (unsigned i = 0; i < R * C; i++)
+		{
+			auto r = row_major ? i / C : i % R;
+			auto c = row_major ? i % C : r / R;
+			out[i] = m[r][c];
+		}
+
+		return out;
+	}
+
 	void invert_inplace()
 	{
 		MAT_INV_IMP(S, R, C, m)
@@ -936,6 +950,13 @@ struct mat
 	{
 		mat<R, C, S> out;
 		MAT_MUL_E(R, C, out.m, m, s);
+		return out;
+	}
+
+	inline mat<R, C, S> operator/(const S s) const
+	{
+		mat<R, C, S> out;
+		MAT_MUL_E(R, C, out.m, m, 1 / s);
 		return out;
 	}
 
