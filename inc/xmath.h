@@ -285,7 +285,7 @@ typedef SSIZE_T ssize_t;
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix with scale applied of size (m_R, m_C)
  * @param      m     Left hand operand matrix of size (m_R, m_C)
- * @param      s     Scalar which will be multiplied agains each element of 'm'
+ * @param      s     Scalar which will be multiplied against each element of 'm'
  */
 #define MAT_MUL_E(m_R, m_C, r, m, s)\
 {\
@@ -306,15 +306,15 @@ typedef SSIZE_T ssize_t;
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
  * @param      m     Left hand operand in the addition of size (m_R, m_C)
- * @param      n     Right hand operand in the addition of size (m_R, m_C)
+ * @param      s     Scalar which will be added to each element of 'm'
  */
-#define MAT_ADD_E(m_R, m_C, r, m, n)\
+#define MAT_ADD_E(m_R, m_C, r, m, s)\
 {\
     for (int __row = (m_R); __row--;)\
     { \
 	    for (int __col = (m_C); __col--;)\
 	    {\
-	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+	        (r)[__row][__col] = (m)[__row][__col] + (s);\
 	    }\
     }\
 }\
@@ -327,7 +327,7 @@ typedef SSIZE_T ssize_t;
  * @param      m_C   Columns in matrix 'm'
  * @param      r     Resulting matrix of size (m_R, m_C)
  * @param      m     Left hand operand in the subtraction of size (m_R, m_C)
- * @param      n     Right hand operand in the subtraction of size (m_R, m_C)
+ * @param      s     Scalar which will be subtracted from each element of 'm'
  */
 #define MAT_SUB_E(m_R, m_C, r, m, n)\
 {\
@@ -335,7 +335,7 @@ typedef SSIZE_T ssize_t;
     { \
 	    for (int __col = (m_C); __col--;)\
 	    {\
-	        (r)[__row][__col] = (m)[__row][__col] + (n)[__row][__col];\
+	        (r)[__row][__col] = (m)[__row][__col] - (s);\
 	    }\
     }\
 }\
@@ -853,6 +853,17 @@ struct mat
 
 	}
 
+	mat(std::initializer_list<vec<C, S>> init)
+	{
+		int ri = 0;
+		for (auto row : init)
+		{
+			m[ri] = row;
+			ri += 1;
+		}
+
+	}
+
 	mat<R, C, S>& initialize(std::function<S (S r, S c)> init)
 	{
 		for (auto row = R; row--;)
@@ -920,6 +931,32 @@ struct mat
 		return out;
 	}
 
+	S max_value() const
+	{
+		S _max = m[0][0];
+
+		for (unsigned r = 0; r < R; r++)
+		for (unsigned c = 0; c < C; c++)
+		{
+			_max = std::max<S>(_max, m[r][c]);
+		}
+
+		return _max;
+	}
+
+	S min_value() const
+	{
+		S _min = m[0][0];
+
+		for (unsigned r = 0; r < R; r++)
+		for (unsigned c = 0; c < C; c++)
+		{
+			_min = std::min<S>(_min, m[r][c]);
+		}
+
+		return _min;
+	}
+
 	vec<C, S>& operator[](size_t r) { return m[r]; }
 
 	const vec<C, S>& operator[](size_t r) const { return m[r]; }
@@ -938,6 +975,12 @@ struct mat
 		return out;
 	}
 
+	mat<R, C, S>& operator-= (S s)
+	{
+		MAT_SUB_E(R, C, m, m, s);
+		return *this;
+	}
+
 	template<size_t O>
 	mat<R, O, S> operator* (const mat<C, O, S>& N) const
 	{
@@ -953,11 +996,24 @@ struct mat
 		return out;
 	}
 
+	inline mat<R, C, S>& operator*=(const S s)
+	{
+		MAT_MUL_E(R, C, m, m, s);
+		return *this;
+	}
+
 	inline mat<R, C, S> operator/(const S s) const
 	{
 		mat<R, C, S> out;
-		MAT_MUL_E(R, C, out.m, m, 1 / s);
+		MAT_MUL_E(R, C, out.m, m, (1 / s));
 		return out;
+	}
+
+	inline mat<R, C, S>& operator/=(const S s)
+	{
+		S c = 1 / s;
+		MAT_MUL_E(R, C, m, m, c);
+		return *this;
 	}
 
 	vec<R, S> operator* (const vec<C, S>& V) const
@@ -1005,13 +1061,14 @@ struct mat
 	// 	return out;
 	// }
 
-	inline mat<R, C, S>& operator*=(const S s)
+	inline mat<R, C, S>& operator*=(const mat<R, C, S>& N)
 	{
-		MAT_MUL_E(R, C, m, m, s);
+		mat<R, C, S> tmp = *this;
+		MAT_MUL(R, C, R, C, m, tmp.m, N.m);
 		return *this;
 	}
 
-	inline mat<R, C, S>& operator*=(const mat<R, C, S>& N)
+	inline mat<R, C, S>& operator/=(const mat<R, C, S>& N)
 	{
 		mat<R, C, S> tmp = *this;
 		MAT_MUL(R, C, R, C, m, tmp.m, N.m);
@@ -1031,7 +1088,7 @@ struct mat
 		return str;
 	}
 
-	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& forward, const vec<3>& u)
+	static mat<4, 4> look(const vec<3>& position, const vec<3>& forward, const vec<3>& u)
 	{
 		const auto r = vec<3>::cross(forward, u);
 		const auto f = forward;
@@ -1045,6 +1102,13 @@ struct mat
 		};
 
 		return translation(p) * ori;
+	}
+
+	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& subject, const vec<3>& up)
+	{
+		const auto f = (subject - position).unit();
+
+		return look(position, f, up);
 	}
 
 	static mat<4, 4> rotation(vec<3> axis, float angle)
