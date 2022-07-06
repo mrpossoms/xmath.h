@@ -938,7 +938,11 @@ struct mat
 		for (unsigned r = 0; r < R; r++)
 		for (unsigned c = 0; c < C; c++)
 		{
-			_max = std::max<S>(_max, m[r][c]);
+			if (isfinite(m[r][c]))
+			{
+				_max = std::max<S>(_max, m[r][c]);
+			}
+
 		}
 
 		return _max;
@@ -951,9 +955,11 @@ struct mat
 		for (unsigned r = 0; r < R; r++)
 		for (unsigned c = 0; c < C; c++)
 		{
-			_min = std::min<S>(_min, m[r][c]);
+			if (isfinite(m[r][c]))
+			{
+				_min = std::min<S>(_min, m[r][c]);
+			}
 		}
-
 		return _min;
 	}
 
@@ -1088,10 +1094,11 @@ struct mat
 		return str;
 	}
 
-	static mat<4, 4> look(const vec<3>& position, const vec<3>& forward, const vec<3>& u)
+	static mat<4, 4> look(const vec<3>& position, const vec<3>& forward, vec<3> u)
 	{
 		const auto r = vec<3>::cross(forward, u);
 		const auto f = forward;
+		u = vec<3>::cross(r, f);
 		const auto p = position;
 
 		mat<4, 4> ori = {
@@ -1106,7 +1113,7 @@ struct mat
 
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& subject, const vec<3>& up)
 	{
-		const auto f = (subject - position).unit();
+		const auto f = (position - subject).unit();
 
 		return look(position, f, up);
 	}
@@ -1118,7 +1125,7 @@ struct mat
 		const auto s = sinf(angle);
 		const auto omc = 1 - c;
 
-		return {
+		return { 
 			{c+a[0]*a[0]*omc,      a[1]*a[0]*omc+a[2]*s, a[2]*a[0]*omc-a[1]*s, 0},
 			{a[0]*a[1]*omc-a[2]*s, c+a[1]*a[1]*omc,      a[2]*a[1]*omc+a[0]*s, 0},
 			{a[0]*a[2]*omc+a[1]*s, a[1]*a[2]*omc-a[0]*s, c+a[2]*a[2]*omc,      0},
