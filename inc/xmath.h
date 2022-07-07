@@ -1560,6 +1560,65 @@ namespace intersect
 
 }; // namespace intersection
 
-} // namespace xmath
+namespace filter
+{
+
+/**
+ * @brief      { struct_description }
+ *
+ * @tparam     Z     { description }
+ * @tparam     X     { description }
+ * @tparam     U     { description }
+ * @tparam     S     { description }
+ */
+template<size_t Z, size_t X, size_t U, typename S=XMTYPE>
+struct kalman
+{
+    struct
+    {
+        vec<X, S> state;
+        mat<X, X, S> covariance;
+    } estimated;
+
+    kalman(const vec<X, S>& state) : estimated.state(state)
+    {
+        estimated.covariance = mat<X, X, S>::I();
+    }
+
+    /**
+     * @brief      { function_description }
+     *
+     * @param[in]  state_transition  The state transition
+     * @param[in]  control_to_state  The control to state
+     * @param[in]  control           The control
+     */
+    void time_update(const mat<X, X, S>& state_transition,
+                     const mat<X, U, S>& control_to_state,
+                     const vec<U, S>& control)
+    {
+
+    }
+
+    /**
+     * @brief      { function_description }
+     *
+     * @param[in]  state_transition              The state transition
+     * @param[in]  state_to_measurement          The state to measurement
+     * @param[in]  measurement_noise_covariance  The measurement noise covariance
+     * @param[in]  measurement                   The measurement
+     */
+    void measurement_update(const mat<X, X, S>& state_transition,
+                            const mat<Z, X, S>& state_to_measurement,
+                            const mat<Z, Z, S>& measurement_noise_covariance,
+                            const vec<Z, S>& measurement
+                            )
+    {
+
+    }
+};
+
+} // end filter
+
+} // namespace xmath end
 #endif
 #endif
