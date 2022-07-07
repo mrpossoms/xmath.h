@@ -1589,6 +1589,16 @@ static XMTYPE ray_sphere(const vec<3>& ray_o,
 
 }; // namespace intersection
 
+namespace filter
+{
+
+struct kalman
+{
+
+};
+
+} // end filter
+
 } // namespace xmath end
 #endif
 #endif
