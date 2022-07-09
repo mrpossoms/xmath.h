@@ -1045,7 +1045,7 @@ struct mat
 
 		for (size_t i = 0; i < R-1; i++)
 		{
-			out[i] += m[i][C-1];
+			out[i] += m[R-1][i];
 		}
 
 		return out;
@@ -1098,22 +1098,31 @@ struct mat
 	{
 		const auto r = vec<3>::cross(forward, u);
 		const auto f = forward;
-		u = vec<3>::cross(r, f);
+		u = vec<3>::cross(r, f).unit();
 		const auto p = position;
 
 		mat<4, 4> ori = {
 			{ r[0], u[0], f[0], 0 },
 			{ r[1], u[1], f[1], 0 },
 			{ r[2], u[2], f[2], 0 },
-			{    0,    0,    0, 1 }
+			{ 0,    0,    0,    1 }
 		};
 
-		return translation(p) * ori;
+		return ori.transpose() * translation(p);
+
+		mat<4, 4> v = {
+			{ r[0], u[0], f[0], 0 },
+			{ r[1], u[1], f[1], 0 },
+			{ r[2], u[2], f[2], 0 },
+			{-p[0],-p[1],-p[2], 1 }
+		};
+
+		return v;
 	}
 
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& subject, const vec<3>& up)
 	{
-		const auto f = (position - subject).unit();
+		const auto f = (subject - position).unit();
 
 		return look(position, f, up);
 	}
