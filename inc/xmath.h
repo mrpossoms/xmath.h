@@ -1045,7 +1045,7 @@ struct mat
 
 		for (size_t i = 0; i < R-1; i++)
 		{
-			out[i] += m[R-1][i];
+			out[i] += m[i][C-1];
 		}
 
 		return out;
@@ -1102,24 +1102,13 @@ struct mat
 		const auto p = position;
 
 		mat<4, 4> ori = {
-			{ r[0], u[0], f[0],-p[0] },
-			{ r[1], u[1], f[1],-p[1] },
-			{ r[2], u[2], f[2],-p[2] },
+			{ r[0], r[1], r[2], 0 },
+			{ u[0], u[1], u[2], 0 },
+			{ f[0], f[1], f[2], 0 },
 			{ 0,    0,    0,    1 }
 		};
 
-		return ori;
-
-		return ori.transpose() * translation(p);
-
-		mat<4, 4> v = {
-			{ r[0], u[0], f[0], 0 },
-			{ r[1], u[1], f[1], 0 },
-			{ r[2], u[2], f[2], 0 },
-			{-p[0],-p[1],-p[2], 1 }
-		};
-
-		return v;
+		return ori * translation(-p);
 	}
 
 	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& subject, const vec<3>& up)
@@ -1157,10 +1146,10 @@ struct mat
 	static mat<4, 4> translation(vec<3> t)
 	{
 		return {
-			{    1,    0,    0,    0    },
-			{    0,    1,    0,    0    },
-			{    0,    0,    1,    0    },
-			{  t[0], t[1], t[2],   1.   }
+			{    1,    0,    0,    t[0]  },
+			{    0,    1,    0,    t[1] },
+			{    0,    0,    1,    t[2] },
+			{    0,    0,    0,    1.   }
 		};
 	}
 
