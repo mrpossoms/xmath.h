@@ -1102,11 +1102,13 @@ struct mat
 		const auto p = position;
 
 		mat<4, 4> ori = {
-			{ r[0], u[0], f[0], 0 },
-			{ r[1], u[1], f[1], 0 },
-			{ r[2], u[2], f[2], 0 },
+			{ r[0], u[0], f[0],-p[0] },
+			{ r[1], u[1], f[1],-p[1] },
+			{ r[2], u[2], f[2],-p[2] },
 			{ 0,    0,    0,    1 }
 		};
+
+		return ori;
 
 		return ori.transpose() * translation(p);
 
