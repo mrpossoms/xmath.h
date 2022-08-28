@@ -32,6 +32,8 @@ typedef SSIZE_T ssize_t;
 #define M_PI 3.14159265358979323846
 #endif
 
+// clang-format off
+
 /**
  * @brief      Compute vector addition between two vectors
  *
@@ -461,6 +463,8 @@ typedef SSIZE_T ssize_t;
 		}\
 	}\
 }\
+
+// clang-format on
 
 #ifndef __cplusplus
 static inline void vec_add(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
