@@ -84,16 +84,6 @@ typedef SSIZE_T ssize_t;
 }\
 
 /**
- * @brief      Scales each element of a vector by a scalar
- *
- * @param      n          Dimensionality of the vectors
- * @param      dst_vec    The destination array to contain the result of size n
- * @param      left_vec   The left array operand of the addition of size n
- * @param      right_scalar  The scalar by which each element is multiplied.
- *
- */
-
-/**
  * @brief Performs element-wise addition of left and right vectors after the
  * right vector has been scaled by a scalar operand.
  *
@@ -409,7 +399,7 @@ typedef SSIZE_T ssize_t;
 
 
 /**
- * @brief      Computes the inverse of an invertible matrix.
+ * @brief      Computes the inverse of an assumed invertible matrix, in place.
  *
  * @param      TYPE  The storage type for each element.
  * @param      R     Number of rows in the matrix
@@ -663,7 +653,6 @@ struct vec
 		return *this;
 	}
 
-
 	inline vec<N,S>& operator+=(const vec<N,S>& v) { return *this = *this + v; }
 
 	inline vec<N,S>& operator-=(const vec<N,S>& v) { return *this = *this - v; }
@@ -688,11 +677,26 @@ struct vec
 		return true;
 	}
 
+	/**
+	 * @brief      Compare magnitudes of two vectors. This is determined by
+	 * computing and comparing the dot product of each vector.
+	 *
+	 * @param[in]  v     Vector to compare magnitude with.
+	 *
+	 * @return     true if this vector's magnitude is greater than that of v.
+	 */
 	inline bool operator<(const vec<N, S>& v) const
 	{
 		return this->dot(*this) < v.dot(v);
 	}
 
+	/**
+	 * @brief      Returns a copy of this vector, but of the element type specified.
+	 *
+	 * @tparam     T     Element type to cast this vector to.
+	 *
+	 * @return     Copy of cast vector.
+	 */
 	template<typename T>
 	inline vec<N,T> cast() const
 	{
@@ -729,9 +733,9 @@ struct vec
 
 	inline S magnitude() const { VEC_MAG(S, N, this->v) }
 
-	vec<N,S> unit() const { return *this / magnitude(); }
+	inline vec<N,S> unit() const { return *this / magnitude(); }
 
-	S dot(vec<N,S> const& v) const { VEC_DOT(S, N, this->v, v.v) }
+	inline S dot(vec<N,S> const& v) const { VEC_DOT(S, N, this->v, v.v) }
 
 	vec<N,S> project_onto(vec<N,S> const& v) const
 	{
