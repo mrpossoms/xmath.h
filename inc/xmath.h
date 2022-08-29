@@ -581,6 +581,7 @@ static inline void mat_identity(size_t n, XMTYPE mat[n][n])
 
 #ifdef __cplusplus
 #include <functional>
+#include <limits>
 #include <initializer_list>
 #include <string>
 
@@ -766,6 +767,16 @@ struct vec
 		return v;
 	}
 
+	/**
+	 * @brief      Extracts a sub-vector copy from this instance begining at
+	 * a specific index, spanning a specified size.
+	 *
+	 * @param[in]  start  The element index where the sub-vector begins
+	 *
+	 * @tparam     NN     Size of the subvector
+	 *
+	 * @return     Copy of selected sub-vector
+	 */
 	template <size_t NN>
 	vec<NN, S> slice(size_t start = 0) const
 	{
@@ -1087,22 +1098,6 @@ struct mat
 
 		return out;
 	}
-
-	// vec<3, float> operator*(const vec<3, float>& V) const
-	// {
-	// 	vec<3, float> out = {};
-	// 	for (size_t r = 0; r < 3; r++)
-	// 	for (size_t c = 0; c < 3; c++)
-	// 	{
-	// 		out[r] += m[r][c] * V[c];
-	// 	}
-
-	// 	out[0] += m[0][3];
-	// 	out[1] += m[1][3];
-	// 	out[2] += m[2][3];
-
-	// 	return out;
-	// }
 
 	inline mat<R, C, S>& operator*=(const mat<R, C, S>& N)
 	{
@@ -1502,7 +1497,7 @@ namespace intersect
 	                      const vec<3>& box_o,
 	                      const vec<3>  box_sides[3])
 	{
-		const auto epsilon = 0.00000001f;
+		const auto epsilon = std::numeric_limits<XMTYPE>::epsilon();
 		auto       t_min   = -INFINITY;
 		auto       t_max   = INFINITY;
 
@@ -1519,7 +1514,7 @@ namespace intersect
 			auto e = p.dot(box_sides[i] / half_lengths[i]);
 			auto f = ray_d.dot(box_sides[i] / half_lengths[i]);
 
-			if (fabs(f) > epsilon)
+			if (static_cast<XMTYPE>(fabs(f)) > epsilon)
 			{
 				auto t_1 = (e + half_lengths[i]) / f;
 				auto t_2 = (e - half_lengths[i]) / f;
