@@ -3,7 +3,6 @@
 #include <iostream>
 #include "xmath.h"
 
-#define RAND_F (((random() % 2048) / 1024.f) - 1.f)
 
 TEST
 {

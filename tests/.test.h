@@ -14,6 +14,8 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 
+#include <xmath.h>
+
 #define TEST int main (int argc, const char* argv[])
 #define TOLERANCE (1e-8)
 
@@ -28,4 +30,21 @@
     }\
 }\
 
+#ifdef __cplusplus
+#include <iostream>
+
+template<size_t N>
+xmath::vec<N> rand_unit()
+{
+    xmath::vec<N> v;
+
+    for (unsigned i = 0; i < N; i++)
+    {
+        v[i] = RAND_F;
+    }
+
+    return v.unit();
+}
+
+#endif
 // -Wall doesn't like ending a file with a backlash

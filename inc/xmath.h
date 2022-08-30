@@ -17,6 +17,7 @@
 #ifndef _XMATH_H_
 #define _XMATH_H_
 #include <math.h>
+#include <stdlib.h>
 #include <sys/types.h>
 
 #if defined(_MSC_VER)
@@ -31,6 +32,8 @@ typedef SSIZE_T ssize_t;
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
+
+// clang-format off
 
 /**
  * @brief      Compute vector addition between two vectors
@@ -82,16 +85,6 @@ typedef SSIZE_T ssize_t;
 		(dst_vec)[__i] = (left_vec)[__i] * (right_scalar);\
 	}\
 }\
-
-/**
- * @brief      Scales each element of a vector by a scalar
- *
- * @param      n          Dimensionality of the vectors
- * @param      dst_vec    The destination array to contain the result of size n
- * @param      left_vec   The left array operand of the addition of size n
- * @param      right_scalar  The scalar by which each element is multiplied.
- *
- */
 
 /**
  * @brief Performs element-wise addition of left and right vectors after the
@@ -409,7 +402,7 @@ typedef SSIZE_T ssize_t;
 
 
 /**
- * @brief      Computes the inverse of an invertible matrix.
+ * @brief      Computes the inverse of an assumed invertible matrix, in place.
  *
  * @param      TYPE  The storage type for each element.
  * @param      R     Number of rows in the matrix
@@ -470,67 +463,132 @@ typedef SSIZE_T ssize_t;
 			else (MAT)[__r][__c] = 0;\
 		}\
 	}\
-}\
+}
+
+// clang-format on
 
 #ifndef __cplusplus
-static inline void vec_add(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
-{ VEC_ADD(n, dst, left, right) }
+static inline void vec_add(size_t       n,
+                           XMTYPE       dst[n],
+                           const XMTYPE left[n],
+                           const XMTYPE right[n])
+{
+	VEC_ADD(n, dst, left, right)
+}
 
-static inline void vec_sub(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
-{ VEC_SUB(n, dst, left, right) }
+static inline void vec_sub(size_t       n,
+                           XMTYPE       dst[n],
+                           const XMTYPE left[n],
+                           const XMTYPE right[n])
+{
+	VEC_SUB(n, dst, left, right)
+}
 
-static inline void vec_scl(size_t n, XMTYPE dst[n], const XMTYPE in[n], XMTYPE scalar)
-{ VEC_SCL(n, dst, in, scalar) }
+static inline void vec_scl(size_t       n,
+                           XMTYPE       dst[n],
+                           const XMTYPE in[n],
+                           XMTYPE       scalar)
+{
+	VEC_SCL(n, dst, in, scalar)
+}
 
-static inline void vec_add_scl(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n], XMTYPE s)
-{ VEC_ADD_SCL(n, dst, left, right, s) }
+static inline void vec_add_scl(size_t       n,
+                               XMTYPE       dst[n],
+                               const XMTYPE left[n],
+                               const XMTYPE right[n],
+                               XMTYPE       s)
+{
+	VEC_ADD_SCL(n, dst, left, right, s)
+}
 
-static inline void vec_hadamard(size_t n, XMTYPE dst[n], const XMTYPE left[n], const XMTYPE right[n])
-{ VEC_HADAMARD(n, dst, left, right) }
+static inline void vec_hadamard(size_t       n,
+                                XMTYPE       dst[n],
+                                const XMTYPE left[n],
+                                const XMTYPE right[n])
+{
+	VEC_HADAMARD(n, dst, left, right)
+}
 
-static inline XMTYPE vec_dot(size_t n, const XMTYPE left[n], const XMTYPE right[n])
-{ VEC_DOT(XMTYPE, n, left, right) }
+static inline XMTYPE vec_dot(size_t       n,
+                             const XMTYPE left[n],
+                             const XMTYPE right[n])
+{
+	VEC_DOT(XMTYPE, n, left, right)
+}
 
 static inline XMTYPE vec_mag(size_t n, const XMTYPE left[n])
-{ VEC_MAG(XMTYPE, n, left) }
-
-static inline void mat_transpose(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[c][r])
-{ MAT_TRANSPOSE(r, c, in, out) }
-
-static inline void mat_mul(size_t m_R, size_t m_C,  size_t n_R, size_t n_C, XMTYPE r[m_R][n_C], const XMTYPE m[m_R][m_C], const XMTYPE n[n_R][n_C])
-{ MAT_MUL(m_R, m_C, n_R, n_C, r, m, n) }
-
-static inline void mat_add(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
-{ MAT_ADD(m_R, m_C, r, m, n) }
-
-static inline void mat_sub(size_t m_R, size_t m_C, XMTYPE r[m_R][m_C], const XMTYPE m[m_R][m_C], const XMTYPE n[m_R][m_C])
-{ MAT_SUB(m_R, m_C, r, m, n) }
-
-static inline void mat_inv(size_t r, size_t c, const XMTYPE in[r][c], XMTYPE out[r][c])
 {
+	VEC_MAG(XMTYPE, n, left)
+}
+
+static inline void mat_transpose(size_t       r,
+                                 size_t       c,
+                                 const XMTYPE in[r][c],
+                                 XMTYPE       out[c][r])
+{
+	MAT_TRANSPOSE(r, c, in, out)
+}
+
+static inline void mat_mul(size_t       m_R,
+                           size_t       m_C,
+                           size_t       n_R,
+                           size_t       n_C,
+                           XMTYPE       r[m_R][n_C],
+                           const XMTYPE m[m_R][m_C],
+                           const XMTYPE n[n_R][n_C])
+{
+	MAT_MUL(m_R, m_C, n_R, n_C, r, m, n)
+}
+
+static inline void mat_add(size_t       m_R,
+                           size_t       m_C,
+                           XMTYPE       r[m_R][m_C],
+                           const XMTYPE m[m_R][m_C],
+                           const XMTYPE n[m_R][m_C])
+{
+	MAT_ADD(m_R, m_C, r, m, n)
+}
+
+static inline void mat_sub(size_t       m_R,
+                           size_t       m_C,
+                           XMTYPE       r[m_R][m_C],
+                           const XMTYPE m[m_R][m_C],
+                           const XMTYPE n[m_R][m_C])
+{
+	MAT_SUB(m_R, m_C, r, m, n)
+}
+
+static inline void mat_inv(size_t       r,
+                           size_t       c,
+                           const XMTYPE in[r][c],
+                           XMTYPE       out[r][c])
+{
+	if (r == 0 || c == 0) { abort(); }
+
 	for (size_t i = 0; i < r; i++)
 	{
-		for (size_t j = 0; j < c; j++)
-		{
-			out[i][j] = in[i][j];
-		}
+		for (size_t j = 0; j < c; j++) { out[i][j] = in[i][j]; }
 	}
+
 	MAT_INV_IMP(XMTYPE, r, c, out)
 }
 
 static inline void mat_identity(size_t n, XMTYPE mat[n][n])
-{ MAT_IDENTITY(n, mat) }
+{
+	MAT_IDENTITY(n, mat)
+}
 #endif
 
 #ifdef __cplusplus
-#include <initializer_list>
 #include <functional>
+#include <limits>
+#include <initializer_list>
 #include <string>
 
 namespace xmath
 {
 
-template <size_t N, typename S=XMTYPE>
+template <size_t N, typename S = XMTYPE>
 struct vec
 {
 	vec()
@@ -547,18 +605,12 @@ struct vec
 	{
 		if (init.size() < N)
 		{
-			for (auto i = N; i--;)
-			{
-				v[i] = *init.begin();
-			}
+			for (auto i = N; i--;) { v[i] = *init.begin(); }
 		}
 		else
 		{
 			auto i = 0;
-			for (auto s : init)
-			{
-				v[i++] = s;
-			}
+			for (auto s : init) { v[i++] = s; }
 		}
 	}
 
@@ -580,105 +632,102 @@ struct vec
 		return true;
 	}
 
-	inline vec<N,S> operator+(const vec<N,S>& v) const
+	inline vec<N, S> operator+(const vec<N, S>& v) const
 	{
-		vec<N,S> out;
+		vec<N, S> out;
 		VEC_ADD(N, out.v, this->v, v.v)
 		return out;
 	}
 
-
-	inline vec<N,S> operator+(S s) const
+	inline vec<N, S> operator+(S s) const
 	{
-		vec<N,S> out;
-		for (auto i = N; i--;)
-		{
-			out.v[i] = v[i] + s;
-		}
+		vec<N, S> out;
+		for (auto i = N; i--;) { out.v[i] = v[i] + s; }
 		return out;
 	}
 
-	inline vec<N,S> operator-(const vec<N,S>& v) const
+	inline vec<N, S> operator-(const vec<N, S>& v) const
 	{
-		vec<N,S> out;
+		vec<N, S> out;
 		VEC_SUB(N, out.v, this->v, v.v)
 		return out;
 	}
 
-	inline vec<N,S> operator-(S s) const
+	inline vec<N, S> operator-(S s) const
 	{
-		vec<N,S> out;
-		for (auto i = N; i--;)
-		{
-			out.v[i] = v[i] - s;
-		}
+		vec<N, S> out;
+		for (auto i = N; i--;) { out.v[i] = v[i] - s; }
 		return out;
 	}
 
-	inline vec<N,S> operator-() const
+	inline vec<N, S> operator-() const
 	{
-		vec<N,S> out;
+		vec<N, S> out;
 		VEC_SCL(N, out.v, this->v, -1)
 		return out;
 	}
 
-	inline vec<N,S> operator*(const vec<N,S>& v) const
+	inline vec<N, S> operator*(const vec<N, S>& v) const
 	{
-		vec<N,S> out;
+		vec<N, S> out;
 		VEC_HADAMARD(N, out.v, this->v, v.v)
 		return out;
 	}
 
-
-	inline vec<N,S> operator*(const S s) const
+	inline vec<N, S> operator*(const S s) const
 	{
-		vec<N,S> out;
+		vec<N, S> out;
 		VEC_SCL(N, out.v, this->v, s)
 		return out;
 	}
 
-
-	inline vec<N,S>  operator/(const vec<N,S>& v) const
+	inline vec<N, S> operator/(const vec<N, S>& v) const
 	{
-		vec<N,S> out;
+		vec<N, S> out;
 		VEC_DIV(N, out.v, this->v, v.v)
 		return out;
 	}
 
-
-	inline vec<N,S> operator/(const S s) const
+	inline vec<N, S> operator/(const S s) const
 	{
-		vec<N,S> out;
-		VEC_SCL(N, out.v, this->v, 1.f/s)
+		vec<N, S> out;
+		VEC_SCL(N, out.v, this->v, 1.f / s)
 		return out;
 	}
 
-
-	inline vec<N,S>& operator=(const vec<N,S>& v)
+	inline vec<N, S>& operator=(const vec<N, S>& v)
 	{
-		for (auto i = N; i--;)
-		{
-			this->v[i] = v.v[i];
-		}
+		for (auto i = N; i--;) { this->v[i] = v.v[i]; }
 		return *this;
 	}
 
+	inline vec<N, S>& operator+=(const vec<N, S>& v)
+	{
+		return *this = *this + v;
+	}
 
-	inline vec<N,S>& operator+=(const vec<N,S>& v) { return *this = *this + v; }
+	inline vec<N, S>& operator-=(const vec<N, S>& v)
+	{
+		return *this = *this - v;
+	}
 
-	inline vec<N,S>& operator-=(const vec<N,S>& v) { return *this = *this - v; }
+	inline vec<N, S>& operator*=(const vec<N, S>& v)
+	{
+		return *this = *this * v;
+	}
 
-	inline vec<N,S>& operator*=(const vec<N,S>& v) { return *this = *this * v; }
+	inline vec<N, S>& operator*=(const S s) { return *this = *this * s; }
 
-	inline vec<N,S>& operator*=(const S s) { return *this = *this * s; }
+	inline vec<N, S>& operator/=(const vec<N, S>& v)
+	{
+		return *this = *this / v;
+	}
 
-	inline vec<N,S>& operator/=(const vec<N,S>& v) { return *this = *this / v; }
+	inline vec<N, S>& operator/=(const S s) { return *this = *this / s; }
 
-	inline vec<N,S>& operator/=(const S s) { return *this = *this / s; }
+	inline bool operator!=(const vec<N, S>& v) const { return !(*this == v); }
 
-	inline bool operator!=(const vec<N,S>& v) const { return !(*this == v); }
-
-	inline bool operator==(const vec<N,S>& v) const
+	inline bool operator==(const vec<N, S>& v) const
 	{
 		for (auto i = N; i--;)
 		{
@@ -688,153 +737,173 @@ struct vec
 		return true;
 	}
 
+	/**
+	 * @brief      Compare magnitudes of two vectors. This is determined by
+	 * computing and comparing the dot product of each vector.
+	 *
+	 * @param[in]  v     Vector to compare magnitude with.
+	 *
+	 * @return     true if this vector's magnitude is greater than that of v.
+	 */
 	inline bool operator<(const vec<N, S>& v) const
 	{
 		return this->dot(*this) < v.dot(v);
 	}
 
-	template<typename T>
-	inline vec<N,T> cast() const
+	/**
+	 * @brief      Returns a copy of this vector, but of the element type
+	 * specified.
+	 *
+	 * @tparam     T     Element type to cast this vector to.
+	 *
+	 * @return     Copy of cast vector.
+	 */
+	template <typename T>
+	inline vec<N, T> cast() const
 	{
-		vec<N,T> v;
-		for (size_t i = 0; i < N; ++i)
-		{
-			v[i] = (T)this->v[i];
-		}
+		vec<N, T> v;
+		for (size_t i = 0; i < N; ++i) { v[i] = (T)this->v[i]; }
 
 		return v;
 	}
 
-	template<size_t NN>
-	vec<NN,S> slice(size_t start = 0) const
+	/**
+	 * @brief      Extracts a sub-vector copy from this instance begining at
+	 * a specific index, spanning a specified size.
+	 *
+	 * @param[in]  start  The element index where the sub-vector begins
+	 *
+	 * @tparam     NN     Size of the subvector
+	 *
+	 * @return     Copy of selected sub-vector
+	 */
+	template <size_t NN>
+	vec<NN, S> slice(size_t start = 0) const
 	{
-		vec<NN,S> r;
+		vec<NN, S> r;
 		for (size_t i = 0; i < NN; ++i) { r[i] = v[i + start]; }
 		return r;
 	}
 
-
-	std::string to_string(bool parens=true) const
+	std::string to_string(bool parens = true) const
 	{
 		std::string str = parens ? "(" : "";
 		for (size_t i = 0; i < N; ++i)
 		{
 			str += std::to_string(v[i]);
 			if (i < N - 1) { str += ", "; }
-		} str += parens ? ")" : "";
+		}
+		str += parens ? ")" : "";
 
 		return str;
 	}
 
-
 	inline S magnitude() const { VEC_MAG(S, N, this->v) }
 
-	vec<N,S> unit() const { return *this / magnitude(); }
+	inline vec<N, S> unit() const { return *this / magnitude(); }
 
-	S dot(vec<N,S> const& v) const { VEC_DOT(S, N, this->v, v.v) }
+	inline S dot(vec<N, S> const& v) const {VEC_DOT(S, N, this->v, v.v)}
 
-	vec<N,S> project_onto(vec<N,S> const& v) const
+	vec<N, S> project_onto(vec<N, S> const& v) const
 	{
 		auto v_hat = v.norm();
-		auto len = this->dot(v_hat);
+		auto len   = this->dot(v_hat);
 		return *this - (v_hat * len);
 	}
 
-	vec<N,S> project_onto_plane(vec<N,S> const& n) const
+	vec<N, S> project_onto_plane(vec<N, S> const& n) const
 	{
 		auto orthogonal_component = n * dot(n);
 		return *this - orthogonal_component;
-	}	
+	}
 
 	inline S angle_to(const vec<N, S>& other) const
 	{
 		auto my_mag = magnitude();
-		auto o_mag = other.magnitude();
+		auto o_mag  = other.magnitude();
 
 		return (S)acos(dot(other) / (my_mag * o_mag));
 	}
 
-	vec<N,S> lerp(const vec<N,S>& to, S p)
+	vec<N, S> lerp(const vec<N, S>& to, S p)
 	{
 		return (*this * (static_cast<S>(1) - p)) + (to * p);
 	}
 
-	bool is_near(const vec<N,S>& v, S threshold=0)
+	bool is_near(const vec<N, S>& v, S threshold = 0)
 	{
 		auto diff = *this - v;
 		return diff.dot(diff) <= threshold;
 	}
 
-	vec<N,S>& take_min(const vec<N,S>& v)
+	vec<N, S>& take_min(const vec<N, S>& v)
 	{
 		for (size_t i = 0; i < N; ++i)
 		{
 			auto& cur = this->v[i];
-			cur = v[i] < cur ? v[i] : cur;
+			cur       = v[i] < cur ? v[i] : cur;
 		}
 
 		return *this;
 	}
 
-	vec<N,S> floor() const
+	vec<N, S> floor() const
 	{
-		vec<N,S> r;
+		vec<N, S> r;
 		for (size_t i = 0; i < N; ++i) { r[i] = ::floor(v[i]); }
 		return r;
 	}
 
-	vec<N,S> ceil() const
+	vec<N, S> ceil() const
 	{
-		vec<N,S> r;
+		vec<N, S> r;
 		for (size_t i = 0; i < N; ++i) { r[i] = ::ceil(v[i]); }
 		return r;
 	}
 
-	vec<N,S> abs() const
+	vec<N, S> abs() const
 	{
-		vec<N,S> r;
+		vec<N, S> r;
 		for (size_t i = 0; i < N; ++i) { r[i] = ::abs(v[i]); }
 		return r;
 	}
 
-	vec<N,S>& take_max(const vec<N,S>& v)
+	vec<N, S>& take_max(const vec<N, S>& v)
 	{
 		for (size_t i = 0; i < N; ++i)
 		{
 			auto& cur = this->v[i];
-			cur = v[i] > cur ? v[i] : cur;
+			cur       = v[i] > cur ? v[i] : cur;
 		}
 
 		return *this;
 	}
 
-	static S cross(vec<2,S>& a, vec<2,S>& b)
+	static S cross(vec<2, S>& a, vec<2, S>& b)
 	{
-		return a[0]*b[1] - a[1]*b[0];
+		return a[0] * b[1] - a[1] * b[0];
 	}
 
-	static vec<3,S> cross(vec<3,S> const& a, vec<3,S> const& b)
+	static vec<3, S> cross(vec<3, S> const& a, vec<3, S> const& b)
 	{
 		return {
-			a[1]*b[2] - a[2]*b[1],
-			a[2]*b[0] - a[0]*b[2],
-			a[0]*b[1] - a[1]*b[0],
+		    a[1] * b[2] - a[2] * b[1],
+		    a[2] * b[0] - a[0] * b[2],
+		    a[0] * b[1] - a[1] * b[0],
 		};
 	}
 
 	S v[N]; // value store
 };
 
-template <size_t R, size_t C, typename S=XMTYPE>
+
+template <size_t R, size_t C, typename S = XMTYPE>
 struct mat
 {
 	mat()
 	{
 		for (auto row = R; row--;)
-		for (auto col = C; col--;)
-		{
-			m[row][col] = {};
-		}
+			for (auto col = C; col--;) { m[row][col] = {}; }
 	}
 
 	mat(std::initializer_list<std::initializer_list<S>> init)
@@ -850,7 +919,6 @@ struct mat
 			}
 			ri += 1;
 		}
-
 	}
 
 	mat(std::initializer_list<vec<C, S>> init)
@@ -861,16 +929,15 @@ struct mat
 			m[ri] = row;
 			ri += 1;
 		}
-
 	}
 
-	mat<R, C, S>& initialize(std::function<S (S r, S c)> init)
+	mat<R, C, S>& initialize(std::function<S(S r, S c)> init)
 	{
 		for (auto row = R; row--;)
-		for (auto col = C; col--;)
-		{
-			m[row][col] = init(static_cast<S>(row), static_cast<S>(col));
-		}
+			for (auto col = C; col--;)
+			{
+				m[row][col] = init(static_cast<S>(row), static_cast<S>(col));
+			}
 
 		return *this;
 	}
@@ -882,8 +949,8 @@ struct mat
 		return m;
 	}
 
-	template<size_t SUB_R, size_t SUB_C>
-	mat<SUB_R, SUB_C, S> slice(size_t r_off=0, size_t c_off=0)
+	template <size_t SUB_R, size_t SUB_C>
+	mat<SUB_R, SUB_C, S> slice(size_t r_off = 0, size_t c_off = 0)
 	{
 		mat<SUB_R, SUB_C, S> out;
 
@@ -901,7 +968,7 @@ struct mat
 	vec<R * C, S> flatten(bool row_major = true)
 	{
 		vec<R * C, S> out;
-		
+
 		for (unsigned i = 0; i < R * C; i++)
 		{
 			auto r = row_major ? i / C : i % R;
@@ -912,10 +979,7 @@ struct mat
 		return out;
 	}
 
-	void invert_inplace()
-	{
-		MAT_INV_IMP(S, R, C, m)
-	}
+	void invert_inplace(){MAT_INV_IMP(S, R, C, m)}
 
 	mat<R, C, S> invert() const
 	{
@@ -936,10 +1000,10 @@ struct mat
 		S _max = m[0][0];
 
 		for (unsigned r = 0; r < R; r++)
-		for (unsigned c = 0; c < C; c++)
-		{
-			_max = std::max<S>(_max, m[r][c]);
-		}
+			for (unsigned c = 0; c < C; c++)
+			{
+				if (isfinite(m[r][c])) { _max = std::max<S>(_max, m[r][c]); }
+			}
 
 		return _max;
 	}
@@ -949,11 +1013,10 @@ struct mat
 		S _min = m[0][0];
 
 		for (unsigned r = 0; r < R; r++)
-		for (unsigned c = 0; c < C; c++)
-		{
-			_min = std::min<S>(_min, m[r][c]);
-		}
-
+			for (unsigned c = 0; c < C; c++)
+			{
+				if (isfinite(m[r][c])) { _min = std::min<S>(_min, m[r][c]); }
+			}
 		return _min;
 	}
 
@@ -961,28 +1024,28 @@ struct mat
 
 	const vec<C, S>& operator[](size_t r) const { return m[r]; }
 
-	mat<R, C, S> operator+ (const mat<R, C, S>& M) const
+	mat<R, C, S> operator+(const mat<R, C, S>& M) const
 	{
 		mat<R, C, S> out;
 		MAT_ADD(R, C, out, m, M.m);
 		return out;
 	}
 
-	mat<R, C, S> operator- (const mat<R, C, S>& M) const
+	mat<R, C, S> operator-(const mat<R, C, S>& M) const
 	{
 		mat<R, C, S> out;
 		MAT_SUB(R, C, out, m, M.m);
 		return out;
 	}
 
-	mat<R, C, S>& operator-= (S s)
+	mat<R, C, S>& operator-=(S s)
 	{
 		MAT_SUB_E(R, C, m, m, s);
 		return *this;
 	}
 
-	template<size_t O>
-	mat<R, O, S> operator* (const mat<C, O, S>& N) const
+	template <size_t O>
+	mat<R, O, S> operator*(const mat<C, O, S>& N) const
 	{
 		mat<R, O, S> out;
 		MAT_MUL(R, C, C, O, out.m, m, N.m);
@@ -1016,50 +1079,25 @@ struct mat
 		return *this;
 	}
 
-	vec<R, S> operator* (const vec<C, S>& V) const
+	vec<R, S> operator*(const vec<C, S>& V) const
 	{
 		vec<R, S> out = {};
 		for (size_t r = 0; r < R; r++)
-		for (size_t c = 0; c < C; c++)
-		{
-			out[r] += m[r][c] * V[c];
-		}
+			for (size_t c = 0; c < C; c++) { out[r] += m[r][c] * V[c]; }
 
 		return out;
 	}
 
-	vec<R-1, S> operator* (const vec<C-1, S>& V) const
+	vec<R - 1, S> operator*(const vec<C - 1, S>& V) const
 	{
-		vec<R-1, S> out = {};
-		for (size_t r = 0; r < R-1; r++)
-		for (size_t c = 0; c < C-1; c++)
-		{
-			out[r] += m[r][c] * V[c];
-		}
+		vec<R - 1, S> out = {};
+		for (size_t r = 0; r < R - 1; r++)
+			for (size_t c = 0; c < C - 1; c++) { out[r] += m[r][c] * V[c]; }
 
-		for (size_t i = 0; i < R-1; i++)
-		{
-			out[i] += m[i][C-1];
-		}
+		for (size_t i = 0; i < R - 1; i++) { out[i] += m[i][C - 1]; }
 
 		return out;
 	}
-
-	// vec<3, float> operator*(const vec<3, float>& V) const
-	// {
-	// 	vec<3, float> out = {};
-	// 	for (size_t r = 0; r < 3; r++)
-	// 	for (size_t c = 0; c < 3; c++)
-	// 	{
-	// 		out[r] += m[r][c] * V[c];
-	// 	}
-
-	// 	out[0] += m[0][3];
-	// 	out[1] += m[1][3];
-	// 	out[2] += m[2][3];
-
-	// 	return out;
-	// }
 
 	inline mat<R, C, S>& operator*=(const mat<R, C, S>& N)
 	{
@@ -1088,23 +1126,28 @@ struct mat
 		return str;
 	}
 
-	static mat<4, 4> look(const vec<3>& position, const vec<3>& forward, const vec<3>& u)
+	static mat<4, 4> look(const vec<3>& position,
+	                      const vec<3>& forward,
+	                      vec<3>        u)
 	{
 		const auto r = vec<3>::cross(forward, u);
 		const auto f = forward;
+		u            = vec<3>::cross(r, f).unit();
 		const auto p = position;
 
 		mat<4, 4> ori = {
-			{ r[0], u[0], f[0], 0 },
-			{ r[1], u[1], f[1], 0 },
-			{ r[2], u[2], f[2], 0 },
-			{    0,    0,    0, 1 }
-		};
+		    {r[0], r[1], r[2], 0},
+		    {u[0], u[1], u[2], 0},
+		    {f[0], f[1], f[2], 0},
+		    {0,    0,    0,    1}
+        };
 
-		return translation(p) * ori;
+		return ori * translation(-p);
 	}
 
-	static mat<4, 4> look_at(const vec<3>& position, const vec<3>& subject, const vec<3>& up)
+	static mat<4, 4> look_at(const vec<3>& position,
+	                         const vec<3>& subject,
+	                         const vec<3>& up)
 	{
 		const auto f = (subject - position).unit();
 
@@ -1113,46 +1156,52 @@ struct mat
 
 	static mat<4, 4> rotation(vec<3> axis, float angle)
 	{
-		const auto a = axis;
-		const auto c = cosf(angle);
-		const auto s = sinf(angle);
+		const auto a   = axis;
+		const auto c   = cosf(angle);
+		const auto s   = sinf(angle);
 		const auto omc = 1 - c;
 
 		return {
-			{c+a[0]*a[0]*omc,      a[1]*a[0]*omc+a[2]*s, a[2]*a[0]*omc-a[1]*s, 0},
-			{a[0]*a[1]*omc-a[2]*s, c+a[1]*a[1]*omc,      a[2]*a[1]*omc+a[0]*s, 0},
-			{a[0]*a[2]*omc+a[1]*s, a[1]*a[2]*omc-a[0]*s, c+a[2]*a[2]*omc,      0},
-			{                   0,                    0,                    0, 1}
-		};
+		    {c + a[0] * a[0] * omc,        a[1] * a[0] * omc + a[2] * s,
+		     a[2] * a[0] * omc - a[1] * s,                                  0},
+		    {a[0] * a[1] * omc - a[2] * s, c + a[1] * a[1] * omc,
+		     a[2] * a[1] * omc + a[0] * s,                                  0},
+		    {a[0] * a[2] * omc + a[1] * s, a[1] * a[2] * omc - a[0] * s,
+		     c + a[2] * a[2] * omc,		                                 0},
+		    {0,		                    0,		                    0, 1}
+        };
 	}
 
 	static mat<4, 4> scale(vec<3> t)
 	{
 		return {
-			{ t[0],    0,     0,    0    },
-			{    0,  t[1],    0,    0    },
-			{    0,    0,  t[2],    0    },
-			{    0,    0,     0,    1.   }
-		};
+		    {t[0], 0,    0,    0 },
+            {0,    t[1], 0,    0 },
+            {0,    0,    t[2], 0 },
+            {0,    0,    0,    1.}
+        };
 	}
 
 	static mat<4, 4> translation(vec<3> t)
 	{
 		return {
-			{    1,    0,    0,    0    },
-			{    0,    1,    0,    0    },
-			{    0,    0,    1,    0    },
-			{  t[0], t[1], t[2],   1.   }
-		};
+		    {1, 0, 0, t[0]},
+            {0, 1, 0, t[1]},
+            {0, 0, 1, t[2]},
+            {0, 0, 0, 1.  }
+        };
 	}
 
-	static mat<4, 4> perspective(const vec<2, S>& half_film_size, S focal_len, S near, S far)
+	static mat<4, 4> perspective(const vec<2, S>& half_film_size,
+	                             S                focal_len,
+	                             S                near,
+	                             S                far)
 	{
-		auto r = (half_film_size[0] / focal_len) * near;
-		auto l = -r;
-		auto t = (half_film_size[1] / focal_len) * near;
-		auto b = -t;
-		auto n2 = near * 2;
+		auto r   = (half_film_size[0] / focal_len) * near;
+		auto l   = -r;
+		auto t   = (half_film_size[1] / focal_len) * near;
+		auto b   = -t;
+		auto n2  = near * 2;
 		auto rml = r - l;
 		auto tmb = t - b;
 		auto rpl = r + l;
@@ -1162,432 +1211,413 @@ struct mat
 		auto ftn = far * near;
 
 		return {
-			{    n2/rml,         0,          0,         0 },
-			{         0,    n2/tmb,          0,         0 },
-			{   rpl/rml,   tpb/tmb,   -fpn/fmn,        -1 },
-			{         0,         0, -2*ftn/fmn,         0 }
-		};		
+		    {n2 / rml,  0,         0,              0 },
+		    {0,         n2 / tmb,  0,              0 },
+		    {rpl / rml, tpb / tmb, -fpn / fmn,     -1},
+		    {0,         0,         -2 * ftn / fmn, 0 }
+        };
 	}
 
 	static mat<4, 4> perspective(S near, S far, S fov, S aspect)
 	{
 		const auto half_canvas_w = (S)tan(fov / 2) * near;
 		const auto half_canvas_h = half_canvas_w / aspect;
-		return perspective(vec<2, S>{half_canvas_w, half_canvas_h}, near, near, far);
+		return perspective(vec<2, S>{half_canvas_w, half_canvas_h}, near, near,
+		                   far);
 	}
 
-	static mat<4, 4> orthographic(S near, S far, S left, S right, S top, S bottom)
+	static mat<4, 4> orthographic(S near,
+	                              S far,
+	                              S left,
+	                              S right,
+	                              S top,
+	                              S bottom)
 	{
 		const auto rml = right - left;
 		const auto tmb = top - bottom;
 		const auto fmn = far - near;
 
 		return {
-			{2/rml,     0,      0,     0},
-			{    0, 2/tmb,      0,     0},
-			{    0,     0, -2/fmn,     0},
-			{    0,     0,      0,     1},
+		    {2 / rml, 0,       0,        0},
+		    {0,       2 / tmb, 0,        0},
+		    {0,       0,       -2 / fmn, 0},
+		    {0,       0,       0,        1},
 		};
 	}
 
 	vec<C, S> m[R];
 };
 
-// template<> vec<3, float> mat<4, 4, float>::operator*(const vec<3, float>& V) const
-// {
-// 	vec<3, float> out = {};
-// 	for (size_t r = 0; r < 3; r++)
-// 	for (size_t c = 0; c < 3; c++)
-// 	{
-// 		out[r] += this->m[r][c] * V[c];
-// 	}
 
-// 	out[0] += m[0][3];
-// 	out[1] += m[1][3];
-// 	out[2] += m[2][3];
-
-// 	return out;
-// }
-
-// template<> vec<3, double> mat<4, 4, double>::operator*(const vec<3, double>& V) const
-// {
-// 	vec<3, double> out = {};
-// 	for (size_t r = 0; r < 3; r++)
-// 	for (size_t c = 0; c < 3; c++)
-// 	{
-// 		out[r] += this->m[r][c] * V[c];
-// 	}
-
-// 	out[0] += m[0][3];
-// 	out[1] += m[1][3];
-// 	out[2] += m[2][3];
-
-// 	return out;
-// }
-
-template<typename QS=XMTYPE>
+template <typename QS = XMTYPE>
 struct quat : public vec<4, QS>
 {
-    quat() : vec<4, QS>({ 0, 0, 0, 1 })
-    {
-        // NOP
-    }
+	quat() : vec<4, QS>({0, 0, 0, 1})
+	{
+		// NOP
+	}
 
-    quat(const QS* v) : vec<4, QS>({ v[0], v[1], v[2], v[3] })
-    {
-        // NOP
-    }
+	quat(const QS* v) : vec<4, QS>({v[0], v[1], v[2], v[3]})
+	{
+		// NOP
+	}
 
-    quat(QS x, QS y, QS z, QS w) : vec<4, QS>({ x, y, z, w })
-    {
-        // NOP
-    }
+	quat(QS x, QS y, QS z, QS w) : vec<4, QS>({x, y, z, w})
+	{
+		// NOP
+	}
 
-    quat(vec<4> v) : vec<4, QS>(v)
-    {
-        // NOP
-    }
+	quat(vec<4> v) : vec<4, QS>(v)
+	{
+		// NOP
+	}
 
+	quat operator*(quat const& other) const
+	{
+		auto t3 = this->template slice<3>(0);
+		auto o3 = other.template slice<3>(0);
 
-    quat operator*(quat const& other) const
-    {
-        auto t3 = this->template slice<3>(0);
-        auto o3 = other.template slice<3>(0);
+		auto r = vec<3, QS>::cross(t3, o3);
+		auto w = t3 * other[3];
+		r += w;
+		w = o3 * this->v[3];
+		r += w;
 
-        auto r = vec<3, QS>::cross(t3, o3);
-        auto w = t3 * other[3];
-        r += w;
-        w = o3 * this->v[3];
-        r += w;
+		return {r[0], r[1], r[2], this->v[3] * other.v[3] - t3.dot(o3)};
+	}
 
-        return {
-            r[0], r[1], r[2],
-            this->v[3] * other.v[3] - t3.dot(o3)
-        };
-    }
+	quat operator*(float s) const { return {this->slice<4>(0) * s}; }
 
+	quat& operator*=(quat const& other)
+	{
+		*this = *this * std::move(other);
+		return *this;
+	}
 
-    quat operator*(float s) const
-    {
-        return { this->slice<4>(0) * s };
-    }
+	quat conjugate() const
+	{
+		auto& q = *this;
+		return {(QS)-q[0], (QS)-q[1], (QS)-q[2], (QS)q[3]};
+	}
 
+	quat inverse() const
+	{
+		auto inv  = conjugate();
+		auto mag2 = this->dot(*this);
+		static_cast<vec<4>>(inv) /= mag2;
+		return inv;
+	}
 
-    quat& operator*=(quat const& other)
-    {
-        *this = *this * std::move(other);
-        return *this;
-    }
-
-    quat conjugate() const
-    {
-        auto& q = *this;
-        return { (QS)-q[0], (QS)-q[1], (QS)-q[2], (QS)q[3] };
-    }
-
-    quat inverse() const
-    {
-        auto inv = conjugate();
-        auto mag2 = this->dot(*this);
-        static_cast<vec<4>>(inv) /= mag2;
-        return inv;
-    }
-
-    inline float rotational_difference(quat const& q) const
-    {
-        auto q_d = q * this->inverse();
+	inline float rotational_difference(quat const& q) const
+	{
+		auto q_d  = q * this->inverse();
 		auto cplx = q_d.template slice<3>();
-        return 2 * atan2(cplx.magnitude(), fabsf(q_d[3]));
-    }
+		return 2 * atan2(cplx.magnitude(), fabsf(q_d[3]));
+	}
 
+	quat slerp_to(quat const& p1, float t) const
+	{
+		const auto& p0    = *this;
+		auto        W     = rotational_difference(p1);
+		auto        sin_W = sin(W);
+		if (sin_W < 0.0001f) { sin_W = 0.0001f; }
+		return p0 * (sin((1 - t) * W) / sin_W) + p1 * (sin(t * W) / sin_W);
+	}
 
-    quat slerp_to(quat const& p1, float t) const
-    {
-        const auto& p0 = *this;
-        auto W = rotational_difference(p1);
-        auto sin_W = sin(W);
-        if (sin_W < 0.0001f) { sin_W = 0.0001f; }
-        return p0 * (sin((1 - t) * W) / sin_W) + p1 * (sin(t * W) / sin_W);
-    }
+	vec<3> rotate(vec<3, QS> const& v) const
+	{
+		if (v[0] == 0 && v[1] == 0 && v[2] == 0) { return v; }
 
-    vec<3> rotate(vec<3, QS> const& v) const
-    {
-    	if (v[0] == 0 && v[1] == 0 && v[2] == 0) { return v; }
+		vec<3, QS> q_xyz = this->template slice<3>(0);
 
-        vec<3, QS> q_xyz = this->template slice<3>(0);
+		vec<3, QS> t = vec<3, QS>::cross(q_xyz, v);
+		t *= 2;
 
-        vec<3, QS> t = vec<3, QS>::cross(q_xyz, v);
-        t *= 2;
+		vec<3, QS> u = vec<3, QS>::cross(q_xyz, t);
+		t *= this->v[3];
 
-        vec<3, QS> u = vec<3, QS>::cross(q_xyz, t);
-        t *= this->v[3];
+		return v + t + u;
+	}
 
-        return v + t + u;
-    }
+	inline mat<4, 4> to_matrix() const
+	{
+		auto v = *((vec<4, QS>*)this);
+		auto a = v[3], b = v[0], c = v[1], d = v[2];
+		auto a2 = a * a, b2 = b * b, c2 = c * c, d2 = d * d;
 
-    inline mat<4, 4> to_matrix() const
-    {
-        auto v = *((vec<4, QS>*)this);
-        auto a = v[3], b = v[0], c = v[1], d = v[2];
-        auto a2 = a * a, b2 = b * b, c2 = c * c, d2 = d * d;
+		return {
+		    {a2 + b2 - c2 - d2,   2 * (b * c - a * d), 2 * (b * d + a * c), 0},
+		    {2 * (b * c + a * d), a2 - b2 + c2 - d2,   2 * (c * d - a * b), 0},
+		    {2 * (b * d - a * c), 2 * (c * d + a * b), a2 - b2 - c2 + d2,   0},
+		    {0,		           0,		           0,                   1},
+		};
+	}
 
-        return {
-            { a2 + b2 - c2 - d2, 2 * (b*c - a*d)  , 2 * (b*d + a*c)  , 0},
-            { 2 * (b*c + a*d)  , a2 - b2 + c2 - d2, 2 * (c*d - a*b)  , 0},
-            { 2 * (b*d - a*c)  , 2 * (c*d + a*b)  , a2 - b2 - c2 + d2, 0},
-            { 0                , 0                , 0                , 1},
-        };
-    }
+	vec<3, QS> to_roll_pitch_yaw()
+	{
+		QS roll, pitch, yaw;
+		// roll (x-axis rotation)
+		auto sinr_cosp =
+		    +2.0 * (this->v[3] * this->v[0] + this->v[1] * this->v[2]);
+		auto cosr_cosp =
+		    +1.0 - 2.0 * (this->v[0] * this->v[0] + this->v[1] * this->v[1]);
+		roll = atan2(sinr_cosp, cosr_cosp);
 
-    vec<3, QS> to_roll_pitch_yaw()
-    {
-        QS roll, pitch, yaw;
-        // roll (x-axis rotation)
-        auto sinr_cosp = +2.0 * (this->v[3] * this->v[0] + this->v[1] * this->v[2]);
-        auto cosr_cosp = +1.0 - 2.0 * (this->v[0] * this->v[0] + this->v[1] * this->v[1]);
-        roll = atan2(sinr_cosp, cosr_cosp);
+		// pitch (y-axis rotation)
+		auto sinp = +2.0 * (this->v[3] * this->v[1] - this->v[2] * this->v[0]);
+		if (fabs(sinp) >= 1)
+		{
+			pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+		}
+		else { pitch = asin(sinp); }
 
-        // pitch (y-axis rotation)
-        auto sinp = +2.0 * (this->v[3] * this->v[1] - this->v[2] * this->v[0]);
-        if (fabs(sinp) >= 1)
-        {
-            pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
-        }
-        else
-        {
-            pitch = asin(sinp);
-        }
+		// yaw (z-axis rotation)
+		auto siny_cosp =
+		    +2.0 * (this->v[3] * this->v[2] + this->v[0] * this->v[1]);
+		auto cosy_cosp =
+		    +1.0 - 2.0 * (this->v[1] * this->v[1] + this->v[2] * this->v[2]);
+		yaw = atan2(siny_cosp, cosy_cosp);
 
-        // yaw (z-axis rotation)
-        auto siny_cosp = +2.0 * (this->v[3] * this->v[2] + this->v[0] * this->v[1]);
-        auto cosy_cosp = +1.0 - 2.0 * (this->v[1] * this->v[1] + this->v[2] * this->v[2]);
-        yaw = atan2(siny_cosp, cosy_cosp);
+		return {roll, pitch, yaw};
+	}
 
-        return { roll, pitch, yaw };
-    }
+	static quat view(vec<3> f, vec<3> u = {0, 1, 0})
+	{
+		auto t0 = vec<3>{0, 0, 1}.angle_to(f);
+		auto a0 = vec<3>::cross(vec<3>{1, 0, 0}, f);
+		auto q0 = from_axis_angle(a0, t0);
 
-    static quat view(vec<3> f, vec<3> u={0, 1, 0})
-    {
-    	auto t0 = vec<3>{0, 0, 1}.angle_to(f);
-    	auto a0 = vec<3>::cross(vec<3>{1, 0, 0}, f);
-    	auto q0 = from_axis_angle(a0, t0);
+		auto t1 = vec<3>{0, 1, 0}.angle_to(q0.rotate(u));
+		auto a1 = vec<3>::cross(vec<3>{0, 1, 0}, u);
+		auto q1 = from_axis_angle(a1, t1);
 
-    	auto t1 = vec<3>{0, 1, 0}.angle_to(q0.rotate(u));
-    	auto a1 = vec<3>::cross(vec<3>{0, 1, 0}, u);
-    	auto q1 = from_axis_angle(a1, t1);
+		return q1 * q0;
+	}
 
-    	return q1 * q0;
-    	// /**
-    	//  * Find some rotation R(q) which statisfies
-    	//  * 
-    	//  * f = R(q) * {0 0 1}
-    	//  * u = R(q) * {0 1 0}
-    	//  * 
-    	//  */
-    	// const auto X = vec<3>{1, 0, 0};
-    	// const auto Y = vec<3>{0, 1, 0};
-
-    	// // both f and u exist in the same plane. In the above case, the normal
-    	// // of the plane is pointing along the x axis. Find the angle between
-    	// // the normal and the x axis to build the first quaternion q
-    	// auto n = vec<3>::cross(f, u);
-    	// auto q_a = X.angle_to(n);
-    	// auto q = from_axis_angle(vec<3>::cross(X, n), q_a);
-
-    	// // within the plane, f and u rotate about the axis defined by the
-    	// // normal of the plane described above. The angle could be found by
-    	// // rotating the Y axis unit vector by the quaternion q we just found
-    	// auto y = q.rotate(Y);
-    	// auto r_a = y.angle_to(u);
-    	// auto r = from_axis_angle(n, r_a);
-
-    	// return r * q;
-
-/**
-    	auto forward_plane = (forward * vec<3>{ 1, 0, 1 }).unit();
-    	auto theta_sign = forward_plane.dot({1, 0, 0}) > 0 ? 1 : -1;
-    	auto theta = theta_sign * acos(forward_plane.dot({0, 0, 1})) + M_PI;
-
-    	auto phi_sign = forward_plane.dot(up) > 0 ? -1 : 1;
-    	auto phi = phi_sign * acos(up.dot({0, 1, 0}));
-
-    	return from_axis_angle({0, 1, 0}, theta) * from_axis_angle({1, 0, 0}, phi);
-**/
-    	// auto r = vec<3>::cross(forward, up);
-    	// auto m = mat<4,4>{
-    	// 	{ r[0], up[0], forward[0], 0 },
-    	// 	{ r[1], up[1], forward[1], 0 },
-    	// 	{ r[2], up[2], forward[2], 0 },
-    	// 	{    0,     0,          0, 1 },
-    	// };
-    	// return from_matrix(m.invert());
-    }
-
-    static quat from_matrix(const mat<4, 4>& m)
-    {
-    	quat q;
+	static quat from_matrix(const mat<4, 4>& m)
+	{
+		quat q;
 		auto tr = m[0][0] + m[1][1] + m[2][2];
 
 		if (tr > 0)
 		{
-			auto s = sqrt(tr+1.0) * 2; // s=4*qw
-			q[3] = 0.25 * s;
-			q[0] = (m[2][1] - m[1][2]) / s;
-			q[1] = (m[0][2] - m[2][0]) / s;
-			q[2] = (m[1][0] - m[0][1]) / s;
+			auto s = sqrt(tr + 1.0) * 2; // s=4*qw
+			q[3]   = 0.25 * s;
+			q[0]   = (m[2][1] - m[1][2]) / s;
+			q[1]   = (m[0][2] - m[2][0]) / s;
+			q[2]   = (m[1][0] - m[0][1]) / s;
 		}
-		else if ((m[0][0] > m[1][1])&&(m[0][0] > m[2][2]))
+		else if ((m[0][0] > m[1][1]) && (m[0][0] > m[2][2]))
 		{
 			auto s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // s=4*q[0]
-			q[3] = (m[2][1] - m[1][2]) / s;
-			q[0] = 0.25 * s;
-			q[1] = (m[0][1] + m[1][0]) / s;
-			q[2] = (m[0][2] + m[2][0]) / s;
+			q[3]   = (m[2][1] - m[1][2]) / s;
+			q[0]   = 0.25 * s;
+			q[1]   = (m[0][1] + m[1][0]) / s;
+			q[2]   = (m[0][2] + m[2][0]) / s;
 		}
 		else if (m[1][1] > m[2][2])
 		{
 			auto s = sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2; // s=4*q[1]
-			q[3] = (m[0][2] - m[2][0]) / s;
-			q[0] = (m[0][1] + m[1][0]) / s;
-			q[1] = 0.25 * s;
-			q[2] = (m[1][2] + m[2][1]) / s;
+			q[3]   = (m[0][2] - m[2][0]) / s;
+			q[0]   = (m[0][1] + m[1][0]) / s;
+			q[1]   = 0.25 * s;
+			q[2]   = (m[1][2] + m[2][1]) / s;
 		}
 		else
 		{
 			auto s = sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2; // s=4*q[2]
-			q[3] = (m[1][0] - m[0][1]) / s;
-			q[0] = (m[0][2] + m[2][0]) / s;
-			q[1] = (m[1][2] + m[2][1]) / s;
-			q[2] = 0.25 * s;
+			q[3]   = (m[1][0] - m[0][1]) / s;
+			q[0]   = (m[0][2] + m[2][0]) / s;
+			q[1]   = (m[1][2] + m[2][1]) / s;
+			q[2]   = 0.25 * s;
 		}
 
 		return q;
+	}
+
+	static quat from_axis_angle(vec<3, QS> axis, QS angle)
+	{
+		auto a_2 = angle / 2;
+		auto a   = sinf(a_2);
+
+		axis *= a;
+
+		return {(QS)axis[0], (QS)axis[1], (QS)axis[2], (QS)cosf(a_2)};
+	}
+};
+
+namespace intersect
+{
+
+	static XMTYPE ray_plane(const vec<3>& ray_o,
+	                        const vec<3>& ray_d,
+	                        const vec<3>& plane_o,
+	                        const vec<3>& plane_n)
+	{
+		// definition of a plane:
+		// p_n . (p_o - p) = 0
+		const auto& p_n = plane_n;
+		const auto& p_o = plane_o;
+		//
+		// definition of point on ray
+		// r_d * t + r_o = p
+		const auto& r_d = ray_d;
+		const auto& r_o = ray_o;
+
+		// substitute ray point into plane
+		// p_n . (p_o - (r_d * t + r_o)) = 0
+		// p_n . p_o - p_n * r_p = 0
+		// p_n . p_o = p_n * r_p         # expand r_p
+		// p_n . p_o = p_n . r_d * t + p_n . r_o
+		// (p_n . p_o) - (p_n . r_o) = p_n . r_d * t
+		// p_n . (p_o - r_o) / p_n . r_d = t
+
+		auto pn_dot_rd = p_n.dot(r_d);
+		auto d_po_ro   = p_o - r_o;
+
+		if (d_po_ro.dot(r_d) < 0)
+		{
+			// ray origin is on the side facing away from the plane normal
+			// an intersection cannot occur
+			return NAN;
+		}
+
+		if (pn_dot_rd >= 0)
+		{
+			// ray direction is parallel, or pointing away from the plane
+			// an intersection cannot occur
+			return NAN;
+		}
+
+		return p_n.dot(d_po_ro) / pn_dot_rd;
+	}
+
+	static XMTYPE ray_box(const vec<3>& ray_o,
+	                      const vec<3>& ray_d,
+	                      const vec<3>& box_o,
+	                      const vec<3>  box_sides[3])
+	{
+		const auto epsilon = std::numeric_limits<XMTYPE>::epsilon();
+		auto       t_min   = -INFINITY;
+		auto       t_max   = INFINITY;
+
+		auto p = box_o - ray_o;
+
+		XMTYPE half_lengths[] = {
+		    box_sides[0].magnitude(),
+		    box_sides[1].magnitude(),
+		    box_sides[2].magnitude(),
+		};
+
+		for (unsigned i = 0; i < 3; i++)
+		{
+			auto e = p.dot(box_sides[i] / half_lengths[i]);
+			auto f = ray_d.dot(box_sides[i] / half_lengths[i]);
+
+			if (static_cast<XMTYPE>(fabs(f)) > epsilon)
+			{
+				auto t_1 = (e + half_lengths[i]) / f;
+				auto t_2 = (e - half_lengths[i]) / f;
+
+				if (t_1 > t_2) { std::swap(t_1, t_2); }
+				if (t_1 > t_min) { t_min = t_1; }
+				if (t_2 < t_max) { t_max = t_2; }
+				if (t_min > t_max) { return NAN; }
+				if (t_max < 0) { return NAN; }
+			}
+			else if ((-e - half_lengths[i]) > 0 || (-e + half_lengths[i]) < 0)
+			{
+				return NAN;
+			}
+		}
+
+		if (t_min > 0) { return t_min; }
+
+		return t_max;
+	}
+
+	static XMTYPE ray_sphere(const vec<3>& ray_o,
+	                         const vec<3>& ray_d,
+	                         const vec<3>& sphere_o,
+	                         const XMTYPE  sphere_r)
+	{
+		auto l  = sphere_o - ray_o;
+		auto s  = l.dot(ray_d);
+		auto l2 = l.dot(l);
+		auto r2 = sphere_r * sphere_r;
+
+		if (s < 0 && l2 > r2) { return NAN; }
+
+		auto m2 = l2 - (s * s);
+
+		if (m2 > r2) { return NAN; }
+
+		auto q = sqrt(r2 - m2);
+
+		auto b = l2 > r2;
+		return b * (s - q) + !b * (s + q);
+	}
+
+}; // namespace intersection
+
+namespace filter
+{
+
+/**
+ * @brief      { struct_description }
+ *
+ * @tparam     Z     { description }
+ * @tparam     X     { description }
+ * @tparam     U     { description }
+ * @tparam     S     { description }
+ */
+template<size_t Z, size_t X, size_t U, typename S=XMTYPE>
+struct kalman
+{
+    struct
+    {
+        vec<X, S> state;
+        mat<X, X, S> covariance;
+    } estimated;
+
+    kalman(const vec<X, S>& state) : estimated.state(state)
+    {
+        estimated.covariance = mat<X, X, S>::I();
     }
 
-    static quat from_axis_angle(vec<3, QS> axis, QS angle)
+    /**
+     * @brief      { function_description }
+     *
+     * @param[in]  state_transition  The state transition
+     * @param[in]  control_to_state  The control to state
+     * @param[in]  control           The control
+     */
+    void time_update(const mat<X, X, S>& state_transition,
+                     const mat<X, U, S>& control_to_state,
+                     const vec<U, S>& control)
     {
-        auto a_2 = angle / 2;
-        auto a = sinf(a_2);
 
-        axis *= a;
+    }
 
-        return { (QS)axis[0], (QS)axis[1], (QS)axis[2], (QS)cosf(a_2) };
+    /**
+     * @brief      { function_description }
+     *
+     * @param[in]  state_transition              The state transition
+     * @param[in]  state_to_measurement          The state to measurement
+     * @param[in]  measurement_noise_covariance  The measurement noise covariance
+     * @param[in]  measurement                   The measurement
+     */
+    void measurement_update(const mat<X, X, S>& state_transition,
+                            const mat<Z, X, S>& state_to_measurement,
+                            const mat<Z, Z, S>& measurement_noise_covariance,
+                            const vec<Z, S>& measurement
+                            )
+    {
+
     }
 };
 
-struct intersect
-{
-
-static XMTYPE ray_plane(const vec<3>& ray_o,
-                       const vec<3>& ray_d,
-                       const vec<3>& plane_o,
-                       const vec<3>& plane_n)
-{
-    // definition of a plane:
-    // p_n . (p_o - p) = 0
-    const auto& p_n = plane_n;
-    const auto& p_o = plane_o;
-    //
-    // definition of point on ray
-    // r_d * t + r_o = p
-    const auto& r_d = ray_d;
-    const auto& r_o = ray_o;
-
-    // substitute ray point into plane
-    // p_n . (p_o - (r_d * t + r_o)) = 0
-    // p_n . p_o - p_n * r_p = 0
-    // p_n . p_o = p_n * r_p         # expand r_p
-    // p_n . p_o = p_n . r_d * t + p_n . r_o
-    // (p_n . p_o) - (p_n . r_o) = p_n . r_d * t
-    // p_n . (p_o - r_o) / p_n . r_d = t
-
-    auto pn_dot_rd = p_n.dot(r_d);
-    auto d_po_ro = p_o - r_o;
-
-    if (d_po_ro.dot(r_d) < 0)
-    {
-        // ray origin is on the side facing away from the plane normal
-        // an intersection cannot occur
-        return NAN;
-    }
-
-    if (pn_dot_rd >= 0)
-    {
-        // ray direction is parallel, or pointing away from the plane
-        // an intersection cannot occur
-        return NAN;
-    }
-
-    return p_n.dot(d_po_ro) / pn_dot_rd;
-}
-
-static XMTYPE ray_box(const vec<3>& ray_o,
-                       const vec<3>& ray_d,
-                       const vec<3>& box_o,
-                       const vec<3> box_sides[3])
-{
-	const auto epsilon = 0.00000001f;
-	auto t_min = -INFINITY;
-	auto t_max = INFINITY;
-
-	auto p = box_o - ray_o;
-
-	XMTYPE half_lengths[] = {
-		box_sides[0].magnitude(),
-		box_sides[1].magnitude(),
-		box_sides[2].magnitude(),
-	};
-
-	for (unsigned i = 0; i < 3; i++)
-	{
-		auto e = p.dot(box_sides[i] / half_lengths[i]);
-		auto f = ray_d.dot(box_sides[i] / half_lengths[i]);
-
-		if (fabs(f) > epsilon)
-		{
-			auto t_1 = (e + half_lengths[i]) / f;
-			auto t_2 = (e - half_lengths[i]) / f;
-
-			if (t_1 > t_2) { std::swap(t_1, t_2); }
-			if (t_1 > t_min) { t_min = t_1; }
-			if (t_2 < t_max) { t_max = t_2; }
-			if (t_min > t_max) { return NAN; }
-			if (t_max < 0) { return NAN; }
-		}
-		else if ((-e - half_lengths[i]) > 0 || (-e + half_lengths[i]) < 0)
-		{
-			return NAN;
-		}
-	}
-
-	if (t_min > 0) { return t_min; }
-
-	return t_max;
-}
-
-static XMTYPE ray_sphere(const vec<3>& ray_o,
-	                     const vec<3>& ray_d,
-	                     const vec<3>& sphere_o,
-	                     const XMTYPE  sphere_r)
-{
-	auto l = sphere_o - ray_o;
-	auto s = l.dot(ray_d);
-	auto l2 = l.dot(l);
-	auto r2 = sphere_r * sphere_r;
-
-	if (s < 0 && l2 > r2) { return NAN; }
-
-	auto m2 = l2 - (s * s);
-
-	if (m2 > r2) { return NAN; }
-
-	auto q = sqrt(r2 - m2);
-
-	auto b = l2 > r2;
-	return b * (s - q) + !b * (s + q);
-}
-
-}; // namespace intersection
+} // end filter
 
 namespace filter
 {
