@@ -1578,11 +1578,16 @@ struct kalman
     {
         vec<X, S> state;
         mat<X, X, S> covariance;
+        vec<Z, S> measurement_residual;
     } estimated;
 
-    kalman(const vec<X, S>& state) : estimated.state(state)
+    mat<X, X, S> I_xx;
+
+    kalman(const vec<X, S>& state = {})
     {
+    	estimated.state = state;
         estimated.covariance = mat<X, X, S>::I();
+        I_xx = mat<X, X, S>::I();
     }
 
     /**
@@ -1594,9 +1599,19 @@ struct kalman
      */
     void time_update(const mat<X, X, S>& state_transition,
                      const mat<X, U, S>& control_to_state,
-                     const vec<U, S>& control)
+                     const vec<U, S>& control,
+                     const mat<X, X, S>& process_noise_covariance = {})
     {
+    	// Advance state in time by state_transition matrix. Apply control
+    	// vector transformed into state space to state.
+    	estimated.state *= state_transition;
+    	estimated.state += control_to_state * control;
 
+    	const auto& F = state_transition;
+    	auto& P = estimated.covariance;
+
+    	// Inflate covariance. TODO: study
+    	P = F * P * F.transpose() + process_noise_covariance;
     }
 
     /**
@@ -1609,22 +1624,38 @@ struct kalman
      */
     void measurement_update(const mat<X, X, S>& state_transition,
                             const mat<Z, X, S>& state_to_measurement,
-                            const mat<Z, Z, S>& measurement_noise_covariance,
-                            const vec<Z, S>& measurement
+                            const vec<Z, S>& measurement,
+                            const mat<Z, Z, S>& measurement_noise_covariance={}
                             )
     {
+    	const auto& F = state_transition;
+    	const auto& H = state_to_measurement;
+    	const auto H_T = state_to_measurement.transpose();
+    	auto& P = estimated.covariance;
+    	auto& x_hat = estimated.state;
 
+		// Compute error between most recent measurement, and current estimated state transformed into measurement domain
+    	auto meas_res_pre = measurement - state_to_measurement * x_hat; 
+
+    	// TODO: study
+    	// Z x Z
+    	auto covariance_res_pre = H * P * H_T + measurement_noise_covariance;
+
+    	// TODO: study
+    	// Kalman gain X x Z
+    	auto K = P * H_T * covariance_res_pre.invert();
+
+    	// TODO: study
+    	// Update state estimate: X x 1
+    	estimated.state = estimated.state * K * meas_res_pre;
+
+    	// TODO: study
+    	// Update state covariance estimate: X x X
+    	estimated.covariance = (I_xx - K * H) * estimated.covariance;
+
+    	// Compute error between estimated state transformed into measurement domain and raw measurement.
+		estimated.measurement_residual = measurement - state_to_measurement * x_hat; 
     }
-};
-
-} // end filter
-
-namespace filter
-{
-
-struct kalman
-{
-
 };
 
 } // end filter
