@@ -581,8 +581,8 @@ static inline void mat_identity(size_t n, XMTYPE mat[n][n])
 
 #ifdef __cplusplus
 #include <functional>
-#include <limits>
 #include <initializer_list>
+#include <limits>
 #include <string>
 
 namespace xmath
@@ -896,7 +896,6 @@ struct vec
 	S v[N]; // value store
 };
 
-
 template <size_t R, size_t C, typename S = XMTYPE>
 struct mat
 {
@@ -1031,11 +1030,11 @@ struct mat
 		return out;
 	}
 
-    mat<R, C, S>& operator+=(const mat<R, C, S>& M)
-    {
-        MAT_ADD(R, C, m, m, M.m);
-        return *this;
-    }
+	mat<R, C, S>& operator+=(const mat<R, C, S>& M)
+	{
+		MAT_ADD(R, C, m, m, M.m);
+		return *this;
+	}
 
 	mat<R, C, S> operator-(const mat<R, C, S>& M) const
 	{
@@ -1044,11 +1043,11 @@ struct mat
 		return out;
 	}
 
-    mat<R, C, S>& operator-=(const mat<R, C, S>& M)
-    {
-        MAT_SUB(R, C, m, m, M.m);
-        return *this;
-    }
+	mat<R, C, S>& operator-=(const mat<R, C, S>& M)
+	{
+		MAT_SUB(R, C, m, m, M.m);
+		return *this;
+	}
 
 	mat<R, C, S>& operator-=(S s)
 	{
@@ -1056,11 +1055,11 @@ struct mat
 		return *this;
 	}
 
-    mat<R, C, S>& operator+=(S s)
-    {
-        MAT_ADD_E(R, C, m, m, s);
-        return *this;
-    }
+	mat<R, C, S>& operator+=(S s)
+	{
+		MAT_ADD_E(R, C, m, m, s);
+		return *this;
+	}
 
 	template <size_t O>
 	mat<R, O, S> operator*(const mat<C, O, S>& N) const
@@ -1266,7 +1265,6 @@ struct mat
 	vec<C, S> m[R];
 };
 
-
 template <typename QS = XMTYPE>
 struct quat : public vec<4, QS>
 {
@@ -1467,116 +1465,116 @@ struct quat : public vec<4, QS>
 namespace intersect
 {
 
-	static XMTYPE ray_plane(const vec<3>& ray_o,
-	                        const vec<3>& ray_d,
-	                        const vec<3>& plane_o,
-	                        const vec<3>& plane_n)
+static XMTYPE ray_plane(const vec<3>& ray_o,
+                        const vec<3>& ray_d,
+                        const vec<3>& plane_o,
+                        const vec<3>& plane_n)
+{
+	// definition of a plane:
+	// p_n . (p_o - p) = 0
+	const auto& p_n = plane_n;
+	const auto& p_o = plane_o;
+	//
+	// definition of point on ray
+	// r_d * t + r_o = p
+	const auto& r_d = ray_d;
+	const auto& r_o = ray_o;
+
+	// substitute ray point into plane
+	// p_n . (p_o - (r_d * t + r_o)) = 0
+	// p_n . p_o - p_n * r_p = 0
+	// p_n . p_o = p_n * r_p         # expand r_p
+	// p_n . p_o = p_n . r_d * t + p_n . r_o
+	// (p_n . p_o) - (p_n . r_o) = p_n . r_d * t
+	// p_n . (p_o - r_o) / p_n . r_d = t
+
+	auto pn_dot_rd = p_n.dot(r_d);
+	auto d_po_ro   = p_o - r_o;
+
+	if (d_po_ro.dot(r_d) < 0)
 	{
-		// definition of a plane:
-		// p_n . (p_o - p) = 0
-		const auto& p_n = plane_n;
-		const auto& p_o = plane_o;
-		//
-		// definition of point on ray
-		// r_d * t + r_o = p
-		const auto& r_d = ray_d;
-		const auto& r_o = ray_o;
+		// ray origin is on the side facing away from the plane normal
+		// an intersection cannot occur
+		return NAN;
+	}
 
-		// substitute ray point into plane
-		// p_n . (p_o - (r_d * t + r_o)) = 0
-		// p_n . p_o - p_n * r_p = 0
-		// p_n . p_o = p_n * r_p         # expand r_p
-		// p_n . p_o = p_n . r_d * t + p_n . r_o
-		// (p_n . p_o) - (p_n . r_o) = p_n . r_d * t
-		// p_n . (p_o - r_o) / p_n . r_d = t
+	if (pn_dot_rd >= 0)
+	{
+		// ray direction is parallel, or pointing away from the plane
+		// an intersection cannot occur
+		return NAN;
+	}
 
-		auto pn_dot_rd = p_n.dot(r_d);
-		auto d_po_ro   = p_o - r_o;
+	return p_n.dot(d_po_ro) / pn_dot_rd;
+}
 
-		if (d_po_ro.dot(r_d) < 0)
+static XMTYPE ray_box(const vec<3>& ray_o,
+                      const vec<3>& ray_d,
+                      const vec<3>& box_o,
+                      const vec<3>  box_sides[3])
+{
+	const auto epsilon = std::numeric_limits<XMTYPE>::epsilon();
+	auto       t_min   = -INFINITY;
+	auto       t_max   = INFINITY;
+
+	auto p = box_o - ray_o;
+
+	XMTYPE half_lengths[] = {
+	    box_sides[0].magnitude(),
+	    box_sides[1].magnitude(),
+	    box_sides[2].magnitude(),
+	};
+
+	for (unsigned i = 0; i < 3; i++)
+	{
+		auto e = p.dot(box_sides[i] / half_lengths[i]);
+		auto f = ray_d.dot(box_sides[i] / half_lengths[i]);
+
+		if (static_cast<XMTYPE>(fabs(f)) > epsilon)
 		{
-			// ray origin is on the side facing away from the plane normal
-			// an intersection cannot occur
+			auto t_1 = (e + half_lengths[i]) / f;
+			auto t_2 = (e - half_lengths[i]) / f;
+
+			if (t_1 > t_2) { std::swap(t_1, t_2); }
+			if (t_1 > t_min) { t_min = t_1; }
+			if (t_2 < t_max) { t_max = t_2; }
+			if (t_min > t_max) { return NAN; }
+			if (t_max < 0) { return NAN; }
+		}
+		else if ((-e - half_lengths[i]) > 0 || (-e + half_lengths[i]) < 0)
+		{
 			return NAN;
 		}
-
-		if (pn_dot_rd >= 0)
-		{
-			// ray direction is parallel, or pointing away from the plane
-			// an intersection cannot occur
-			return NAN;
-		}
-
-		return p_n.dot(d_po_ro) / pn_dot_rd;
 	}
 
-	static XMTYPE ray_box(const vec<3>& ray_o,
-	                      const vec<3>& ray_d,
-	                      const vec<3>& box_o,
-	                      const vec<3>  box_sides[3])
-	{
-		const auto epsilon = std::numeric_limits<XMTYPE>::epsilon();
-		auto       t_min   = -INFINITY;
-		auto       t_max   = INFINITY;
+	if (t_min > 0) { return t_min; }
 
-		auto p = box_o - ray_o;
+	return t_max;
+}
 
-		XMTYPE half_lengths[] = {
-		    box_sides[0].magnitude(),
-		    box_sides[1].magnitude(),
-		    box_sides[2].magnitude(),
-		};
+static XMTYPE ray_sphere(const vec<3>& ray_o,
+                         const vec<3>& ray_d,
+                         const vec<3>& sphere_o,
+                         const XMTYPE  sphere_r)
+{
+	auto l  = sphere_o - ray_o;
+	auto s  = l.dot(ray_d);
+	auto l2 = l.dot(l);
+	auto r2 = sphere_r * sphere_r;
 
-		for (unsigned i = 0; i < 3; i++)
-		{
-			auto e = p.dot(box_sides[i] / half_lengths[i]);
-			auto f = ray_d.dot(box_sides[i] / half_lengths[i]);
+	if (s < 0 && l2 > r2) { return NAN; }
 
-			if (static_cast<XMTYPE>(fabs(f)) > epsilon)
-			{
-				auto t_1 = (e + half_lengths[i]) / f;
-				auto t_2 = (e - half_lengths[i]) / f;
+	auto m2 = l2 - (s * s);
 
-				if (t_1 > t_2) { std::swap(t_1, t_2); }
-				if (t_1 > t_min) { t_min = t_1; }
-				if (t_2 < t_max) { t_max = t_2; }
-				if (t_min > t_max) { return NAN; }
-				if (t_max < 0) { return NAN; }
-			}
-			else if ((-e - half_lengths[i]) > 0 || (-e + half_lengths[i]) < 0)
-			{
-				return NAN;
-			}
-		}
+	if (m2 > r2) { return NAN; }
 
-		if (t_min > 0) { return t_min; }
+	auto q = sqrt(r2 - m2);
 
-		return t_max;
-	}
+	auto b = l2 > r2;
+	return b * (s - q) + !b * (s + q);
+}
 
-	static XMTYPE ray_sphere(const vec<3>& ray_o,
-	                         const vec<3>& ray_d,
-	                         const vec<3>& sphere_o,
-	                         const XMTYPE  sphere_r)
-	{
-		auto l  = sphere_o - ray_o;
-		auto s  = l.dot(ray_d);
-		auto l2 = l.dot(l);
-		auto r2 = sphere_r * sphere_r;
-
-		if (s < 0 && l2 > r2) { return NAN; }
-
-		auto m2 = l2 - (s * s);
-
-		if (m2 > r2) { return NAN; }
-
-		auto q = sqrt(r2 - m2);
-
-		auto b = l2 > r2;
-		return b * (s - q) + !b * (s + q);
-	}
-
-}; // namespace intersection
+}; // namespace intersect
 
 namespace filter
 {
@@ -1589,93 +1587,98 @@ namespace filter
  * @tparam     U     { description }
  * @tparam     S     { description }
  */
-template<size_t Z, size_t X, size_t U, typename S=XMTYPE>
+template <size_t Z, size_t X, size_t U, typename S = XMTYPE>
 struct kalman
 {
-    struct
-    {
-        mat<X, 1, S> state;
-        mat<X, X, S> covariance;
-        mat<Z, 1, S> measurement_residual;
-    } estimated;
+	struct
+	{
+		mat<X, 1, S> state;
+		mat<X, X, S> covariance;
+		mat<Z, 1, S> measurement_residual;
+	} estimated;
 
-    mat<X, X, S> I_xx;
+	mat<X, X, S> I_xx;
 
-    kalman(const mat<X, 1, S>& state = {})
-    {
-    	estimated.state = state;
-        estimated.covariance = mat<X, X, S>::I();
-        I_xx = mat<X, X, S>::I();
-    }
+	kalman(const mat<X, 1, S>& state = {})
+	{
+		estimated.state      = state;
+		estimated.covariance = mat<X, X, S>::I();
+		I_xx                 = mat<X, X, S>::I();
+	}
 
-    /**
-     * @brief      { function_description }
-     *
-     * @param[in]  state_transition  The state transition
-     * @param[in]  control_to_state  The control to state
-     * @param[in]  control           The control
-     */
-    void time_update(const mat<X, X, S>& state_transition,
-                     const mat<X, U, S>& control_to_state,
-                     const mat<U, 1, S>& control,
-                     const mat<X, X, S>& process_noise_covariance = {})
-    {
-    	// Advance state in time by state_transition matrix. Apply control
-    	// vector transformed into state space to state.
-    	estimated.state = state_transition * estimated.state;
-    	estimated.state += control_to_state * control;
+	/**
+	 * @brief      { function_description }
+	 *
+	 * @param[in]  state_transition  The state transition
+	 * @param[in]  control_to_state  The control to state
+	 * @param[in]  control           The control
+	 */
+	void time_update(const mat<X, X, S>& state_transition,
+	                 const mat<X, U, S>& control_to_state,
+	                 const mat<U, 1, S>& control,
+	                 const mat<X, X, S>& process_noise_covariance = {})
+	{
+		// Advance state in time by state_transition matrix. Apply control
+		// vector transformed into state space to state.
+		estimated.state = state_transition * estimated.state;
+		estimated.state += control_to_state * control;
 
-    	const auto& F = state_transition;
-    	auto& P = estimated.covariance;
+		const auto& F = state_transition;
+		auto&       P = estimated.covariance;
 
-    	// Inflate covariance. TODO: study
-    	P = F * P * F.transpose() + process_noise_covariance;
-    }
+		// Inflate covariance. TODO: study
+		P = F * P * F.transpose() + process_noise_covariance;
+	}
 
-    /**
-     * @brief      { function_description }
-     *
-     * @param[in]  state_transition              The state transition
-     * @param[in]  state_to_measurement          The state to measurement
-     * @param[in]  measurement_noise_covariance  The measurement noise covariance
-     * @param[in]  measurement                   The measurement
-     */
-    void measurement_update(const mat<X, X, S>& state_transition,
-                            const mat<Z, X, S>& state_to_measurement,
-                            const mat<Z, 1, S>& measurement,
-                            const mat<Z, Z, S>& measurement_noise_covariance={}
-                            )
-    {
-    	const mat<X, X, S>& F = state_transition;
-    	const mat<Z, X, S>& H = state_to_measurement;
-    	const mat<X, Z, S> H_T = state_to_measurement.transpose();
-    	auto& P = estimated.covariance;
-    	auto& x_hat = estimated.state;
+	/**
+	 * @brief      { function_description }
+	 *
+	 * @param[in]  state_transition              The state transition
+	 * @param[in]  state_to_measurement          The state to measurement
+	 * @param[in]  measurement_noise_covariance  The measurement noise
+	 * covariance
+	 * @param[in]  measurement                   The measurement
+	 */
+	void measurement_update(
+	    const mat<X, X, S>& state_transition,
+	    const mat<Z, X, S>& state_to_measurement,
+	    const mat<Z, 1, S>& measurement,
+	    const mat<Z, Z, S>& measurement_noise_covariance = {})
+	{
+		const mat<X, X, S>& F     = state_transition;
+		const mat<Z, X, S>& H     = state_to_measurement;
+		const mat<X, Z, S>  H_T   = state_to_measurement.transpose();
+		auto&               P     = estimated.covariance;
+		auto&               x_hat = estimated.state;
 
-		// Compute error between most recent measurement, and current estimated state transformed into measurement domain
-    	
-        auto meas_res_pre = measurement - state_to_measurement * x_hat;
+		// Compute error between most recent measurement, and current estimated
+		// state transformed into measurement domain
 
-    	// TODO: study
-    	mat<Z, Z, S> covariance_res_pre = H * P * H_T + measurement_noise_covariance;
+		auto meas_res_pre = measurement - state_to_measurement * x_hat;
 
-    	// TODO: study
-    	mat<X, Z, S> K = P * H_T * covariance_res_pre.invert();
+		// TODO: study
+		mat<Z, Z, S> covariance_res_pre =
+		    H * P * H_T + measurement_noise_covariance;
 
-    	// TODO: study
-    	// Update state estimate: X x 1
-    	estimated.state += /*mat<1, X, S>{estimated.state} * */ K * meas_res_pre;
-    	// TODO: study
-    	// Update state covariance estimate: X x X
-    	estimated.covariance = (I_xx - K * H) * estimated.covariance;
+		// TODO: study
+		mat<X, Z, S> K = P * H_T * covariance_res_pre.invert();
 
-    	// Compute error between estimated state transformed into measurement domain and raw measurement.
-		estimated.measurement_residual = measurement - state_to_measurement * x_hat; 
-    }
+		// TODO: study
+		// Update state estimate: X x 1
+		estimated.state += K * meas_res_pre;
+		// TODO: study
+		// Update state covariance estimate: X x X
+		estimated.covariance = (I_xx - K * H) * estimated.covariance;
+
+		// Compute error between estimated state transformed into measurement
+		// domain and raw measurement.
+		estimated.measurement_residual =
+		    measurement - state_to_measurement * x_hat;
+	}
 };
 
-} // end filter
+} // namespace filter
 
-} // namespace xmath end
+} // namespace xmath
 #endif
 #endif

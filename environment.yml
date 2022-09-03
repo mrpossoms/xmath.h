@@ -1,0 +1,9 @@
+name: xmath.h
+channels:
+  - defaults
+dependencies:
+  - clang-format-14=14.0.6=default_hc1a23ef_0
+  - libclang-cpp14=14.0.6=default_hc1a23ef_0
+  - libllvm14=14.0.6=hef93074_0
+  - libstdcxx-ng=11.2.0=h1234567_1
+  - zlib=1.2.12=h7f8727e_2
