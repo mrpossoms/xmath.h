@@ -1031,6 +1031,12 @@ struct mat
 		return out;
 	}
 
+    mat<R, C, S>& operator+=(const mat<R, C, S>& M)
+    {
+        MAT_ADD(R, C, m, m, M.m);
+        return *this;
+    }
+
 	mat<R, C, S> operator-(const mat<R, C, S>& M) const
 	{
 		mat<R, C, S> out;
@@ -1038,11 +1044,23 @@ struct mat
 		return out;
 	}
 
+    mat<R, C, S>& operator-=(const mat<R, C, S>& M)
+    {
+        MAT_SUB(R, C, m, m, M.m);
+        return *this;
+    }
+
 	mat<R, C, S>& operator-=(S s)
 	{
 		MAT_SUB_E(R, C, m, m, s);
 		return *this;
 	}
+
+    mat<R, C, S>& operator+=(S s)
+    {
+        MAT_ADD_E(R, C, m, m, s);
+        return *this;
+    }
 
 	template <size_t O>
 	mat<R, O, S> operator*(const mat<C, O, S>& N) const
@@ -1576,14 +1594,14 @@ struct kalman
 {
     struct
     {
-        vec<X, S> state;
+        mat<X, 1, S> state;
         mat<X, X, S> covariance;
-        vec<Z, S> measurement_residual;
+        mat<Z, 1, S> measurement_residual;
     } estimated;
 
     mat<X, X, S> I_xx;
 
-    kalman(const vec<X, S>& state = {})
+    kalman(const mat<X, 1, S>& state = {})
     {
     	estimated.state = state;
         estimated.covariance = mat<X, X, S>::I();
@@ -1599,12 +1617,12 @@ struct kalman
      */
     void time_update(const mat<X, X, S>& state_transition,
                      const mat<X, U, S>& control_to_state,
-                     const vec<U, S>& control,
+                     const mat<U, 1, S>& control,
                      const mat<X, X, S>& process_noise_covariance = {})
     {
     	// Advance state in time by state_transition matrix. Apply control
     	// vector transformed into state space to state.
-    	estimated.state *= state_transition;
+    	estimated.state = state_transition * estimated.state;
     	estimated.state += control_to_state * control;
 
     	const auto& F = state_transition;
@@ -1624,31 +1642,29 @@ struct kalman
      */
     void measurement_update(const mat<X, X, S>& state_transition,
                             const mat<Z, X, S>& state_to_measurement,
-                            const vec<Z, S>& measurement,
+                            const mat<Z, 1, S>& measurement,
                             const mat<Z, Z, S>& measurement_noise_covariance={}
                             )
     {
-    	const auto& F = state_transition;
-    	const auto& H = state_to_measurement;
-    	const auto H_T = state_to_measurement.transpose();
+    	const mat<X, X, S>& F = state_transition;
+    	const mat<Z, X, S>& H = state_to_measurement;
+    	const mat<X, Z, S> H_T = state_to_measurement.transpose();
     	auto& P = estimated.covariance;
     	auto& x_hat = estimated.state;
 
 		// Compute error between most recent measurement, and current estimated state transformed into measurement domain
-    	auto meas_res_pre = measurement - state_to_measurement * x_hat; 
+    	
+        auto meas_res_pre = measurement - state_to_measurement * x_hat;
 
     	// TODO: study
-    	// Z x Z
-    	auto covariance_res_pre = H * P * H_T + measurement_noise_covariance;
+    	mat<Z, Z, S> covariance_res_pre = H * P * H_T + measurement_noise_covariance;
 
     	// TODO: study
-    	// Kalman gain X x Z
-    	auto K = P * H_T * covariance_res_pre.invert();
+    	mat<X, Z, S> K = P * H_T * covariance_res_pre.invert();
 
     	// TODO: study
     	// Update state estimate: X x 1
-    	estimated.state = estimated.state * K * meas_res_pre;
-
+    	estimated.state += /*mat<1, X, S>{estimated.state} * */ K * meas_res_pre;
     	// TODO: study
     	// Update state covariance estimate: X x X
     	estimated.covariance = (I_xx - K * H) * estimated.covariance;
