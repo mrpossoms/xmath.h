@@ -5,7 +5,7 @@ sources:
   repo: git@github.com:mrpossoms/asciichart.git
   sparse_paths:
   -
-  rev: master
+  rev: feature/legend 
   link:
   scripts:
   -

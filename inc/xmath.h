@@ -930,6 +930,12 @@ struct mat
 		}
 	}
 
+	mat(vec<R * C, S> init)
+	{
+		for (unsigned r = 0; r < R; r++)
+			for (unsigned c = 0; c < C; c++) { m[r][c] = init[r * C + c]; }
+	}
+
 	mat<R, C, S>& initialize(std::function<S(S r, S c)> init)
 	{
 		for (auto row = R; row--;)
@@ -1593,18 +1599,13 @@ struct kalman
 	struct
 	{
 		mat<X, 1, S> state;
-		mat<X, X, S> covariance;
+		mat<X, X, S> covariance = mat<X, X, S>::I();
 		mat<Z, 1, S> measurement_residual;
 	} estimated;
 
-	mat<X, X, S> I_xx;
+	mat<X, X, S> I_xx = mat<X, X, S>::I();
 
-	kalman(const mat<X, 1, S>& state = {})
-	{
-		estimated.state      = state;
-		estimated.covariance = mat<X, X, S>::I();
-		I_xx                 = mat<X, X, S>::I();
-	}
+	kalman(vec<X, S>& state = {}) { estimated.state = {state}; }
 
 	/**
 	 * @brief      { function_description }
