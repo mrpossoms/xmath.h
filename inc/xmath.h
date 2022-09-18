@@ -1115,7 +1115,7 @@ struct mat
 
 	const S* ptr() const { return m[0].v; }
 
-	std::string to_string()
+	std::string to_string() const
 	{
 		std::string str = "";
 		for (size_t r = 0; r < R; r++)
