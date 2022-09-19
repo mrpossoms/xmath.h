@@ -223,7 +223,7 @@ void random_walk_velocity()
 	assert(fabs(residual[1]) < sqrt(cov[1][1]) * 3);
 }
 
-
+/**
 void IMU()
 {
 	std::normal_distribution<double> process_noise(0,0.01);
@@ -249,7 +249,7 @@ void IMU()
 
 	for (float t = 0; t < 10; t += dt)
 	{
-		state = stm_cart * state + vec<2>{process_noise(rng),process_noise(rng)};
+		state = stm_imu * state + vec<2>{process_noise(rng),process_noise(rng)};
 		state[1] = sin(t);
 
 		if (i % 1 == 0)
@@ -259,26 +259,26 @@ void IMU()
 			// measurement consists of a 2D acceleration vector from accelerometer, and 1D angular rate from gyro
 			// an angle of 0 will mean the imu is lying flat, facing up. As such the acceleration vector should be
 			// pointing downward
-			auto theta_est = cart_filter.estimated[0][0];
-			auto theta_dot_est = cart_filter.estimated[1][0];
+			auto theta_est = imu_filter.estimated[0][0];
+			auto theta_dot_est = imu_filter.estimated[1][0];
 			mat<3, 2> state_to_measurement_accel = {
 				{ 1, 0 },
 			};
 
-			cart_filter.measurement_update(
-				stm_cart,
+			imu_filter.measurement_update(
+				stm_imu,
 				state_to_measurement_cart,
 				mat<1, 1>{{z}},
 				measurement_noise_covar_cart
 			);
 		}
 
-		cart_filter.time_update(stm_cart, control_to_state_cart, {}, process_noise_covar_cart);
+		imu_filter.time_update(stm_imu, control_to_state_cart, {}, process_noise_covar_cart);
 
 		traces["true pos"].push_back(state[0]);
 		traces["true vel"].push_back(state[1]);
-		traces["estimated pos"].push_back(cart_filter.estimated.state[0][0]);
-		traces["estimated vel"].push_back(cart_filter.estimated.state[1][0]);
+		traces["estimated pos"].push_back(imu_filter.estimated.state[0][0]);
+		traces["estimated vel"].push_back(imu_filter.estimated.state[1][0]);
 
 		i += 1;
 	}
@@ -288,11 +288,12 @@ void IMU()
 	std::cerr << chart.offset(3).height(30).legendPadding(3).Plot();
 
 	// ensure each state element is within 1-sigma of the true state
-	std::cerr << cart_filter.estimated.covariance.to_string() << std::endl;
-	const auto& cov = cart_filter.estimated.covariance;
-	assert(fabs(cart_filter.estimated.state[0][0] - state[0]) < sqrt(cov[0][0]) * 3);
-	assert(fabs(cart_filter.estimated.state[1][0] - state[1]) < sqrt(cov[1][1]) * 3);
+	std::cerr << imu_filter.estimated.covariance.to_string() << std::endl;
+	const auto& cov = imu_filter.estimated.covariance;
+	assert(fabs(imu_filter.estimated.state[0][0] - state[0]) < sqrt(cov[0][0]) * 3);
+	assert(fabs(imu_filter.estimated.state[1][0] - state[1]) < sqrt(cov[1][1]) * 3);
 }
+**/
 
 
 TEST
