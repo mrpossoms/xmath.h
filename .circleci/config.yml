@@ -11,6 +11,10 @@ jobs:
       - checkout
 
       - run:
+          name: Fetch Dependencies
+          command: pip install gitman && gitman install
+
+      - run:
           name: Run tests
           command: make -C tests test
 
