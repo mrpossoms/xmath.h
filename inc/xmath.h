@@ -1586,21 +1586,27 @@ namespace filter
 {
 
 /**
- * @brief      { struct_description }
+ * @brief      Classical Kalman filter implementation
  *
- * @tparam     Z     { description }
- * @tparam     X     { description }
- * @tparam     U     { description }
- * @tparam     S     { description }
+ * @tparam     Z     Dimension of the measurement vector
+ * @tparam     X     Dimension of the state vector.
+ * @tparam     U     Dimension of the control vector
+ * @tparam     S     Datatype used for each element in vectors and matrices
+ * within the filter
  */
 template <size_t Z, size_t X, size_t U, typename S = XMTYPE>
 struct kalman
 {
 	struct
 	{
-		mat<X, 1, S> state;
-		mat<X, X, S> covariance = mat<X, X, S>::I();
-		mat<Z, 1, S> measurement_residual;
+		mat<X, 1, S> state; //< Estimated state vector inferred from initial
+		                    //state and measurements.
+		mat<X, X, S> covariance =
+		    mat<X, X, S>::I(); //< Estimated covariance vector for and between
+		                       //each feature in the state vector.
+		mat<Z, 1, S> measurement_residual; //< Residual between estimated state
+		                                   //mapped into measurement space and
+		                                   //the most recent measurement.
 	} estimated;
 
 	mat<X, X, S> I_xx = mat<X, X, S>::I();
@@ -1608,15 +1614,18 @@ struct kalman
 	kalman(vec<X, S>& state = {}) { estimated.state = {state}; }
 
 	/**
-	 * @brief      { function_description }
+	 * @brief      Predict next estimated state based on linear dynamics
+	 * described by state transition matrix.
 	 *
-	 * @param[in]  state_transition  The state transition
-	 * @param[in]  control_to_state  The control to state
-	 * @param[in]  control           The control
+	 * @param[in]  state_transition  State transition matrix which maps
+	 * estimated state at time t, x_t to x_t+1.
+	 * @param[in]  control_to_state  Transforms control vector to state delta to
+	 * incorporate known actions that are being performed.
+	 * @param[in]  control           Control vector
 	 */
 	void time_update(const mat<X, X, S>& state_transition,
 	                 const mat<X, U, S>& control_to_state,
-	                 const mat<U, 1, S>& control,
+	                 const mat<U, 1, S>& control                  = {},
 	                 const mat<X, X, S>& process_noise_covariance = {})
 	{
 		// Advance state in time by state_transition matrix. Apply control
@@ -1632,13 +1641,15 @@ struct kalman
 	}
 
 	/**
-	 * @brief      { function_description }
+	 * @brief      Ingest measurement to update estimated state and covariance.
 	 *
-	 * @param[in]  state_transition              The state transition
-	 * @param[in]  state_to_measurement          The state to measurement
-	 * @param[in]  measurement_noise_covariance  The measurement noise
+	 * @param[in]  state_transition              State transition matrix which
+	 * maps estimated state at time t, x_t to x_t+1.
+	 * @param[in]  state_to_measurement          Matrix which maps state vector
+	 * into meaurement space.
+	 * @param[in]  measurement_noise_covariance  Covariance of the measurements
 	 * covariance
-	 * @param[in]  measurement                   The measurement
+	 * @param[in]  measurement                   Measurement vector at time t.
 	 */
 	void measurement_update(
 	    const mat<X, X, S>& state_transition,
