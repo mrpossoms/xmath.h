@@ -77,7 +77,7 @@ void constant_velocity()
 
 	Asciichart chart(traces);
 	std::cerr << __FUNCTION__ << std::endl;
-	std::cerr << chart.offset(3).height(30).legendPadding(10).Plot();
+	std::cerr << chart.offset(3).height(30).legend_padding(10).Plot();
 
 	// ensure each state element is within 1-sigma of the true state
 	std::cerr << "covariance:\n" << cart_filter.estimated.covariance.to_string() << std::endl;
@@ -138,7 +138,7 @@ void sin_velocity()
 
 	Asciichart chart(traces);
 	std::cerr << __FUNCTION__ << std::endl;
-	std::cerr << chart.offset(3).height(30).legendPadding(3).Plot();
+	std::cerr << chart.offset(3).height(30).legend_padding(3).Plot();
 
 	// ensure each state element is within 1-sigma of the true state
 	std::cerr << "covariance:\n" << cart_filter.estimated.covariance.to_string() << std::endl;
@@ -169,8 +169,12 @@ void random_walk_velocity()
 	std::unordered_map<std::string, std::vector<double>> traces;
 
 	mat<2, 2> process_noise_covar_walk = {
-		{ 1, 0 },
-		{ 0, 1 },
+		{ 10, 0 },
+		{ 0, 10 },
+	};
+
+	mat<1, 1> measurement_noise_covar = { 
+		{ 0.1 }
 	};
 
 	int i = 0;
@@ -191,7 +195,7 @@ void random_walk_velocity()
 				stm_cart,
 				state_to_measurement_cart,
 				mat<1, 1>{{z}},
-				measurement_noise_covar_cart
+				measurement_noise_covar
 			);
 		}
 
@@ -206,7 +210,7 @@ void random_walk_velocity()
 
 	Asciichart chart(traces);
 	std::cerr << __FUNCTION__ << std::endl;
-	std::cerr << chart.offset(3).height(30).legendPadding(3).Plot();
+	std::cerr << chart.offset(3).height(30).legend_padding(3).Plot();
 
 	// ensure each state element is within 1-sigma of the true state
 	std::cerr << "covariance:\n" << cart_filter.estimated.covariance.to_string() << std::endl;
