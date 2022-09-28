@@ -1,0 +1,11 @@
+location: gitman_sources
+sources:
+- name: asciichart
+  type: git
+  repo: https://github.com/mrpossoms/asciichart.git
+  sparse_paths:
+  -
+  rev: feature/legend 
+  link:
+  scripts:
+  -

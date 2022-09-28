@@ -1,5 +1,5 @@
 TARGET=$(shell ${CC} -dumpmachine)
-INC+=-I../inc
+INC+=-I../inc -I../gitman_sources/asciichart/include/ascii
 LIBS+=
 LINK+=-lm
 CC=gcc

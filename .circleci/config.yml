@@ -4,11 +4,15 @@ jobs:
   build:
 
     docker:
-      - image: mrpossoms/ubuntu-bionic:latest
+      - image: mrpossoms/ubuntu-dev-base:latest
         environment:
 
     steps:
       - checkout
+
+      - run:
+          name: Fetch Dependencies
+          command: gitman install
 
       - run:
           name: Run tests

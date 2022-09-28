@@ -13,5 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Setup Gitman
+      run: pip3 install gitman
+
+    - name: Install Dependencies
+      run: gitman install
+
     - name: run tests
       run: make -C ./tests test
