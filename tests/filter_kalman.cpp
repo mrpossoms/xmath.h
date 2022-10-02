@@ -161,11 +161,11 @@ void random_walk_velocity()
 
 	std::normal_distribution<double> process_noise(0,0.1);
 	std::normal_distribution<double> measurement_noise(0.0,0.1);
-	std::normal_distribution<double> wander_noise(-1,1);
+	std::normal_distribution<double> wander_noise(0,1);
 
 	vec<2> state = {}; // consists of 1D position, and velocity
 
-	filter::kalman<1, 2, 1> cart_filter(state); 
+	filter::kalman<2, 2, 1> cart_filter(state); 
 	std::unordered_map<std::string, std::vector<double>> traces;
 
 	mat<2, 2> process_noise_covar_walk = {
@@ -173,8 +173,19 @@ void random_walk_velocity()
 		{ 0, 10 },
 	};
 
-	mat<1, 1> measurement_noise_covar = { 
-		{ 0.1 }
+	mat<2, 2> measurement_noise_covar = { 
+		{ 0.1, 0.0 },
+		{ 0.0, 0.1 },
+	};
+
+	mat<2, 2> state_to_measurement_pos = {
+		{ 1, 0 },
+		{ 0, 0 },
+	};
+
+	mat<2, 2> state_to_measurement_vel = {
+		{ 0, 0 },
+		{ 0, 1 },
 	};
 
 	int i = 0;
@@ -186,15 +197,26 @@ void random_walk_velocity()
 		state[1] += wander_noise(rng);
 		state = stm_cart * state + vec<2>{process_noise(rng),process_noise(rng)};
 
-		if (i % 10 == 0)
+		if (i % 20 == 0)
+		{
+			auto z = state[1] + measurement_noise(rng);
+
+			cart_filter.measurement_update(
+				stm_cart,
+				state_to_measurement_vel,
+				mat<2, 1>{{0}, {z}},
+				measurement_noise_covar
+			);
+		}
+		else if (i % 10 == 0)
 		{
 			auto z = state[0] + measurement_noise(rng);
 
 
 			cart_filter.measurement_update(
 				stm_cart,
-				state_to_measurement_cart,
-				mat<1, 1>{{z}},
+				state_to_measurement_pos,
+				mat<2, 1>{{z}, {0}},
 				measurement_noise_covar
 			);
 		}
