@@ -954,6 +954,13 @@ struct mat
 		return m;
 	}
 
+	static inline mat<R, C, S> diagonal(const vec<R, S>& diag)
+	{
+		mat<R, C, S> d;
+		for (unsigned i = 0; i < R; i++) { d[i][i] = diag[i]; }
+		return d;
+	}
+
 	template <size_t SUB_R, size_t SUB_C>
 	mat<SUB_R, SUB_C, S> slice(size_t r_off = 0, size_t c_off = 0)
 	{
@@ -1600,13 +1607,13 @@ struct kalman
 	struct
 	{
 		mat<X, 1, S> state; //< Estimated state vector inferred from initial
-		                    //state and measurements.
+		                    // state and measurements.
 		mat<X, X, S> covariance =
 		    mat<X, X, S>::I(); //< Estimated covariance vector for and between
-		                       //each feature in the state vector.
+		                       // each feature in the state vector.
 		mat<Z, 1, S> measurement_residual; //< Residual between estimated state
-		                                   //mapped into measurement space and
-		                                   //the most recent measurement.
+		                                   // mapped into measurement space and
+		                                   // the most recent measurement.
 	} estimated;
 
 	mat<X, X, S> I_xx = mat<X, X, S>::I();
