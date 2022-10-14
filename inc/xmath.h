@@ -962,7 +962,7 @@ struct mat
 	}
 
 	template <size_t SUB_R, size_t SUB_C>
-	mat<SUB_R, SUB_C, S> slice(size_t r_off = 0, size_t c_off = 0)
+	mat<SUB_R, SUB_C, S> slice(size_t r_off = 0, size_t c_off = 0) const
 	{
 		mat<SUB_R, SUB_C, S> out;
 
@@ -1618,7 +1618,7 @@ struct kalman
 
 	mat<X, X, S> I_xx = mat<X, X, S>::I();
 
-	kalman(vec<X, S>& state = {}) { estimated.state = {state}; }
+	kalman(const vec<X, S>& state = {}) { estimated.state = {state}; }
 
 	/**
 	 * @brief      Predict next estimated state based on linear dynamics
