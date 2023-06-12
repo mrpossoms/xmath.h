@@ -1698,6 +1698,62 @@ struct kalman
 
 } // namespace filter
 
+namespace controller
+{
+
+/**
+ * @brief      PID controller implementation
+ *
+ * @tparam     U     Dimension of the control vector
+ * @tparam     S     Datatype used for each element in vectors and matrices
+ * within the filter
+ */
+template <size_t U=1, typename S=XMTYPE>
+struct pid
+{
+    struct
+    {
+        vec<U, S> control; //< Control vector
+        vec<U, S> error;   //< Error vector
+        vec<U, S> integral;     //< Integral of error vector
+    } state;
+
+    vec<U, S> K_p; //< Proportional gain
+    vec<U, S> K_i; //< Integral gain
+    vec<U, S> K_d; //< Derivative gain
+
+    /**
+     * @brief      Construct a PID controller
+     *
+     * @param[in]  K_p   Proportional gain
+     * @param[in]  K_i   Integral gain
+     * @param[in]  K_d   Derivative gain
+     */
+    pid(const vec<U, S>& K_p = {},
+        const vec<U, S>& K_i = {},
+        const vec<U, S>& K_d = {})
+        : K_p(K_p), K_i(K_i), K_d(K_d)
+    {
+    }
+
+    /**
+     * @brief      Compute control vector based on error vector
+     *
+     * @param[in]  error  Error vector
+     *
+     * @return     Control vector
+     */
+    vec<U, S> operator()(const vec<U, S>& error, S dt)
+    {
+        auto de = error - state.error;
+        state.integral += error * dt;
+        state.error = error;
+        return (K_p * error) + (K_i * state.integral) + (K_d * de / dt);
+    }
+};
+
+} // namespace controller
+
 } // namespace xmath
 #endif
 #endif
