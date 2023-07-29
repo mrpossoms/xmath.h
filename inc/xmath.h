@@ -847,6 +847,13 @@ struct vec
 		return *this;
 	}
 
+    vec<N, S> clamp(const vec<N, S>& min, const vec<N, S>& max) const
+    {
+        vec<N, S> r;
+        for (size_t i = 0; i < N; ++i) { r[i] = std::clamp(v[i], min[i], max[i]); }
+        return r;
+    }
+
 	vec<N, S> floor() const
 	{
 		vec<N, S> r;
