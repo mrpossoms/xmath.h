@@ -1484,7 +1484,8 @@ struct quat : public vec<4, QS>
 
 namespace intersect
 {
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 static XMTYPE ray_plane(const vec<3>& ray_o,
                         const vec<3>& ray_d,
                         const vec<3>& plane_o,
@@ -1593,7 +1594,7 @@ static XMTYPE ray_sphere(const vec<3>& ray_o,
 	auto b = l2 > r2;
 	return b * (s - q) + !b * (s + q);
 }
-
+#pragma GCC diagnostic pop
 }; // namespace intersect
 
 namespace filter
