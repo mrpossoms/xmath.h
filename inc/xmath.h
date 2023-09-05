@@ -1255,10 +1255,10 @@ struct mat
         };
 	}
 
-	static mat<4, 4> perspective(S near, S far, S fov, S aspect)
+	static mat<4, 4> perspective(S near, S far, S h_fov, S v_fov)
 	{
-		const auto half_canvas_w = (S)tan(fov / 2) * near;
-		const auto half_canvas_h = half_canvas_w / aspect;
+		const auto half_canvas_w = (S)tan(h_fov / 2) * near;
+		const auto half_canvas_h = (S)tan(v_fov / 2) * near;
 		return perspective(vec<2, S>{half_canvas_w, half_canvas_h}, near, near,
 		                   far);
 	}
