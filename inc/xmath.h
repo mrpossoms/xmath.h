@@ -582,6 +582,7 @@ static inline void mat_identity(size_t n, XMTYPE mat[n][n])
 #ifdef __cplusplus
 #include <functional>
 #include <initializer_list>
+#include <algorithm>
 #include <limits>
 #include <string>
 
