@@ -615,6 +615,11 @@ struct vec
 		}
 	}
 
+	vec(const vec<N, S>& v)
+	{
+		for (auto i = N; i--;) { this->v[i] = v.v[i]; }
+	}
+
 	inline S operator[](int i) const { return v[i]; }
 
 	inline S& operator[](int i) { return v[i]; }
