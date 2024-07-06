@@ -979,15 +979,21 @@ struct mat
 	{
 		mat<SUB_R, SUB_C, S> out;
 
-		for (auto r = 0; r < SUB_R; r++)
+		for (auto r = 0u; r < SUB_R; r++)
 		{
-			for (auto c = 0; c < SUB_C; c++)
+			for (auto c = 0u; c < SUB_C; c++)
 			{
 				out[r][c] = m[r + r_off][c + c_off];
 			}
 		}
 
 		return out;
+	}
+
+	inline mat<3, 3, S> R_T() const
+	{
+		auto r = slice<3,3>();
+		return r;
 	}
 
 	vec<R * C, S> flatten(bool row_major = true)
@@ -1328,7 +1334,7 @@ struct quat : public vec<4, QS>
 		return {r[0], r[1], r[2], this->v[3] * other.v[3] - t3.dot(o3)};
 	}
 
-	quat operator*(float s) const { return {this->slice<4>(0) * s}; }
+	quat operator*(float s) const { return {this->template slice<4>(0) * s}; }
 
 	quat& operator*=(quat const& other)
 	{
