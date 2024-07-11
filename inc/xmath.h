@@ -791,6 +791,23 @@ struct vec
 		return r;
 	}
 
+	template <size_t NN>
+	vec<NN, S> append(const vec<NN - N, S>& w) const
+	{
+		vec<NN, S> r;
+		for (size_t i = 0; i < NN; ++i)
+		{
+			if (i < N) {
+				r[i] = v[i];				
+			}
+			else {
+				r[i] = w[i - N];
+			}
+
+		}
+		return r;
+	}
+
 	std::string to_string(bool parens = true) const
 	{
 		std::string str = parens ? "(" : "";
@@ -840,6 +857,18 @@ struct vec
 	{
 		auto diff = *this - v;
 		return diff.dot(diff) <= threshold;
+	}
+
+	S max_component()
+	{
+		S g = v[0];
+		for (size_t i = 1; i < N; i++)
+		{
+			auto gt = v[i] > g;
+			g = (1 - gt) * g + gt * v[i];
+		}
+
+		return g;
 	}
 
 	vec<N, S>& take_min(const vec<N, S>& v)
@@ -904,6 +933,12 @@ struct vec
 		    a[2] * b[0] - a[0] * b[2],
 		    a[0] * b[1] - a[1] * b[0],
 		};
+	}
+
+	static vec<3, S> reflect(const vec<3, S>& d, const vec<3, S>& n)
+	{
+		auto a = d.dot(n) * -2;
+		return d + n * a;
 	}
 
 	S v[N]; // value store
