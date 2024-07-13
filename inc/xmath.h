@@ -910,6 +910,13 @@ struct vec
 		return r;
 	}
 
+	vec<N, S> round() const
+	{
+		vec<N, S> r;
+		for (size_t i = 0; i < N; ++i) { r[i] = ::round(v[i]); }
+		return r;
+	}
+
 	vec<N, S>& take_max(const vec<N, S>& v)
 	{
 		for (size_t i = 0; i < N; ++i)

@@ -3,8 +3,8 @@ INC+=-I../inc -I../gitman_sources/asciichart/include/ascii
 LIBS+=
 LINK+=-lm
 CC=gcc
-CXXFLAGS+=-std=c++17 -g
-CFLAGS=-std=c99 -g
+CXXFLAGS+=-std=c++17 -g -O3
+CFLAGS=-std=c99 -g -O3
 
 TESTS=$(patsubst %.cpp,bin/%,$(wildcard *.cpp))
 TESTS+=$(patsubst %.c,bin/%_c,$(wildcard *.c))
